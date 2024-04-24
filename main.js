@@ -138,6 +138,7 @@ async function run() {
       const camera = new FreeCamera('camera1', new Vector3(0, 0, 0), scene);
       camera.setTarget(Vector3.Zero());
       camera.attachControl(canvas, true);
+      console.log(camera.position);
       scene.removeCamera(camera);
       assets.cameras.push(camera);
     }
@@ -153,10 +154,7 @@ async function run() {
     // shadowGenerator.addShadowCaster(mesh);
   });
 
-  document.onkeydown = (e) => {
-    if (e.key != 'z') {
-      return;
-    }
+  function changeMap() {
     assetContainers[currentSceneIndex].removeAllFromScene();
     currentSceneIndex = ++currentSceneIndex % assetContainers.length;
 
@@ -164,6 +162,7 @@ async function run() {
       scene.activeCamera.position.copyFrom(
         assetContainers[currentSceneIndex].cameras[0].position
       );
+      console.log(assetContainers[currentSceneIndex].cameras[0].position);
     }
     assetContainers[currentSceneIndex].meshes.forEach((mesh) => {
       if (mesh.parent) {
@@ -173,9 +172,10 @@ async function run() {
       }
     });
     assetContainers[currentSceneIndex].addAllToScene();
-  };
+  }
 
   xr.baseExperience.onInitialXRPoseSetObservable.add(() => {
+    xr.baseExperience.camera.position.z = 0.001;
     const xrPosition = xr.baseExperience.camera.position.clone();
     console.log(xrPosition);
   });
@@ -183,19 +183,40 @@ async function run() {
   xr.input.onControllerAddedObservable.add((controller) => {
     controller.onMotionControllerInitObservable.add(
       async (motionController) => {
+
+        const ids = motionController.getComponentIds();
+        const trigger = motionController.getComponent(ids[0]);
+        const squeeze = motionController.getComponent(ids[1]);
+        const a_and_b_Button = motionController.getComponent(ids[3]);
+        const x_and_y_Button = motionController.getComponent(ids[4]);
+
         if (motionController.handness === 'left') {
+
           const leftSpehere = MeshBuilder.CreateSphere(
             'leftSphere',
-            { diameter: 0.05 },
+            { diameter: 0.05, slice: 0.5},
             scene
           );
+
+          trigger.onButtonStateChangedObservable.add(() => {
+
+            if (trigger.pressed) {
+              changeMap();
+            } 
+          });
         }
         if (motionController.handness === 'right') {
           const rightSpehere = MeshBuilder.CreateSphere(
             'leftSphere',
-            { diameter: 0.05 },
+            { diameter: 0.05, slice: 0.5 },
             scene
           );
+          trigger.onButtonStateChangedObservable.add(() => {
+
+            if (trigger.pressed) {
+              changeMap();
+            } 
+          });
         }
       }
     );
