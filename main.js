@@ -47,11 +47,11 @@ const scenes = [
     file: '',
   },
   {
-    root: 'models/',
+    root: '/models/',
     file: 'parking.glb',
   },
   {
-    root: 'models/',
+    root: '/models/',
     file: 'room.glb',
   },
 ];
