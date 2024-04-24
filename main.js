@@ -209,6 +209,7 @@ async function run() {
 run()
   .then(() => {
     console.log('Done');
+    document.getElementsByClassName("xr-button-overlay")[0].style.display = "block";
   })
   .catch((err) => {
     console.log(err);
