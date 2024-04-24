@@ -23,10 +23,12 @@ import {
   HavokPlugin,
   PhysicsShapeType,
   PhysicsAggregate,
-  glTF,
+  glTf
 } from 'babylonjs';
 
-import HavokPhysics from 'https://cdn.babylonjs.com/havok/HavokPhysics_es.js';
+import "https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"
+
+import HavokPhysics from "https://cdn.babylonjs.com/havok/HavokPhysics_es.js"
 // import HavokPhysics from '@babylonjs/havok';
 
 async function loadPromise(root, file, scene) {
@@ -45,11 +47,11 @@ const scenes = [
     file: '',
   },
   {
-    root: '/',
-    file: 'https://github.com/extremety1989/3dgame/blob/main/parking.glb',
+    root: 'models/',
+    file: 'parking.glb',
   },
   {
-    root: '/',
+    root: 'models/',
     file: 'room.glb',
   },
 ];
@@ -116,9 +118,9 @@ async function run() {
       light.diffuse = Color3.FromHexString('#ffffff');
       light.groundColor = Color3.FromHexString('#bbbbff');
       light.intensity = 0.7;
-      shadowGenerator = new ShadowGenerator(1024, light);
-      shadowGenerator.useBlurExponentialShadowMap = true;
-      shadowGenerator.blurKernel = 32;
+      // shadowGenerator = new ShadowGenerator(1024, light);
+      // shadowGenerator.useBlurExponentialShadowMap = true;
+      // shadowGenerator.blurKernel = 32;
 
       scene.removeLight(light);
       assets.lights.push(light);
@@ -148,7 +150,7 @@ async function run() {
       mesh.bakeTransformIntoVertices(parentTransform);
       mesh.parent = null;
     }
-    shadowGenerator.addShadowCaster(mesh);
+    // shadowGenerator.addShadowCaster(mesh);
   });
 
   document.onkeydown = (e) => {
