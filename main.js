@@ -52,6 +52,10 @@ try {
       root: '/models/',
       file: 'room.glb',
     },
+    {
+      root: '/models/',
+      file: 'gym.glb',
+    }
   ];
 
   async function run() {
