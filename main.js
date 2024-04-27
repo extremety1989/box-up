@@ -63,6 +63,7 @@ try {
     const engine = new Engine(canvas, true);
 
     const scene = new Scene(engine);
+  
     const xr = await scene.createDefaultXRExperienceAsync({
       uiOptions: {
         sessionMode: 'immersive-vr',
@@ -104,6 +105,13 @@ try {
     for (let i = 0; i < scenes.length; i++) {
       if (scenes[i].file === '') continue;
       const assets = await loadPromise(scenes[i].root, scenes[i].file, scene);
+      assets.meshes.forEach((mesh) => {
+        mesh.computeWorldMatrix(true);
+       if(mesh.name === "Ground"){
+        mesh.receiveShadows = true;
+        mesh.position.y = 0;
+       }
+      });
       if (assets.lights.length == 0) {
         const light = new HemisphericLight(
           'light',
@@ -157,7 +165,7 @@ try {
     yellowSide.material.diffuseColor = Color3.Yellow();
 
     const blackTarget = MeshBuilder.CreateSphere(
-      'b',
+      'black',
       { diameter: 0.2, slice: 0.5},
       scene
     );
@@ -169,7 +177,7 @@ try {
 
    
     const yellowTarget = MeshBuilder.CreateSphere(
-      'y',
+      'yellow',
       { diameter: 0.2, slice: 0.5},
       scene
     );
@@ -218,7 +226,7 @@ try {
 
     function combo_2() {
       const newBlackTarget = blackSide.createInstance("black");
-      newBlackTarget.addChild(blackTarget.createInstance("b"));
+      newBlackTarget.addChild(blackTarget.createInstance("black"));
       newBlackTarget.position.copyFrom(pos);
       newBlackTarget.position.y -= 0.5;
       newBlackTarget.position.z += 10;
@@ -229,7 +237,7 @@ try {
       newBlackTarget.rotation.z = Math.PI/4;
       targets.push(newBlackTarget);
       const newTellowTarget = yellowSide.createInstance("yellow");
-      newTellowTarget.addChild(yellowTarget.createInstance("y"));
+      newTellowTarget.addChild(yellowTarget.createInstance("yellow"));
       newTellowTarget.position.copyFrom(pos);
       newTellowTarget.position.y -= 0.5;
       newTellowTarget.position.z += 5;
@@ -243,7 +251,7 @@ try {
 
     function combo_3() {
       const newBlackTarget = blackSide.createInstance("black");
-      newBlackTarget.addChild(blackTarget.createInstance("b"));
+      newBlackTarget.addChild(blackTarget.createInstance("black"));
       newBlackTarget.position.copyFrom(pos);
       newBlackTarget.position.y -= 0.2;
       newBlackTarget.position.z += 10;
@@ -254,7 +262,7 @@ try {
       newBlackTarget.showBoundingBox = true;
       targets.push(newBlackTarget);
       const newTellowTarget = yellowSide.createInstance("yellow");
-      newTellowTarget.addChild(yellowTarget.createInstance("y"));
+      newTellowTarget.addChild(yellowTarget.createInstance("yelow"));
       newTellowTarget.position.copyFrom(pos);
       newTellowTarget.position.y -= 0.2;
       newTellowTarget.position.z += 5;
@@ -338,7 +346,7 @@ try {
           if (left.meshes[0].intersectsMesh(target, true) && right.meshes[0].intersectsMesh(target, true)){
 
           }
-          if (left.meshes[0].intersectsMesh(target, true)) {
+          if (left.meshes[0].intersectsMesh(target, false)) {
             if(target.name === "yellow"){
               if(left.velocity.length() > 0.9){
 
@@ -350,7 +358,7 @@ try {
 
             }
           }
-          if (right.meshes[0].intersectsMesh(target, true)){
+          if (right.meshes[0].intersectsMesh(target, false)){
             if(target.name === "black"){
               if(right.velocity.length() > 0.9){
 
