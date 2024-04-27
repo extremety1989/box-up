@@ -268,7 +268,7 @@ try {
 
     function combo_4() {
       const newBlackTarget = blackSide.createInstance("black");
-      newBlackTarget.addChild(blackTarget.createInstance("b"));
+      newBlackTarget.addChild(blackTarget.createInstance("black"));
       newBlackTarget.position.copyFrom(pos);
       newBlackTarget.position.y -= 0.5;
       newBlackTarget.position.z += 10;
@@ -279,7 +279,7 @@ try {
       newBlackTarget.showBoundingBox = true;
       targets.push(newBlackTarget);
       const newTellowTarget = yellowSide.createInstance("yellow");
-      newTellowTarget.addChild(yellowTarget.createInstance("y"));
+      newTellowTarget.addChild(yellowTarget.createInstance("yellow"));
       newTellowTarget.position.copyFrom(pos);
       newTellowTarget.position.y -= 0.5;
       newTellowTarget.position.z += 5;
