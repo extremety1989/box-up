@@ -4,7 +4,6 @@ import {
   HemisphericLight,
   Scene,
   Vector3,
-  FreeCamera,
   StandardMaterial,
   Color3,
   MeshBuilder,
@@ -19,14 +18,13 @@ import {
   WebXRControllerComponent,
   SceneLoader,
   ShadowGenerator,
-  TransformNode,
+  Engine,
   glTf
 } from 'babylonjs';
 
 import "https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"
 
-import HavokPhysics from "https://cdn.babylonjs.com/havok/HavokPhysics_es.js"
-//import HavokPhysics from '@babylonjs/havok';
+const info = localStorage.getItem('info') ? JSON.parse(localStorage.getItem('info')) : {};
 
 try {
   async function loadPromise(root, file, scene) {
@@ -46,20 +44,15 @@ try {
     },
     {
       root: '/models/',
-      file: 'parking.glb',
-    },
-    {
-      root: '/models/',
-      file: 'room.glb',
-    },
-    {
-      root: '/models/',
       file: 'gym.glb',
     }
   ];
 
   async function run() {
-    let shadowGenerator;
+    if(info.level) {
+      const level = scenes.find((scene) => scene.file === info.level);
+      
+    }
     const app = document.getElementById('app');
     const canvas = document.createElement('canvas');
     app.appendChild(canvas);
@@ -108,19 +101,17 @@ try {
     for (let i = 0; i < scenes.length; i++) {
       if (scenes[i].file === '') continue;
       const assets = await loadPromise(scenes[i].root, scenes[i].file, scene);
-      // Add a light if none exists
       if (assets.lights.length == 0) {
         const light = new HemisphericLight(
           'light',
           new Vector3(-0.5, -1, -0.25),
           scene
         );
+
         light.diffuse = Color3.FromHexString('#ffffff');
         light.groundColor = Color3.FromHexString('#bbbbff');
         light.intensity = 0.7;
-        // shadowGenerator = new ShadowGenerator(1024, light);
-        // shadowGenerator.useBlurExponentialShadowMap = true;
-        // shadowGenerator.blurKernel = 32;
+
 
         scene.removeLight(light);
         assets.lights.push(light);
@@ -133,67 +124,56 @@ try {
         scene.removeLight(dirLight);
         assets.lights.push(dirLight);
       }
-      // Add camera if none exists
-      // if (assets.cameras.length == 0) {
-      //   const camera = new FreeCamera('camera1', new Vector3(0, 0, 0), scene);
-      //   camera.setTarget(Vector3.Zero());
-      //   camera.attachControl(canvas, true);
-      //   console.log(camera.position);
-      //   scene.removeCamera(camera);
-      //   assets.cameras.push(camera);
-      // }
       assetContainers.push(assets);
     }
     assetContainers[currentSceneIndex].addAllToScene();
-    assetContainers[currentSceneIndex].meshes.forEach((mesh) => {
-      if (mesh.parent) {
-        const parentTransform = mesh.parent.getWorldMatrix();
-        mesh.bakeTransformIntoVertices(parentTransform);
-        mesh.parent = null;
-      }
-      // shadowGenerator.addShadowCaster(mesh);
-    });
+  
 
     function changeMap() {
       assetContainers[currentSceneIndex].removeAllFromScene();
       currentSceneIndex = ++currentSceneIndex % assetContainers.length;
-
-      // if (assetContainers[currentSceneIndex].cameras[0]) {
-      //   scene.activeCamera.position.copyFrom(
-      //     assetContainers[currentSceneIndex].cameras[0].position
-      //   );
-      // }
-      assetContainers[currentSceneIndex].meshes.forEach((mesh) => {
-        if (mesh.parent) {
-          const parentTransform = mesh.parent.getWorldMatrix();
-          mesh.bakeTransformIntoVertices(parentTransform);
-          mesh.parent = null;
-        }
-      });
       assetContainers[currentSceneIndex].addAllToScene();
     }
 
+    const destroyedTarget = new Howl({
+      src: ['./sounds/sound.mp3']
+    });
+    
+    const blackSide = MeshBuilder.CreateCylinder("black", {height: 0.05, diameter: 0.2}, scene);
+    blackSide.position.y = -0.025;
+    blackSide.material = new StandardMaterial('blackMaterial', scene);
+    blackSide.material.diffuseColor = Color3.Black();
+
+
+    const yellowSide = MeshBuilder.CreateCylinder("yellow", {height: 0.05, diameter: 0.2}, scene);
+    yellowSide.position.y = -0.025;
+    yellowSide.material = new StandardMaterial('blackMaterial', scene);
+    yellowSide.material.diffuseColor = Color3.Yellow();
 
     const blackTarget = MeshBuilder.CreateSphere(
-      'black',
-      { diameter: 0.2 },
+      'b',
+      { diameter: 0.2, slice: 0.5},
       scene
     );
+
     blackTarget.speed = 0;
     blackTarget.material = new StandardMaterial('blackMaterial', scene);
     blackTarget.material.diffuseColor = Color3.Black();
-    blackTarget.isVisible = true;
-
+    blackTarget.isVisible = false;
+    blackTarget.sound = destroyedTarget;
+   
     const yellowTarget = MeshBuilder.CreateSphere(
-      'yellow',
-      { diameter: 0.2 },
+      'y',
+      { diameter: 0.2, slice: 0.5},
       scene
     );
 
     yellowTarget.speed = 0;
     yellowTarget.material = new StandardMaterial('yellowMaterial', scene);
     yellowTarget.material.diffuseColor = Color3.Yellow();
-    yellowTarget.isVisible = true;
+    yellowTarget.isVisible = false;
+    yellowTarget.sound = destroyedTarget;
+
 
     let pos = new Vector3(0, 0, 0);
     xr.baseExperience.onStateChangedObservable.add((state) => {
@@ -202,28 +182,36 @@ try {
 
 
 
-    const newBlackTargets = [];
-    const newYellowTargets = [];
+    const targets = [];
 
 
 
-    setInterval(() => {
-
+    function combo_1() {
       const newBlackTarget = blackTarget.createInstance("black");
+      newBlackTarget.addChild(blackSide.createInstance("black"));
       newBlackTarget.position.copyFrom(pos);
-      newBlackTarget.position.z += 5;
-      newBlackTarget.position.x += 0.5;
+      newBlackTarget.position.z += 10;
+      newBlackTarget.position.x += 0.1;
       newBlackTarget.speed = 1;
-      newBlackTargets.push(newBlackTarget);
-
+      newBlackTarget.isVisible = true;
+      newBlackTarget.rotation.x = Math.PI/2;
+      newBlackTarget.rotation.z = Math.PI/4;
+      targets.push(newBlackTarget);
       const newTellowTarget = yellowTarget.createInstance("yellow");
+      newTellowTarget.addChild(yellowSide.createInstance("yellow"));
       newTellowTarget.position.copyFrom(pos);
       newTellowTarget.position.z += 5;
-      newTellowTarget.position.x -= 0.5;
+      newTellowTarget.position.x -= 0.1;
       newTellowTarget.speed = 1;
-      newYellowTargets.push(newTellowTarget);
+      newTellowTarget.isVisible = true;
+      newTellowTarget.rotation.x = Math.PI/2;
+      newTellowTarget.rotation.z = -Math.PI/4;
+      targets.push(newTellowTarget);
+    }
 
-    }, 1000);
+    setInterval(() => {
+      combo_1();
+    }, 1500);
 
     const leftSpehere = MeshBuilder.CreateSphere(
       'leftSphere',
@@ -244,20 +232,29 @@ try {
 
 
     scene.registerBeforeRender(function () {
-      if( newBlackTargets.length > 0 ) {
-        newBlackTargets.forEach((target) => {
-          if (rightSpehere.intersectsMesh(target, true)) {
-            target.dispose();
-            newBlackTargets.splice(newBlackTargets.indexOf(target), 1);
-          }
-        });
-      }
+      if( targets.length > 0 ) {
+        targets.forEach((target) => {
+          if (leftSpehere.intersectsMesh(target, true) && rightSpehere.intersectsMesh(target, true)){
 
-      if( newYellowTargets.length > 0 ) {
-        newYellowTargets.forEach((target) => {
-          if (leftSpehere.intersectsMesh(target, true)) {
-            target.dispose();
-            newYellowTargets.splice(newYellowTargets.indexOf(target), 1);
+          } else {
+            if (leftSpehere.intersectsMesh(target, true)) {
+              if(target.name === "yellow"){
+                target.sound.play();
+                target.dispose();
+                targets.splice(targets.indexOf(target), 1);
+              } else{
+  
+              }
+            }
+            if (rightSpehere.intersectsMesh(target, true)) {
+              if(target.name === "black"){
+                target.sound.play();
+                target.dispose();
+                targets.splice(targets.indexOf(target), 1);
+              } else{
+  
+              }
+            }
           }
         });
       }
@@ -303,21 +300,11 @@ try {
     engine.runRenderLoop(() => {
       scene.render();
       const delta = engine.getDeltaTime() / 1000;
-      if( newBlackTargets.length > 0 ) {
-        newBlackTargets.forEach((target) => {
-          if(target.position.z < -5) {
+      if( targets.length > 0 ) {
+        targets.forEach((target) => {
+          if(target.position.z < -1) {
             target.dispose();
-            newBlackTargets.splice(newBlackTargets.indexOf(target), 1);
-          }
-          target.position.z -= target.speed * delta;
-        });
-      }
-
-      if( newYellowTargets.length > 0 ) {
-        newYellowTargets.forEach((target) => {
-          if(target.position.z < -5) {
-            target.dispose();
-            newYellowTargets.splice(newYellowTargets.indexOf(target), 1);
+            targets.splice(targets.indexOf(target), 1);
           }
           target.position.z -= target.speed * delta;
         });
