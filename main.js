@@ -312,7 +312,7 @@ try {
     else if(Math.random() > 0.2){
       combo_4();
     }else{
-      combo_5();
+      // combo_5();
     }
     }, 1500);
 
@@ -337,24 +337,23 @@ try {
           }
           if (left.meshes[0].intersectsMesh(target, true) && right.meshes[0].intersectsMesh(target, true)){
 
-          } else {
-            if (left.meshes[0].intersectsMesh(target, true)) {
-              if(target.name === "yellow" && left.velocity.length() > 0.9){
-                destroyedTarget.play();
-                target.dispose();
-                targets.splice(targets.indexOf(target), 1);
-              } else{
-  
-              }
+          }
+          if (left.meshes[0].intersectsMesh(target, true)) {
+            if(target.name === "yellow" && left.velocity.length() > 0.9){
+              destroyedTarget.play();
+              target.dispose();
+              targets.splice(targets.indexOf(target), 1);
+            } else{
+
             }
-            if (right.meshes[0].intersectsMesh(target, true) && right.velocity.length() > 0.9){
-              if(target.name === "black"){
-                destroyedTarget.play();
-                target.dispose();
-                targets.splice(targets.indexOf(target), 1);
-              } else{
-  
-              }
+          }
+          if (right.meshes[0].intersectsMesh(target, true)){
+            if(target.name === "black" && right.velocity.length() > 0.9){
+              destroyedTarget.play();
+              target.dispose();
+              targets.splice(targets.indexOf(target), 1);
+            } else{
+
             }
           }
         });
