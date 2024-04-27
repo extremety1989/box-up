@@ -317,11 +317,11 @@ try {
     }, 1500);
 
 
-    const left = await SceneLoader.ImportMeshAsync(null, "/models/", "left.glb", scene);
+    const left = await SceneLoader.ImportMeshAsync(null, "./models/", "left.glb", scene);
     left.velocity = new Vector3(0, 0, 0);
 
 
-    const right = await SceneLoader.ImportMeshAsync(null, "/models/", "right.glb", scene);
+    const right = await SceneLoader.ImportMeshAsync(null, "./models/", "right.glb", scene);
     right.velocity = new Vector3(0, 0, 0);
 
 
@@ -335,10 +335,10 @@ try {
               targets.splice(targets.indexOf(target), 1);
             }
           }
-          if (left.intersectsMesh(target, true) && right.intersectsMesh(target, true)){
+          if (left.meshes[0].intersectsMesh(target, true) && right.meshes[0].intersectsMesh(target, true)){
 
           } else {
-            if (left.intersectsMesh(target, true)) {
+            if (left.meshes[0].intersectsMesh(target, true)) {
               if(target.name === "yellow" && left.velocity.length() > 0.9){
                 destroyedTarget.play();
                 target.dispose();
@@ -347,7 +347,7 @@ try {
   
               }
             }
-            if (right.intersectsMesh(target, true) && right.velocity.length() > 0.9){
+            if (right.meshes[0].intersectsMesh(target, true) && right.velocity.length() > 0.9){
               if(target.name === "black"){
                 destroyedTarget.play();
                 target.dispose();
@@ -382,7 +382,7 @@ try {
           if (motionController.handness === 'left') {
 
             leftController = controller;
-            left.parent = controller.grip || controller.pointer;
+            left.meshes[0].parent = controller.grip || controller.pointer;
 
             trigger.onButtonStateChangedObservable.add(() => {
 
@@ -394,7 +394,7 @@ try {
           if (motionController.handness === 'right') {
 
             rightController = controller;
-            right.parent = controller.grip || controller.pointer;
+            right.meshes[0].parent = controller.grip || controller.pointer;
 
             trigger.onButtonStateChangedObservable.add(() => {
 
