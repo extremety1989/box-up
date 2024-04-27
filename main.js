@@ -316,23 +316,13 @@ try {
     }
     }, 1500);
 
-    const leftSpehere = MeshBuilder.CreateSphere(
-      'leftSphere',
-      { diameter: 0.2 },
-      scene
-    );
-    leftSpehere.velocity = new Vector3(0, 0, 0);
-    leftSpehere.material = new StandardMaterial('leftMaterial', scene);
-    leftSpehere.material.diffuseColor = Color3.Yellow();
 
-    const rightSpehere = MeshBuilder.CreateSphere(
-      'leftSphere',
-      { diameter: 0.2 },
-      scene
-    );
-    rightSpehere.velocity = new Vector3(0, 0, 0);
-    rightSpehere.material = new StandardMaterial('leftMaterial', scene);
-    rightSpehere.material.diffuseColor = Color3.Black();
+    const left = await SceneLoader.ImportMeshAsync(null, "/models/", "left.glb", scene);
+    left.velocity = new Vector3(0, 0, 0);
+
+
+    const right = await SceneLoader.ImportMeshAsync(null, "/models/", "right.glb", scene);
+    right.velocity = new Vector3(0, 0, 0);
 
 
     scene.registerBeforeRender(function () {
@@ -345,11 +335,11 @@ try {
               targets.splice(targets.indexOf(target), 1);
             }
           }
-          if (leftSpehere.intersectsMesh(target, true) && rightSpehere.intersectsMesh(target, true)){
+          if (left.intersectsMesh(target, true) && right.intersectsMesh(target, true)){
 
           } else {
-            if (leftSpehere.intersectsMesh(target, true)) {
-              if(target.name === "yellow" && leftSpehere.velocity.length() > 0.9){
+            if (left.intersectsMesh(target, true)) {
+              if(target.name === "yellow" && left.velocity.length() > 0.9){
                 destroyedTarget.play();
                 target.dispose();
                 targets.splice(targets.indexOf(target), 1);
@@ -357,7 +347,7 @@ try {
   
               }
             }
-            if (rightSpehere.intersectsMesh(target, true) && rightSpehere.velocity.length() > 0.9){
+            if (right.intersectsMesh(target, true) && right.velocity.length() > 0.9){
               if(target.name === "black"){
                 destroyedTarget.play();
                 target.dispose();
@@ -392,7 +382,7 @@ try {
           if (motionController.handness === 'left') {
 
             leftController = controller;
-            leftSpehere.parent = controller.grip || controller.pointer;
+            left.parent = controller.grip || controller.pointer;
 
             trigger.onButtonStateChangedObservable.add(() => {
 
@@ -404,7 +394,7 @@ try {
           if (motionController.handness === 'right') {
 
             rightController = controller;
-            rightSpehere.parent = controller.grip || controller.pointer;
+            right.parent = controller.grip || controller.pointer;
 
             trigger.onButtonStateChangedObservable.add(() => {
 
@@ -433,7 +423,7 @@ try {
           if (deltaTime > 0) {
             const velocity = currentPosition.subtract(leftPreviousPosition).scale(1 / deltaTime);
             if(velocity.length() > 0.1) {
-              leftSpehere.velocity = velocity;
+              left.velocity = velocity;
             }
           }
         }
@@ -452,7 +442,7 @@ try {
           if (deltaTime > 0) {
             const velocity = currentPosition.subtract(rightPreviousPosition).scale(1 / deltaTime);
             if(velocity.length() > 0.1) {
-              rightSpehere.velocity = velocity;
+              right.velocity = velocity;
             }
           }
         }
