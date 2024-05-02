@@ -9,11 +9,15 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@babylonjs/gui": "^7.0.0",
+    "babylonjs-viewer-assets": "^7.0.0",
+    "babylonjs": "^7.3.2",
     "vite": "^5.2.10",
     "vite-plugin-mkcert": "^1.17.5"
   },
   "dependencies": {
-    "@babylonjs/havok": "^1.3.4",
+    "@babylonjs/gui": "^7.0.0",
+    "babylonjs-viewer-assets": "^7.0.0",
     "babylonjs": "^7.3.2",
     "howler": "^2.2.4"
   }

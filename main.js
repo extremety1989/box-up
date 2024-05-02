@@ -1,5 +1,5 @@
 import './style.css';
-import {Howl, Howler} from 'howler';
+import { Howl, Howler } from 'howler';
 
 import {
   HemisphericLight,
@@ -8,12 +8,6 @@ import {
   StandardMaterial,
   Color3,
   MeshBuilder,
-  AdvancedDynamicTexture,
-  StackPanel,
-  Button,
-  InputText,
-  Control,
-  TextBlock,
   DirectionalLight,
   WebXRFeatureName,
   WebXRControllerComponent,
@@ -22,7 +16,15 @@ import {
   Engine,
   glTf,
 } from 'babylonjs';
-import HavokPhysics from "@babylonjs/havok";
+
+import { Rectangle } from '@babylonjs/gui/2D/controls/rectangle'
+import { Line } from '@babylonjs/gui/2D/controls/line'
+import { Ellipse } from '@babylonjs/gui/2D/controls/ellipse'
+import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock'
+import { AdvancedDynamicTexture } from '@babylonjs/gui'
+
+
+
 import "https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"
 
 const info = localStorage.getItem('info') ? JSON.parse(localStorage.getItem('info')) : {};
@@ -50,20 +52,22 @@ try {
   ];
 
 
-  
+
 
   async function run() {
-    if(info.level) {
+    let pause = true;
+    if (info.level) {
       const level = scenes.find((scene) => scene.file === info.level);
-      
+
     }
+
     const app = document.getElementById('app');
     const canvas = document.createElement('canvas');
     app.appendChild(canvas);
     const engine = new Engine(canvas, true);
 
     const scene = new Scene(engine);
-  
+
     const xr = await scene.createDefaultXRExperienceAsync({
       uiOptions: {
         sessionMode: 'immersive-vr',
@@ -99,6 +103,11 @@ try {
       customRegistrationConfigurations: swappedHandednessConfiguration,
     });
 
+    let pos = new Vector3(0, 0, 0);
+    xr.baseExperience.onStateChangedObservable.add((state) => {
+      pos.copyFrom(xr.baseExperience.camera.position);
+    });
+
     const assetContainers = [];
     let currentSceneIndex = 0;
 
@@ -107,10 +116,43 @@ try {
       const assets = await loadPromise(scenes[i].root, scenes[i].file, scene);
       assets.meshes.forEach((mesh) => {
         mesh.computeWorldMatrix(true);
-       if(mesh.name === "Ground"){
-        mesh.receiveShadows = true;
-        mesh.position.y = 0;
-       }
+        mesh.position.addInPlace(pos);
+        if(mesh.name === "Radio"){
+          console.log(mesh);
+          let eclipse = new Ellipse();
+          let label = new TextBlock();
+          let line = new Line();
+          let advancedTexture = new AdvancedDynamicTexture("UI")
+          advancedTexture.idealWidth = 600;
+          let rect1 = new Rectangle();
+          rect1.width = 0.2;
+          rect1.height = "40px";
+          rect1.cornerRadius = 20;
+          rect1.color = "Orange";
+          rect1.thickness = 4;
+          rect1.background = "green";
+          advancedTexture.addControl(rect1);
+          rect1.linkWithMesh(mesh);
+          rect1.linkOffsetY = -180;
+          rect1.addControl(label);
+          eclipse.width = "2px";
+          eclipse.height = "2px";
+          eclipse.color = "Orange";
+          eclipse.thickness = 4;
+          eclipse.background = "green";
+          advancedTexture.addControl(eclipse);
+          eclipse.linkWithMesh(mesh);
+          line.lineWidth = 4;
+          line.color = "Orange";
+          line.y2 = 5;
+          line.linkOffsetY = -5;
+          advancedTexture.addControl(line);
+          line.linkWithMesh(mesh);
+          line.connectedControl = rect1;
+        }
+        if (mesh.name === "Ground") {
+          mesh.receiveShadows = true;
+        }
       });
       if (assets.lights.length == 0) {
         const light = new HemisphericLight(
@@ -148,25 +190,25 @@ try {
     const destroyedTarget = new Howl({
       src: ['./sounds/break_1.mp3']
     });
-    
 
-    const upper = MeshBuilder.CreateBox("upper", {width: 1.5, height: 0.5}, scene);
+
+    const upper = MeshBuilder.CreateBox("upper", { width: 1.5, height: 0.5 }, scene);
     upper.isVisible = false;
     upper.speed = 0;
-    const blackSide = MeshBuilder.CreateCylinder("black", {height: 0.05, diameter: 0.2}, scene);
+    const blackSide = MeshBuilder.CreateCylinder("black", { height: 0.05, diameter: 0.2 }, scene);
     blackSide.position.y = -0.025;
     blackSide.material = new StandardMaterial('blackMaterial', scene);
     blackSide.material.diffuseColor = Color3.Black();
 
 
-    const yellowSide = MeshBuilder.CreateCylinder("yellow", {height: 0.05, diameter: 0.2}, scene);
+    const yellowSide = MeshBuilder.CreateCylinder("yellow", { height: 0.05, diameter: 0.2 }, scene);
     yellowSide.position.y = -0.025;
     yellowSide.material = new StandardMaterial('blackMaterial', scene);
     yellowSide.material.diffuseColor = Color3.Yellow();
 
     const blackTarget = MeshBuilder.CreateSphere(
       'black',
-      { diameter: 0.2, slice: 0.5},
+      { diameter: 0.2, slice: 0.5 },
       scene
     );
 
@@ -175,10 +217,10 @@ try {
     blackTarget.material.diffuseColor = Color3.Black();
     blackTarget.isVisible = false;
 
-   
+
     const yellowTarget = MeshBuilder.CreateSphere(
       'yellow',
-      { diameter: 0.2, slice: 0.5},
+      { diameter: 0.2, slice: 0.5 },
       scene
     );
 
@@ -186,16 +228,13 @@ try {
     yellowTarget.material = new StandardMaterial('yellowMaterial', scene);
     yellowTarget.material.diffuseColor = Color3.Yellow();
     yellowTarget.isVisible = false;
-   
-
-    let pos = new Vector3(0, 0, 0);
-    xr.baseExperience.onStateChangedObservable.add((state) => {
-      pos.copyFrom(xr.baseExperience.camera.position);
-    });
 
 
 
-    const targets = [];
+
+
+
+    let targets = [];
 
 
 
@@ -208,8 +247,8 @@ try {
       newBlackTarget.position.x += 0.1;
       newBlackTarget.speed = 1;
       newBlackTarget.isVisible = true;
-      newBlackTarget.rotation.x = Math.PI/2;
-      newBlackTarget.rotation.z = Math.PI/4;
+      newBlackTarget.rotation.x = Math.PI / 2;
+      newBlackTarget.rotation.z = Math.PI / 4;
       targets.push(newBlackTarget);
       const newTellowTarget = yellowSide.createInstance("yellow");
       newTellowTarget.addChild(yellowTarget.createInstance("y"));
@@ -219,8 +258,8 @@ try {
       newTellowTarget.position.x -= 0.1;
       newTellowTarget.speed = 1;
       newTellowTarget.isVisible = true;
-      newTellowTarget.rotation.x = Math.PI/2;
-      newTellowTarget.rotation.z = -Math.PI/4;
+      newTellowTarget.rotation.x = Math.PI / 2;
+      newTellowTarget.rotation.z = -Math.PI / 4;
       targets.push(newTellowTarget);
     }
 
@@ -233,8 +272,8 @@ try {
       newBlackTarget.position.x += 0.1;
       newBlackTarget.speed = 1;
       newBlackTarget.isVisible = true;
-      newBlackTarget.rotation.x = Math.PI/2;
-      newBlackTarget.rotation.z = Math.PI/4;
+      newBlackTarget.rotation.x = Math.PI / 2;
+      newBlackTarget.rotation.z = Math.PI / 4;
       targets.push(newBlackTarget);
       const newTellowTarget = yellowSide.createInstance("yellow");
       newTellowTarget.addChild(yellowTarget.createInstance("yellow"));
@@ -244,8 +283,8 @@ try {
       newTellowTarget.position.x -= 0.1;
       newTellowTarget.speed = 1;
       newTellowTarget.isVisible = true;
-      newTellowTarget.rotation.x = Math.PI/2;
-      newTellowTarget.rotation.z = -Math.PI/4;
+      newTellowTarget.rotation.x = Math.PI / 2;
+      newTellowTarget.rotation.z = -Math.PI / 4;
       targets.push(newTellowTarget);
     }
 
@@ -258,7 +297,7 @@ try {
       newBlackTarget.position.x += 0.1;
       newBlackTarget.speed = 1;
       newBlackTarget.isVisible = true;
-      newBlackTarget.rotation.x = Math.PI/2;
+      newBlackTarget.rotation.x = Math.PI / 2;
       newBlackTarget.showBoundingBox = true;
       targets.push(newBlackTarget);
       const newTellowTarget = yellowSide.createInstance("yellow");
@@ -269,7 +308,7 @@ try {
       newTellowTarget.position.x -= 0.1;
       newTellowTarget.speed = 1;
       newTellowTarget.isVisible = true;
-      newTellowTarget.rotation.x = Math.PI/2;
+      newTellowTarget.rotation.x = Math.PI / 2;
       newTellowTarget.showBoundingBox = true;
       targets.push(newTellowTarget);
     }
@@ -283,7 +322,7 @@ try {
       newBlackTarget.position.x += 0.1;
       newBlackTarget.speed = 1;
       newBlackTarget.isVisible = true;
-      newBlackTarget.rotation.x = Math.PI/2;
+      newBlackTarget.rotation.x = Math.PI / 2;
       newBlackTarget.showBoundingBox = true;
       targets.push(newBlackTarget);
       const newTellowTarget = yellowSide.createInstance("yellow");
@@ -294,7 +333,7 @@ try {
       newTellowTarget.position.x -= 0.1;
       newTellowTarget.speed = 1;
       newTellowTarget.isVisible = true;
-      newTellowTarget.rotation.x = Math.PI/2;
+      newTellowTarget.rotation.x = Math.PI / 2;
       newTellowTarget.showBoundingBox = true;
       targets.push(newTellowTarget);
     }
@@ -309,19 +348,20 @@ try {
     }
 
     setInterval(() => {
-    if(Math.random() > 0.8){
-      combo_1();
-    } else if (Math.random() > 0.6){
-      combo_2();
+      if (pause) return;
+      if (Math.random() > 0.8) {
+        combo_1();
+      } else if (Math.random() > 0.6) {
+        combo_2();
 
-    } else if (Math.random() > 0.4){
-      combo_3();
-    }
-    else if(Math.random() > 0.2){
-      combo_4();
-    }else{
-      // combo_5();
-    }
+      } else if (Math.random() > 0.4) {
+        combo_3();
+      }
+      else if (Math.random() > 0.2) {
+        combo_4();
+      } else {
+        combo_5();
+      }
     }, 1500);
 
 
@@ -334,39 +374,33 @@ try {
 
 
     scene.registerBeforeRender(function () {
-      if( targets.length > 0 ) {
+      if (targets.length > 0) {
         targets.forEach((target) => {
-          if(target.name === "upper"){
-            if((xr.baseExperience.camera.position.y < target.position.y + 0.5) && 
-            (xr.baseExperience.camera.position.z < target.position.z - 1.5)){
-              target.dispose();
-              targets.splice(targets.indexOf(target), 1);
-            }
-          }
-          if (left.meshes[0].intersectsMesh(target, true) && right.meshes[0].intersectsMesh(target, true)){
+
+          if (left.meshes[0].intersectsMesh(target, true) && right.meshes[0].intersectsMesh(target, true)) {
 
           }
           if (left.meshes[0].intersectsMesh(target, false)) {
-            if(target.name === "yellow"){
-              if(left.velocity.length() > 0.9){
+            if (target.name === "yellow") {
+              if (left.velocity.length() > 0.9) {
 
               }
               destroyedTarget.play();
               target.dispose();
               targets.splice(targets.indexOf(target), 1);
-            } else{
+            } else {
 
             }
           }
-          if (right.meshes[0].intersectsMesh(target, false)){
-            if(target.name === "black"){
-              if(right.velocity.length() > 0.9){
+          if (right.meshes[0].intersectsMesh(target, false)) {
+            if (target.name === "black") {
+              if (right.velocity.length() > 0.9) {
 
               }
               destroyedTarget.play();
               target.dispose();
               targets.splice(targets.indexOf(target), 1);
-            } else{
+            } else {
 
             }
           }
@@ -374,7 +408,7 @@ try {
       }
     });
 
-
+    let target;
     let leftController;
     let rightController;
     xr.input.onControllerAddedObservable.add((controller) => {
@@ -384,7 +418,7 @@ try {
           if (motionController.handness === 'left' && motionController.handedness === 'right') {
 
           }
-          
+
 
           const ids = motionController.getComponentIds();
           const trigger = motionController.getComponent(ids[0]);
@@ -392,6 +426,14 @@ try {
           const a_and_b_Button = motionController.getComponent(ids[3]);
           const x_and_y_Button = motionController.getComponent(ids[4]);
 
+          if(a_and_b_Button.id === "a-button" || x_and_y_Button.id === "y-button"){
+              if(pause){
+                pause = false;
+              }else{
+                pause = true;
+              }
+          }
+   
           if (motionController.handness === 'left') {
 
             leftController = controller;
@@ -400,7 +442,13 @@ try {
             trigger.onButtonStateChangedObservable.add(() => {
 
               if (trigger.pressed) {
-                changeMap();
+                target = scene.meshUnderPointer;
+                if (xr.pointerSelection.getMeshUnderPointer) {
+                  target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
+                }
+                if(target && target.name){
+
+                }
               }
             });
           }
@@ -412,7 +460,7 @@ try {
             trigger.onButtonStateChangedObservable.add(() => {
 
               if (trigger.pressed) {
-                changeMap();
+
               }
             });
           }
@@ -424,42 +472,42 @@ try {
     let leftPreviousTime = null;
     let rightPreviousPosition = null;
     let rightPreviousTime = null;
- 
+
     engine.runRenderLoop(() => {
       scene.render();
-      if(leftController){
+      if (leftController) {
         const currentPosition = leftController.grip.position.clone();
         const currentTime = performance.now();
-        
+
         if (leftPreviousPosition && leftPreviousTime) {
           const deltaTime = (currentTime - leftPreviousTime) / 1000; // Time in seconds
           if (deltaTime > 0) {
             const velocity = currentPosition.subtract(leftPreviousPosition).scale(1 / deltaTime);
-            if(velocity.length() > 0.1) {
+            if (velocity.length() > 0.1) {
               left.velocity = velocity;
             }
           }
         }
-        
+
         // Update previous position and time
         leftPreviousPosition = currentPosition;
         leftPreviousTime = currentTime;
       }
 
-      if(rightController){
+      if (rightController) {
         const currentPosition = rightController.grip.position.clone();
         const currentTime = performance.now();
-        
+
         if (rightPreviousPosition && rightPreviousTime) {
           const deltaTime = (currentTime - rightPreviousTime) / 1000; // Time in seconds
           if (deltaTime > 0) {
             const velocity = currentPosition.subtract(rightPreviousPosition).scale(1 / deltaTime);
-            if(velocity.length() > 0.1) {
+            if (velocity.length() > 0.1) {
               right.velocity = velocity;
             }
           }
         }
-        
+
         // Update previous position and time
         rightPreviousPosition = currentPosition;
         rightPreviousTime = currentTime;
@@ -467,9 +515,15 @@ try {
 
 
       const delta = engine.getDeltaTime() / 1000;
-      if( targets.length > 0 ) {
+      if (targets.length > 0) {
+        if(pause){
+          targets.forEach((target) => {
+            target.dispose();
+          });
+          targets = [];
+        }
         targets.forEach((target) => {
-          if(target.position.z < -1) {
+          if (target.position.z < -1) {
             target.dispose();
             targets.splice(targets.indexOf(target), 1);
           }
