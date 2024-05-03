@@ -8,15 +8,15 @@ importers:
 
   .:
     dependencies:
-      '@babylonjs/gui':
-        specifier: ^7.0.0
-        version: 7.5.0(@babylonjs/core@7.5.0)
-      babylonjs:
-        specifier: ^7.3.2
-        version: 7.3.2
-      babylonjs-viewer-assets:
-        specifier: ^7.0.0
+      '@babylonjs/core':
+        specifier: ^7.5.0
         version: 7.5.0
+      '@babylonjs/gui':
+        specifier: ^7.5.0
+        version: 7.5.0(@babylonjs/core@7.5.0)
+      '@babylonjs/loaders':
+        specifier: ^7.5.0
+        version: 7.5.0(@babylonjs/core@7.5.0)(babylonjs-gltf2interface@7.5.0)
       howler:
         specifier: ^2.2.4
         version: 2.2.4
@@ -37,6 +37,12 @@ packages:
     resolution: {integrity: sha512-kqS9HtveyG7W918u+h01JZBv9cDoPda3/o/vjbiZOUHem71Lj5MR7WeVr8bSRPbVRyj3mUdL2o1w2tYRPiDC/w==}
     peerDependencies:
       '@babylonjs/core': ^7.0.0
+
+  '@babylonjs/loaders@7.5.0':
+    resolution: {integrity: sha512-rVkYkiT3XSGJ1s0rEuUCN3BXJGI4RexKXUrTp1cy0CVj3B2DvNt9pzET4038BmVp8N3EDPBd9+bPZenduicsPw==}
+    peerDependencies:
+      '@babylonjs/core': ^7.0.0
+      babylonjs-gltf2interface: ^7.0.0
 
   '@esbuild/aix-ppc64@0.20.2':
     resolution: {integrity: sha512-D+EBOJHXdNZcLJRBkhENNG8Wji2kgc9AZ9KiPr1JuZjsNtyHzrsfLRrY0tk2H2aoFu6RANO1y1iPPUCDYWkb5g==}
@@ -323,11 +329,8 @@ packages:
   axios@1.6.8:
     resolution: {integrity: sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==}
 
-  babylonjs-viewer-assets@7.5.0:
-    resolution: {integrity: sha512-Nd4AWh16YvED9e73TTlpW8lbVxwTUIA+IjV/Gsh13XJrhafRm4GS1gHzy7J7JYV+zx2kuTvnfyuuTs9t9pNDZQ==}
-
-  babylonjs@7.3.2:
-    resolution: {integrity: sha512-5EATRxTwhlTX7O9BX1PGGV8OjT1KpFGJA3s7dUNdotIuGzFycmKYihsMGAZurEdu1dl5mm/06woQVNLoJ7XfGw==}
+  babylonjs-gltf2interface@7.5.0:
+    resolution: {integrity: sha512-OR9K7XvTZ/YfkjJO/r4H6VdXthVxnZRvVkSSf9eJgoN0g2y5LPY/diUtGA4IkoQnhRLGiTtARVZYKT8TIIf4cQ==}
 
   before-after-hook@2.2.3:
     resolution: {integrity: sha512-NzUnlZexiaH/46WDhANlyR2bXRopNg4F/zuSA3OpZnllCUgRaOF2znDioDWrmbNVsuZk6l9pMquQB38cfBZwkQ==}
@@ -463,6 +466,11 @@ snapshots:
   '@babylonjs/gui@7.5.0(@babylonjs/core@7.5.0)':
     dependencies:
       '@babylonjs/core': 7.5.0
+
+  '@babylonjs/loaders@7.5.0(@babylonjs/core@7.5.0)(babylonjs-gltf2interface@7.5.0)':
+    dependencies:
+      '@babylonjs/core': 7.5.0
+      babylonjs-gltf2interface: 7.5.0
 
   '@esbuild/aix-ppc64@0.20.2':
     optional: true
@@ -662,9 +670,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  babylonjs-viewer-assets@7.5.0: {}
-
-  babylonjs@7.3.2: {}
+  babylonjs-gltf2interface@7.5.0: {}
 
   before-after-hook@2.2.3: {}
 
