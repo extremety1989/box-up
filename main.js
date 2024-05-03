@@ -118,37 +118,7 @@ try {
         mesh.computeWorldMatrix(true);
         mesh.position.addInPlace(pos);
         if(mesh.name === "Radio"){
-          console.log(mesh);
-          let eclipse = new Ellipse();
-          let label = new TextBlock();
-          let line = new Line();
-          let advancedTexture = new AdvancedDynamicTexture("UI")
-          advancedTexture.idealWidth = 600;
-          let rect1 = new Rectangle();
-          rect1.width = 0.2;
-          rect1.height = "40px";
-          rect1.cornerRadius = 20;
-          rect1.color = "Orange";
-          rect1.thickness = 4;
-          rect1.background = "green";
-          advancedTexture.addControl(rect1);
-          rect1.linkWithMesh(mesh);
-          rect1.linkOffsetY = -180;
-          rect1.addControl(label);
-          eclipse.width = "2px";
-          eclipse.height = "2px";
-          eclipse.color = "Orange";
-          eclipse.thickness = 4;
-          eclipse.background = "green";
-          advancedTexture.addControl(eclipse);
-          eclipse.linkWithMesh(mesh);
-          line.lineWidth = 4;
-          line.color = "Orange";
-          line.y2 = 5;
-          line.linkOffsetY = -5;
-          advancedTexture.addControl(line);
-          line.linkWithMesh(mesh);
-          line.connectedControl = rect1;
+
         }
         if (mesh.name === "Ground") {
           mesh.receiveShadows = true;
@@ -408,6 +378,41 @@ try {
       }
     });
 
+    scene.meshes.forEach((mesh) => {  
+      if(mesh.name === "Radio"){
+        let eclipse = new Ellipse();
+        let label = new TextBlock();
+        let line = new Line();
+        let advancedTexture = new AdvancedDynamicTexture("UI")
+        advancedTexture.idealWidth = 600;
+        let rect1 = new Rectangle();
+        rect1.width = 0.2;
+        rect1.height = "40px";
+        rect1.cornerRadius = 20;
+        rect1.color = "Orange";
+        rect1.thickness = 4;
+        rect1.background = "green";
+        advancedTexture.addControl(rect1);
+        rect1.linkWithMesh(mesh[0]);
+        rect1.linkOffsetY = -180;
+        rect1.addControl(label);
+        eclipse.width = "2px";
+        eclipse.height = "2px";
+        eclipse.color = "Orange";
+        eclipse.thickness = 4;
+        eclipse.background = "green";
+        advancedTexture.addControl(eclipse);
+        eclipse.linkWithMesh(mesh[0]);
+        line.lineWidth = 4;
+        line.color = "Orange";
+        line.y2 = 5;
+        line.linkOffsetY = -5;
+        advancedTexture.addControl(line);
+        line.linkWithMesh(mesh[0]);
+        line.connectedControl = rect1;
+      }
+      });
+
     let target;
     let leftController;
     let rightController;
@@ -446,7 +451,7 @@ try {
                 if (xr.pointerSelection.getMeshUnderPointer) {
                   target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
                 }
-                if(target && target.name){
+                if(target && target.name === "Radio"){
 
                 }
               }
