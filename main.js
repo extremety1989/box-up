@@ -15,7 +15,6 @@ import {
   ShadowGenerator,
   AxesViewer,
   Engine,
-  Vector2,
 } from '@babylonjs/core';
 
 import "@babylonjs/loaders/glTF";
@@ -23,7 +22,7 @@ import '@babylonjs/core/Materials/Node/Blocks'
 
 
 import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock'
-import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control } from '@babylonjs/gui'
+import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control, Line, Rectangle, Ellipse } from '@babylonjs/gui'
 
 
 
@@ -91,19 +90,52 @@ try {
     ];
 
 
-
-
-
     const assetContainers = [];
     let currentSceneIndex = 0;
+    let fp;
+    if(info.floorPosition) {
+      fp =  info.floorPosition;
+    }
+    const advancedTextureRadio = AdvancedDynamicTexture.CreateFullscreenUI("RADIO_UI");
+    advancedTextureRadio.idealWidth = 600;
+    
+    const rect1 = new Rectangle();
+    rect1.width = 0.2;
+    rect1.height = "40px";
+    rect1.cornerRadius = 20;
+    rect1.color = "Orange";
+    rect1.thickness = 4;
+    rect1.background = "green";
+    advancedTextureRadio.addControl(rect1);
+ 
+    rect1.linkOffsetY = -150;
 
+    const label = new TextBlock();
+    label.text = "Sphere";
+    rect1.addControl(label);
+
+
+    const line = new Line();
+    line.lineWidth = 4;
+    line.color = "Orange";
+    line.y2 = 20;
+    line.linkOffsetZ += 1;
+    line.linkOffsetY = -60;
+    advancedTextureRadio.addControl(line);
+
+    line.connectedControl = rect1;
     for (let i = 0; i < scenes.length; i++) {
       if (scenes[i].file === '') continue;
       const assets = await loadPromise(scenes[i].root, scenes[i].file, scene);
+
       assets.meshes.forEach((mesh) => {
         mesh.computeWorldMatrix(true);
-        if (mesh.name === "Ground") {
-          mesh.receiveShadows = true;
+        if(mesh.name === "Radio") {
+          rect1.linkWithMesh(mesh);  
+          line.linkWithMesh(mesh); 
+        }
+        if(fp){
+          mesh.position.y = fp;
         }
       });
       if (assets.lights.length == 0) {
@@ -172,14 +204,14 @@ try {
 
     const blackSide = MeshBuilder.CreateCylinder("black", { height: 0.05, diameter: 0.2 }, scene);
     blackSide.isVisible = false;
-    blackSide.position.y = -0.025;
+    blackSide.position.y = -0.028;
     blackSide.material = new StandardMaterial('blackMaterial', scene);
     blackSide.material.diffuseColor = Color3.Black();
 
 
     const yellowSide = MeshBuilder.CreateCylinder("yellow", { height: 0.05, diameter: 0.2 }, scene);
     yellowSide.isVisible = false;
-    yellowSide.position.y = -0.025;
+    yellowSide.position.y = -0.028;
     yellowSide.material = new StandardMaterial('blackMaterial', scene);
     yellowSide.material.diffuseColor = Color3.Yellow();
 
@@ -211,7 +243,8 @@ try {
 
     const plane2 = MeshBuilder.CreatePlane("plane2", { size: 2 }, scene);
     plane2.isVisible = false;
-    plane2.position = new Vector3(0, 1, 1);
+    plane2.position = new Vector3(1, 1.5, 1);
+
 
     const advancedTexture = AdvancedDynamicTexture.CreateForMesh(
       plane
@@ -269,7 +302,7 @@ try {
     button_3.fontWeight = '300';
     button_3.fontSize = "40px";
 
-    const button_4 = Button.CreateSimpleButton("TUTORIAL", "Tutorial");
+    const button_4 = Button.CreateSimpleButton("HOW", "How to play");
     button_4.paddingTop = "40px";
     button_4.paddingLeft = "40px";
     button_4.color = '#fff';
@@ -277,7 +310,7 @@ try {
     button_4.fontWeight = '300';
     button_4.fontSize = "40px";
 
-    const button_5 = Button.CreateSimpleButton("SETGROUND", "Set ground position");
+    const button_5 = Button.CreateSimpleButton("SETFLOOR", "Set floor position");
     button_5.paddingTop = "40px";
     button_5.paddingLeft = "40px";
     button_5.color = '#fff';
@@ -385,6 +418,7 @@ try {
         if (interval) clearInterval(interval);
         interval = setInterval(() => {
           if (!plane2.isVisible) plane2.isVisible = true;
+ 
           center.text = sec.toString();
           if (sec <= 0) {
             pos.copyFrom(xr.baseExperience.camera.position);
@@ -451,7 +485,6 @@ try {
         newBlackTarget.position.x += 0.1;
         newBlackTarget.isVisible = true;
         newBlackTarget.rotation.x = Math.PI / 2;
-        newBlackTarget.showBoundingBox = true;
         res(newBlackTarget);
       });
     }
@@ -467,7 +500,6 @@ try {
         newTellowTarget.isVisible = true;
         newTellowTarget.rotation.x = Math.PI / 2;
         newTellowTarget.rotation.z = -Math.PI / 4;
-        newTellowTarget.showBoundingBox = true;
         res(newTellowTarget);
       });
     }
@@ -478,7 +510,6 @@ try {
         newUpper.position.copyFrom(pos);
         newUpper.position.z += 5;
         newUpper.isVisible = true;
-        newUpper.showBoundingBox = true;
         res(newUpper);
       });
     }
@@ -647,9 +678,12 @@ try {
 
           b_or_y_Button.onButtonStateChangedObservable.add(() => {
             if (b_or_y_Button.pressed && paused && localAxes.isVisible && localAxes.zAxis.parent !== null) {
+            
+              info.floorPosition = localAxes.yAxis.getAbsolutePosition().y - 0.05;
+              localStorage.setItem('info', JSON.stringify(info));
               assetContainers[currentSceneIndex].meshes.forEach((mesh) => {
                 if (mesh.name === "__root__") {
-                  mesh.position.y = localAxes.yAxis.getAbsolutePosition().z - 0.05;
+                  mesh.position.y = info.floorPosition;
                 }
               });
               localAxes.zAxis.parent = null;
