@@ -22,7 +22,7 @@ import '@babylonjs/core/Materials/Node/Blocks'
 
 
 import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock'
-import { AdvancedDynamicTexture, Button, StackPanel } from '@babylonjs/gui'
+import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control } from '@babylonjs/gui'
 
 
 
@@ -234,39 +234,73 @@ try {
     header.fontSize = "80px";
     panel.addControl(header);
 
+    const grid = new Grid("Grid");
+    grid.height = "400px"
+    grid.addRowDefinition(100, true);
+    grid.addRowDefinition(100, true);
+    grid.addRowDefinition(100, true);
+    grid.addColumnDefinition(500, true)
+    grid.addColumnDefinition(500, true)
+    grid.addColumnDefinition(500, true)
+    grid.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER
+
     const button_1 = Button.CreateSimpleButton("Easy", "Easy");
-    button_1.top = "0%";
+    button_1.paddingTop = "40px";
+    button_1.paddingLeft = "40px";
     button_1.color = '#fff';
     button_1.fontSizeInPixels = 12;
-    button_1.paddingTop = "10px";
-    button_1.paddingBottom = "10px";
     button_1.fontWeight = '300';
-    button_1.width = 0.2;
-    button_1.height = "100px";
     button_1.fontSize = "40px";
-    panel.addControl(button_1);
 
     const button_2 = Button.CreateSimpleButton("Medium", "Medium");
+    button_2.paddingTop = "40px";
+    button_2.paddingLeft = "40px";
     button_2.color = '#fff';
     button_2.fontSizeInPixels = 12;
     button_2.fontWeight = '300';
-    button_2.paddingTop = "10px";
-    button_2.paddingBottom = "10px";
-    button_2.width = 0.2;
-    button_2.height = "100px";
     button_2.fontSize = "40px";
-    panel.addControl(button_2);
 
     const button_3 = Button.CreateSimpleButton("Hard", "Hard");
+    button_3.paddingTop = "40px";
+    button_3.paddingLeft = "40px";
     button_3.color = '#fff';
     button_3.fontSizeInPixels = 12;
-    button_3.paddingTop = "10px";
-    button_3.paddingBottom = "10px";
-    button_3.width = 0.2;
     button_3.fontWeight = '300';
-    button_3.height = "100px";
     button_3.fontSize = "40px";
-    panel.addControl(button_3);
+
+    const button_4 = Button.CreateSimpleButton("TUTORIAL", "Tutorial");
+    button_4.paddingTop = "40px";
+    button_4.paddingLeft = "40px";
+    button_4.color = '#fff';
+    button_4.fontSizeInPixels = 12;
+    button_4.fontWeight = '300';
+    button_4.fontSize = "40px";
+
+    const button_5 = Button.CreateSimpleButton("SETGROUND", "Set ground position");
+    button_5.paddingTop = "40px";
+    button_5.paddingLeft = "40px";
+    button_5.color = '#fff';
+    button_5.fontSizeInPixels = 12;
+    button_5.fontWeight = '300';
+    button_5.fontSize = "40px";
+
+
+    const button_6 = Button.CreateSimpleButton("SETHEAD", "Set head position");
+    button_6.paddingTop = "40px";
+    button_6.paddingLeft = "40px";
+    button_6.color = '#fff';
+    button_6.fontSizeInPixels = 12;
+    button_6.fontWeight = '300';
+    button_6.fontSize = "40px";
+
+    panel.addControl(grid);
+    grid.addControl(button_1, 0, 0);
+    grid.addControl(button_2, 1, 0);
+    grid.addControl(button_3, 2, 0);
+
+    grid.addControl(button_4, 0, 1);
+    grid.addControl(button_5, 1, 1);
+    grid.addControl(button_6, 2, 1);
 
     if (info.difficulty === button_1.name) {
       button_1.background = '#fff';
