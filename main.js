@@ -247,9 +247,10 @@ try {
     plane.rotation = new Vector3(0, Math.PI / 9, 0);
 
 
-    const comboCounter = new Ellipse();
-    comboCounter.isVisible = false;
-    comboCounter.text = "0";
+    const advancedTextureComboCounter = AdvancedDynamicTexture.CreateFullscreenUI("COMBO_UI");
+    const comboCounter = new TextBlock();
+    comboCounter.isVisible = true;
+    comboCounter.text = "HEllo";
     comboCounter.width = "100px";
     comboCounter.height = "100px";
     comboCounter.color = "#fff";
@@ -257,8 +258,10 @@ try {
     comboCounter.background = "black";
     comboCounter.alpha = 0.8;
 
-    comboCounter.position = new Vector3(-1, 1.5, 1);
+    comboCounter.position = new Vector3(1, 1.5, 1);
     comboCounter.rotation = new Vector3(0, Math.PI / 9, 0);
+  
+    advancedTextureComboCounter.addControl(comboCounter);
 
     const plane2 = MeshBuilder.CreatePlane("plane2", { size: 2 }, scene);
     plane2.isVisible = false;
@@ -408,9 +411,19 @@ try {
     });
 
     let localAxes = new AxesViewer(scene, 1);
+    localAxes.xAxis.position.y = -100;
+    localAxes.yAxis.position.y = -100;
+    localAxes.zAxis.position.y = -100;
     localAxes.isVisible = false;
     button_5.onPointerClickObservable.add(() => {
-      if(!localAxes.isVisible) {
+      if(localAxes.isVisible){
+        localAxes.zAxis.parent = null;
+        localAxes.yAxis.parent = null;
+        localAxes.isVisible = false;
+        localAxes.xAxis.position.y = -100;
+        localAxes.yAxis.position.y = -100;
+        localAxes.zAxis.position.y = -100;
+      }else{
         localAxes.isVisible = true;
       }
     });
@@ -680,6 +693,9 @@ try {
                   localAxes.zAxis.parent = null;
                   localAxes.yAxis.parent = null;
                   localAxes.isVisible = false;
+                  localAxes.xAxis.position.y = -100;
+                  localAxes.yAxis.position.y = -100;
+                  localAxes.zAxis.position.y = -100;
                 }
                 if (interval) {
                   plane.isVisible = true;
@@ -711,6 +727,9 @@ try {
               localAxes.zAxis.parent = null;
               localAxes.yAxis.parent = null;
               localAxes.isVisible = false;
+              localAxes.xAxis.position.y = -100;
+              localAxes.yAxis.position.y = -100;
+              localAxes.zAxis.position.y = -100;
             }
           });
 
