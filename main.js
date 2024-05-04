@@ -100,6 +100,7 @@ try {
     advancedTextureRadio.idealWidth = 600;
     
     const rect1 = new Rectangle();
+
     rect1.width = 0.2;
     rect1.height = "40px";
     rect1.cornerRadius = 20;
@@ -114,6 +115,8 @@ try {
     const RadioLabel = new TextBlock();
     RadioLabel.text = "...";
     rect1.addControl(RadioLabel);
+
+    
 
 
     const line = new Line();
@@ -243,6 +246,20 @@ try {
     plane.position = new Vector3(1, 1.5, 1);
     plane.rotation = new Vector3(0, Math.PI / 9, 0);
 
+
+    const comboCounter = new Ellipse();
+    comboCounter.isVisible = false;
+    comboCounter.text = "0";
+    comboCounter.width = "100px";
+    comboCounter.height = "100px";
+    comboCounter.color = "#fff";
+    comboCounter.thickness = 4;
+    comboCounter.background = "black";
+    comboCounter.alpha = 0.8;
+
+    comboCounter.position = new Vector3(-1, 1.5, 1);
+    comboCounter.rotation = new Vector3(0, Math.PI / 9, 0);
+
     const plane2 = MeshBuilder.CreatePlane("plane2", { size: 2 }, scene);
     plane2.isVisible = false;
     plane2.position = new Vector3(1, 1.5, 1);
@@ -260,9 +277,6 @@ try {
     const panel = new StackPanel("panel");
     panel.background = "black";
     panel.alpha = 0.8;
-    panel.cornerRadius = 20;
-    panel.color = "#fff";
-    panel.thickness = 4;
     advancedTexture.addControl(panel);
 
     const header = new TextBlock();
@@ -413,6 +427,8 @@ try {
 
 
 
+
+
     let globalSpeed = 1;
 
     let interval = null;
@@ -420,6 +436,7 @@ try {
     function getTimerLeft(sec) {
       if (paused) {
         plane.isVisible = false;
+        comboCounter.text = "0";
         if (interval) clearInterval(interval);
         interval = setInterval(() => {
           if (!plane2.isVisible) plane2.isVisible = true;
@@ -586,7 +603,7 @@ try {
           if (leftCollision.intersectsMesh(target, true)) {
             if (target.name === "yellow") {
               if (left.velocity.length() > 0.9) {
-
+                comboCounter.text = (parseInt(comboCounter.text) + 1).toString();
               }
               destroyedTarget.play();
               target.dispose();
@@ -598,7 +615,7 @@ try {
           if (rightCollision.intersectsMesh(target, true)) {
             if (target.name === "black") {
               if (right.velocity.length() > 0.9) {
-
+                comboCounter.text = (parseInt(comboCounter.text) + 1).toString();
               }
               destroyedTarget.play();
               target.dispose();
@@ -698,7 +715,9 @@ try {
           });
 
     
-
+          if (motionController.handness === 'left' && motionController.handness === 'right') {
+            comboCounter.isVisible = true;
+          }
           if (motionController.handness === 'left') {
 
   
