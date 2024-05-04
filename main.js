@@ -159,7 +159,7 @@ try {
     }
 
     const destroyedTarget = new Howl({
-      src: ['./box-up/sounds/break_1.mp3']
+      src: ['./sounds/break_1.mp3']
     });
 
 
