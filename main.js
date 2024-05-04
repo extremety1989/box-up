@@ -92,10 +92,7 @@ try {
 
     const assetContainers = [];
     let currentSceneIndex = 0;
-    let fp;
-    if(info.floorPosition) {
-      fp =  info.floorPosition;
-    }
+
     const advancedTextureRadio = AdvancedDynamicTexture.CreateFullscreenUI("RADIO_UI");
     advancedTextureRadio.idealWidth = 600;
     
@@ -138,9 +135,6 @@ try {
         if(mesh.name === "RadioModel") {
           rect1.linkWithMesh(mesh);  
           line.linkWithMesh(mesh); 
-        }
-        if(fp){
-          mesh.position.y = fp;
         }
       });
       if (assets.lights.length == 0) {
@@ -410,18 +404,18 @@ try {
   
     });
     let localAxes = new AxesViewer(scene, 1);
-    localAxes.xAxis.position.y = -100;
-    localAxes.yAxis.position.y = -100;
     localAxes.zAxis.position.y = -100;
+    localAxes.yAxis.position.y = -100;
+    localAxes.xAxis.position.y = -100;
     localAxes.isVisible = false;
     button_5.onPointerClickObservable.add(() => {
       if(localAxes.isVisible){
         localAxes.zAxis.parent = null;
         localAxes.yAxis.parent = null;
         localAxes.isVisible = false;
-        localAxes.xAxis.position.y = -100;
-        localAxes.yAxis.position.y = -100;
         localAxes.zAxis.position.y = -100;
+        localAxes.yAxis.position.y = -100;
+        localAxes.xAxis.position.y = -100;
       }else{
         localAxes.isVisible = true;
       }
@@ -692,9 +686,9 @@ try {
                   localAxes.zAxis.parent = null;
                   localAxes.yAxis.parent = null;
                   localAxes.isVisible = false;
-                  localAxes.xAxis.position.y = -100;
-                  localAxes.yAxis.position.y = -100;
                   localAxes.zAxis.position.y = -100;
+                  localAxes.yAxis.position.y = -100;
+                  localAxes.xAxis.position.y = -100;
                 }
                 if (interval) {
                   plane.isVisible = true;
@@ -726,16 +720,62 @@ try {
               localAxes.zAxis.parent = null;
               localAxes.yAxis.parent = null;
               localAxes.isVisible = false;
-              localAxes.xAxis.position.y = -100;
-              localAxes.yAxis.position.y = -100;
               localAxes.zAxis.position.y = -100;
+              localAxes.yAxis.position.y = -100;
+              localAxes.xAxis.position.y = -100;
             }
           });
 
-    
+          
+          trigger.onButtonStateChangedObservable.add(() => {
+
+            if (trigger.pressed && paused) {
+
+
+              if (localAxes && localAxes.isVisible && localAxes.zAxis.parent === null) {
+                localAxes.zAxis.position.y = 0;
+                localAxes.yAxis.position.y = 0;
+                localAxes.xAxis.position.y = 0;
+                localAxes.zAxis.parent = controller.grip || controller.pointer;
+                localAxes.yAxis.parent = controller.grip || controller.pointer;
+              }
+   
+
+              target = scene.meshUnderPointer;
+              if (xr.pointerSelection.getMeshUnderPointer) {
+                target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
+              }
+  
+              if (target && target.name === "plane" && target.parent === null && paused) {
+
+                target.setParent(motionController.rootMesh);
+
+              }
+            } else if (paused) {
+
+              if (target && target.name === "Circle") {
+                xr.baseExperience.camera.position.x = 0;
+                xr.baseExperience.camera.position.z = 0;
+                target = null;
+              }
+              if (target && target.name.startsWith("Circle.")) {
+                xr.baseExperience.camera.position.x = target.position.x;
+                xr.baseExperience.camera.position.z = target.position.z;
+                target = null;
+              }
+
+              if (target && target.name === "plane") {
+                target && target.setParent(null);
+                target = null;
+              }
+            }
+          });
+
           if (motionController.handness === 'left' && motionController.handness === 'right') {
             comboCounter.isVisible = true;
           }
+
+
           if (motionController.handness === 'left') {
 
   
@@ -744,47 +784,6 @@ try {
             leftCollision.position.y -= 0.03;
             leftController = controller;
             left.meshes[0].parent = controller.grip || controller.pointer;
-
-
-
-            trigger.onButtonStateChangedObservable.add(() => {
-
-    
-
-              if (trigger.pressed && paused) {
-
-
-                if (localAxes && localAxes.isVisible && localAxes.zAxis.parent === null) {
-                  localAxes.zAxis.parent = controller.grip || controller.pointer;
-                  localAxes.yAxis.parent = controller.grip || controller.pointer;
-                }
-     
-
-                target = scene.meshUnderPointer;
-                if (xr.pointerSelection.getMeshUnderPointer) {
-                  target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
-                }
-                if (target && target.name === "Circle" && target.parent === null && paused) {
-                  xr.baseExperience.camera.position.x = 0;
-                  xr.baseExperience.camera.position.z = 0;
-                }else if (target && target.name.startsWith("Circle.") && target.parent === null && paused) {
-                  xr.baseExperience.camera.position.x = target.position.x;
-                  xr.baseExperience.camera.position.z = target.position.z;
-                }
-
-                if (target && target.name === "plane" && target.parent === null && paused) {
-
-                  target.setParent(motionController.rootMesh);
-
-                }
-              } else if (paused) {
-
-
-                if (target && target.name === "plane") {
-                  target && target.setParent(null);
-                }
-              }
-            });
           }
           if (motionController.handness === 'right') {
 
@@ -793,33 +792,6 @@ try {
             rightCollision.position.y -= 0.03;
             rightController = controller;
             right.meshes[0].parent = controller.grip || controller.pointer;
-
-            trigger.onButtonStateChangedObservable.add(() => {
-
-              if (trigger.pressed && paused) {
-
-                if (localAxes && localAxes.isVisible && localAxes.zAxis.parent === null) {
-                  localAxes.zAxis.parent = controller.grip || controller.pointer;
-                  localAxes.yAxis.parent = controller.grip || controller.pointer;
-                }
-
-                target = scene.meshUnderPointer;
-                if (xr.pointerSelection.getMeshUnderPointer) {
-                  target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
-                }
-
-                if (target && target.name === "plane" && target.parent === null && paused) {
-
-                  target.setParent(motionController.rootMesh);
-
-                }
-              } else if (paused) {
-
-                if (target && target.name === "plane") {
-                  target && target.setParent(null);
-                }
-              }
-            });
           }
         }
       );
