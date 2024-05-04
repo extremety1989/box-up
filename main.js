@@ -161,8 +161,11 @@ try {
 
 
     const upper = MeshBuilder.CreateBox("upper", { width: 1.5, height: 0.5 }, scene);
+    upper.material = new StandardMaterial('blackMaterial', scene);
+    upper.material.diffuseColor = Color3.Black();
     upper.isVisible = false;
     upper.speed = 0;
+
     const blackSide = MeshBuilder.CreateCylinder("black", { height: 0.05, diameter: 0.2 }, scene);
     blackSide.isVisible = false;
     blackSide.position.y = -0.025;
@@ -278,28 +281,48 @@ try {
     panel2.addControl(center);
 
 
-    function openMenu() {
-      if (!panel.isVisible) {
-        panel.isVisible = !panel.isVisible;
-      }
-    }
 
+ let globalSpeed = 5;
 
-    let interval = null;
-    async function getTimerLeft(sec) {
-      return new Promise((resolve, reject) => {
-        interval = setInterval(() => {
-          center.text = sec.toString();
-          console.log(sec);
-          if (sec <= 0) {
+ let interval = null;
+
+ function getTimerLeft(sec) {
+    if(paused){
+      panel.isVisible = false;
+      if(interval) clearInterval(interval);
+      interval = setInterval(() => {
+        center.text = sec.toString();
+        console.log(sec);
+        if (sec <= 0) {
+          center.text = "Go!";
+          paused = false;
+          clearInterval(interval);
+          setTimeout(() => {
             center.text = "";
-            clearInterval(interval);
-            resolve();
-          }
-          sec--;
-        }, 1000);
-      });
+          }, 1000);
+        }
+        sec--;
+      }, 1000);
+    }else{
+      clearInterval(interval);
     }
+  }
+
+  function openMenu() {
+    if(interval) {
+      clearInterval(interval);
+      interval = null;
+    }
+    panel.isVisible = true;
+    center.text = "";
+    left.isVisible = false;
+    right.isVisible = false;
+    targets.forEach((target) => {
+      target.dispose();
+    });
+    targets = [];
+    paused = true;
+  }
 
 
     let targets = [];
@@ -311,9 +334,9 @@ try {
       newBlackTarget.addChild(blackTarget.createInstance("b"));
       newBlackTarget.position.copyFrom(pos);
       newBlackTarget.position.y -= 0.2;
-      newBlackTarget.position.z += 5;
+      newBlackTarget.position.z += 15;
       newBlackTarget.position.x += 0.1;
-      newBlackTarget.speed = 1;
+      newBlackTarget.speed = globalSpeed;
       newBlackTarget.isVisible = true;
       newBlackTarget.rotation.x = Math.PI / 2;
       newBlackTarget.rotation.z = Math.PI / 4;
@@ -324,7 +347,7 @@ try {
       newTellowTarget.position.y -= 0.2;
       newTellowTarget.position.z += 5;
       newTellowTarget.position.x -= 0.1;
-      newTellowTarget.speed = 1;
+      newTellowTarget.speed = globalSpeed;
       newTellowTarget.isVisible = true;
       newTellowTarget.rotation.x = Math.PI / 2;
       newTellowTarget.rotation.z = -Math.PI / 4;
@@ -336,9 +359,9 @@ try {
       newBlackTarget.addChild(blackTarget.createInstance("black"));
       newBlackTarget.position.copyFrom(pos);
       newBlackTarget.position.y -= 0.5;
-      newBlackTarget.position.z += 5;
+      newBlackTarget.position.z += 15;
       newBlackTarget.position.x += 0.1;
-      newBlackTarget.speed = 1;
+      newBlackTarget.speed = globalSpeed;
       newBlackTarget.isVisible = true;
       newBlackTarget.rotation.x = Math.PI / 2;
       newBlackTarget.rotation.z = Math.PI / 4;
@@ -349,7 +372,7 @@ try {
       newTellowTarget.position.y -= 0.5;
       newTellowTarget.position.z += 5;
       newTellowTarget.position.x -= 0.1;
-      newTellowTarget.speed = 1;
+      newTellowTarget.speed = globalSpeed;
       newTellowTarget.isVisible = true;
       newTellowTarget.rotation.x = Math.PI / 2;
       newTellowTarget.rotation.z = -Math.PI / 4;
@@ -361,9 +384,9 @@ try {
       newBlackTarget.addChild(blackTarget.createInstance("black"));
       newBlackTarget.position.copyFrom(pos);
       newBlackTarget.position.y -= 0.2;
-      newBlackTarget.position.z += 5;
+      newBlackTarget.position.z += 15;
       newBlackTarget.position.x += 0.1;
-      newBlackTarget.speed = 1;
+      newBlackTarget.speed = globalSpeed;
       newBlackTarget.isVisible = true;
       newBlackTarget.rotation.x = Math.PI / 2;
       newBlackTarget.showBoundingBox = true;
@@ -374,7 +397,7 @@ try {
       newTellowTarget.position.y -= 0.2;
       newTellowTarget.position.z += 5;
       newTellowTarget.position.x -= 0.1;
-      newTellowTarget.speed = 1;
+      newTellowTarget.speed = globalSpeed;
       newTellowTarget.isVisible = true;
       newTellowTarget.rotation.x = Math.PI / 2;
       newTellowTarget.showBoundingBox = true;
@@ -386,9 +409,9 @@ try {
       newBlackTarget.addChild(blackTarget.createInstance("black"));
       newBlackTarget.position.copyFrom(pos);
       newBlackTarget.position.y -= 0.5;
-      newBlackTarget.position.z += 5;
+      newBlackTarget.position.z += 15;
       newBlackTarget.position.x += 0.1;
-      newBlackTarget.speed = 1;
+      newBlackTarget.speed = globalSpeed;
       newBlackTarget.isVisible = true;
       newBlackTarget.rotation.x = Math.PI / 2;
       newBlackTarget.showBoundingBox = true;
@@ -399,7 +422,7 @@ try {
       newTellowTarget.position.y -= 0.5;
       newTellowTarget.position.z += 5;
       newTellowTarget.position.x -= 0.1;
-      newTellowTarget.speed = 1;
+      newTellowTarget.speed = globalSpeed;
       newTellowTarget.isVisible = true;
       newTellowTarget.rotation.x = Math.PI / 2;
       newTellowTarget.showBoundingBox = true;
@@ -408,10 +431,10 @@ try {
 
     function combo_5() {
       const newUpper = upper.createInstance("upper");
-      newUpper.isVisible = true;
       newUpper.position.copyFrom(pos);
-      newUpper.position.z += 10;
-      upper.speed = 1;
+      newUpper.position.z += 5;
+      newUpper.speed = globalSpeed;
+      newUpper.isVisible = true;
       targets.push(newUpper);
     }
 
@@ -419,17 +442,9 @@ try {
 
     setInterval(async () => {
       if (paused) return;
-      if (Math.random() > 0.9) {
+      if (Math.random() > 0.5) {
         combo_1();
-      } else if (Math.random() > 0.6) {
-        // combo_2();
-
-      } else if (Math.random() > 0.4) {
-        // combo_3();
-      }
-      else if (Math.random() > 0.2) {
-        // combo_4();
-      } else {
+      }else {
         combo_5();
       }
 
@@ -438,10 +453,11 @@ try {
 
     const left = await SceneLoader.ImportMeshAsync(null, "./models/", "left.glb", scene);
     left.velocity = new Vector3(0, 0, 0);
-
+    left.isVisible = false;
 
     const right = await SceneLoader.ImportMeshAsync(null, "./models/", "right.glb", scene);
     right.velocity = new Vector3(0, 0, 0);
+    right.isVisible = false;
 
 
 
@@ -489,8 +505,27 @@ try {
     });
 
 
-    let leftGrip;
-    let rightGrip;
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "p") {
+        if (paused) {
+
+          if(interval){
+            panel.isVisible = true;
+            center.text = "";
+            clearInterval(interval);
+            interval = null;
+          }else{
+            left.isVisible = true;
+            right.isVisible = true;
+            getTimerLeft(10);
+          }
+
+        } else {
+          openMenu();
+        }
+      }
+    });
+
     let target;
     let leftController;
     let rightController;
@@ -502,61 +537,39 @@ try {
           const ids = motionController.getComponentIds();
           const trigger = motionController.getComponent(ids[0]);
           const squeeze = motionController.getComponent(ids[1]);
-          const a_and_b_Button = motionController.getComponent(ids[3]);
-          const x_and_y_Button = motionController.getComponent(ids[4]);
+          const a_or_x_Button = motionController.getComponent(ids[3]);
+          const b_or_y_Button = motionController.getComponent(ids[4]);
 
-          if (a_and_b_Button.id === "b-button") {
-            a_and_b_Button.onButtonStateChangedObservable.add(() => {
-              if (a_and_b_Button.pressed) {
-                if (paused) {
-                  left.meshes[0].parent = leftGrip;
-                  panel.isVisible = !panel.isVisible;
-                  getTimerLeft(10).then(() => {
-                    paused = !paused;
-                    console.log("Done");
-                  });
-                } else {
-                  left.meshes[0].setParent(null);
-                  paused = !paused;
-                  targets.forEach((target) => {
-                    target.dispose();
-                  });
-                  targets = [];
-                  console.log("game is pausedd");
-                  openMenu();
-                }
-              }
-            });
-          }
 
-          if (x_and_y_Button.id === "y-button") {
-            x_and_y_Button.onButtonStateChangedObservable.add(() => {
-              if (x_and_y_Button.pressed) {
-                if (paused) {
-                  right.meshes[0].parent = rightGrip;
-                  panel.isVisible = !panel.isVisible;
-                  getTimerLeft(10).then(() => {
-                    paused = false;
-                    center.text = "Go!";
-                  });
-                } else {
-                  right.meshes[0].setParent(null);
-                  paused = true;
-                  targets.forEach((target) => {
-                    target.dispose();
-                  });
-                  targets = [];
-                  console.log("game is pausedd");
-                  openMenu();
+          b_or_y_Button.onButtonStateChangedObservable.add(() => {
+            if (b_or_y_Button.pressed) {
+              if (paused) {
+
+                if(interval){
+                  panel.isVisible = true;
+                  center.text = "";
+                  clearInterval(interval);
+                  interval = null;
+                }else{
+                  left.isVisible = true;
+                  right.isVisible = true;
+                  getTimerLeft(10);
                 }
+      
+              } else {
+                openMenu();
               }
-            });
-          }
+            }
+          });
+
+
 
           if (motionController.handness === 'left') {
+  
+
 
             leftController = controller;
-            leftGrip = controller.grip || controller.pointer;
+            left.meshes[0].parent = controller.grip || controller.pointer;
 
             trigger.onButtonStateChangedObservable.add(() => {
 
@@ -567,18 +580,19 @@ try {
                 }
                 if (target && target.name === "panel" && target.parent === null) {
     
-                  target.setParent(motionController.rootMesh);
+                
       
                 }else{
-                  target && target.setParent(null);
+          
                 }
               }
             });
           }
           if (motionController.handness === 'right') {
-
+   
+  
             rightController = controller;
-            rightGrip = controller.grip || controller.pointer;
+            right.meshes[0].parent = controller.grip || controller.pointer;
 
             trigger.onButtonStateChangedObservable.add(() => {
 
@@ -587,15 +601,13 @@ try {
                 if (xr.pointerSelection.getMeshUnderPointer) {
                   target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
                 }
-                if(target){
-                  console.log(target.name);
-                }
+           
                 if (target && target.name === "panel" && target.parent === null) {
     
-                  target.setParent(motionController.rootMesh);
+                  // target.setParent(motionController.rootMesh);
       
                 }else{
-                  target && target.setParent(null);
+                  // target && target.setParent(null);
                 }
               }
             });
