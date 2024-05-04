@@ -103,25 +103,27 @@ try {
     rect1.width = 0.2;
     rect1.height = "40px";
     rect1.cornerRadius = 20;
-    rect1.color = "Orange";
+    rect1.color = "#fff";
     rect1.thickness = 4;
-    rect1.background = "green";
+    rect1.background = "black";
+    rect1.alpha = 0.8;
     advancedTextureRadio.addControl(rect1);
  
-    rect1.linkOffsetY = -150;
+    rect1.linkOffsetY = -100;
 
-    const label = new TextBlock();
-    label.text = "Sphere";
-    rect1.addControl(label);
+    const RadioLabel = new TextBlock();
+    RadioLabel.text = "...";
+    rect1.addControl(RadioLabel);
 
 
     const line = new Line();
     line.lineWidth = 4;
-    line.color = "Orange";
+    line.color = "#fff";
     line.y2 = 20;
     line.linkOffsetZ += 1;
-    line.linkOffsetY = -60;
+    line.linkOffsetY = -20;
     advancedTextureRadio.addControl(line);
+
 
     line.connectedControl = rect1;
     for (let i = 0; i < scenes.length; i++) {
@@ -130,7 +132,7 @@ try {
 
       assets.meshes.forEach((mesh) => {
         mesh.computeWorldMatrix(true);
-        if(mesh.name === "Radio") {
+        if(mesh.name === "RadioModel") {
           rect1.linkWithMesh(mesh);  
           line.linkWithMesh(mesh); 
         }
@@ -258,6 +260,9 @@ try {
     const panel = new StackPanel("panel");
     panel.background = "black";
     panel.alpha = 0.8;
+    panel.cornerRadius = 20;
+    panel.color = "#fff";
+    panel.thickness = 4;
     advancedTexture.addControl(panel);
 
     const header = new TextBlock();
