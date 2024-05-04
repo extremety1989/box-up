@@ -409,7 +409,6 @@ try {
     button_4.onPointerClickObservable.add(() => {
   
     });
-
     let localAxes = new AxesViewer(scene, 1);
     localAxes.xAxis.position.y = -100;
     localAxes.yAxis.position.y = -100;
@@ -764,6 +763,13 @@ try {
                 target = scene.meshUnderPointer;
                 if (xr.pointerSelection.getMeshUnderPointer) {
                   target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
+                }
+                if (target && target.name === "Circle" && target.parent === null && paused) {
+                  xr.baseExperience.camera.position.x = 0;
+                  xr.baseExperience.camera.position.z = 0;
+                }else if (target && target.name.startsWith("Circle.") && target.parent === null && paused) {
+                  xr.baseExperience.camera.position.x = target.position.x;
+                  xr.baseExperience.camera.position.z = target.position.z;
                 }
 
                 if (target && target.name === "plane" && target.parent === null && paused) {
