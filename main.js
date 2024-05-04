@@ -47,7 +47,7 @@ try {
       file: '',
     },
     {
-      root: '/box-up/public/models/',
+      root: '/models/',
       file: 'gym.glb',
     }
   ];
@@ -159,7 +159,7 @@ try {
     }
 
     const destroyedTarget = new Howl({
-      src: ['./public/sounds/break_1.mp3']
+      src: ['./sounds/break_1.mp3']
     });
 
 
