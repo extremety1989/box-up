@@ -14,14 +14,13 @@ import {
   SceneLoader,
   ShadowGenerator,
   Engine,
+  Vector2,
 } from '@babylonjs/core';
 
 import "@babylonjs/loaders/glTF";
 import '@babylonjs/core/Materials/Node/Blocks'
 
-import { Rectangle } from '@babylonjs/gui/2D/controls/rectangle'
-import { Line } from '@babylonjs/gui/2D/controls/line'
-import { Ellipse } from '@babylonjs/gui/2D/controls/ellipse'
+
 import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock'
 import { AdvancedDynamicTexture, Button, StackPanel } from '@babylonjs/gui'
 
@@ -57,6 +56,10 @@ try {
 
 
   async function run() {
+    if (info.difficulty === undefined) {
+      info.difficulty = "Easy";
+    }
+
     let paused = true;
 
     const app = document.getElementById('app');
@@ -66,12 +69,6 @@ try {
 
     const scene = new Scene(engine);
 
-    const xr = await scene.createDefaultXRExperienceAsync({
-      uiOptions: {
-        sessionMode: 'immersive-vr',
-      },
-      optionalFeatures: false,
-    });
 
     const swappedHandednessConfiguration = [
       {
@@ -92,19 +89,9 @@ try {
       },
     ];
 
-    const featureManager = xr.baseExperience.featuresManager;
+    
 
-    featureManager.disableFeature(WebXRFeatureName.TELEPORTATION);
-    featureManager.enableFeature(WebXRFeatureName.MOVEMENT, 'latest', {
-      PerformanceMeasurement: false,
-      xrInput: xr.input,
-      customRegistrationConfigurations: swappedHandednessConfiguration,
-    });
 
-    let pos = new Vector3(0, 0, 0);
-    xr.baseExperience.onStateChangedObservable.add((state) => {
-      pos.copyFrom(xr.baseExperience.camera.position);
-    });
 
     const assetContainers = [];
     let currentSceneIndex = 0;
@@ -114,10 +101,6 @@ try {
       const assets = await loadPromise(scenes[i].root, scenes[i].file, scene);
       assets.meshes.forEach((mesh) => {
         mesh.computeWorldMatrix(true);
-        mesh.position.addInPlace(pos);
-        if (mesh.name === "Radio") {
-
-        }
         if (mesh.name === "Ground") {
           mesh.receiveShadows = true;
         }
@@ -147,7 +130,27 @@ try {
       }
       assetContainers.push(assets);
     }
+  
     assetContainers[currentSceneIndex].addAllToScene();
+
+
+    const xr = await scene.createDefaultXRExperienceAsync({
+      uiOptions: {
+        sessionMode: 'immersive-vr',
+      },
+      optionalFeatures: false,
+    });
+
+    const featureManager = xr.baseExperience.featuresManager;
+
+    featureManager.disableFeature(WebXRFeatureName.TELEPORTATION);
+    featureManager.enableFeature(WebXRFeatureName.MOVEMENT, 'latest', {
+      PerformanceMeasurement: false,
+      xrInput: xr.input,
+      customRegistrationConfigurations: swappedHandednessConfiguration,
+    });
+
+    let pos = new Vector3(0, 0, 0);
 
     function changeMap() {
       assetContainers[currentSceneIndex].removeAllFromScene();
@@ -160,7 +163,7 @@ try {
     });
 
 
-    const upper = MeshBuilder.CreateBox("upper", { width: 1.5, height: 0.5 }, scene);
+    const upper = MeshBuilder.CreateBox("upper", { width: 1.0, height: 0.5 }, scene);
     upper.material = new StandardMaterial('blackMaterial', scene);
     upper.material.diffuseColor = Color3.Black();
     upper.isVisible = false;
@@ -201,30 +204,22 @@ try {
     yellowTarget.material = new StandardMaterial('yellowMaterial', scene);
     yellowTarget.material.diffuseColor = Color3.Yellow();
 
-
-
-
-
     const plane = MeshBuilder.CreatePlane("plane", { size: 1 }, scene);
     plane.position = new Vector3(1, 1.5, 1);
     plane.rotation = new Vector3(0, Math.PI / 9, 0);
-    const planeMaterial = new StandardMaterial("planeMaterial", scene);
-
-    planeMaterial.diffuseColor = new Color3(0, 1, 1);
-
-
   
-
     const plane2 = MeshBuilder.CreatePlane("plane2", { size: 2 }, scene);
+    plane2.isVisible = false;
     plane2.position = new Vector3(0, 1, 1);
-    plane2.material = planeMaterial;
 
     const advancedTexture = AdvancedDynamicTexture.CreateForMesh(
       plane
     );
+
     const advancedTexture2 = AdvancedDynamicTexture.CreateForMesh(
       plane2
     );
+
 
     const panel = new StackPanel("panel");
     panel.background = "black";
@@ -239,40 +234,97 @@ try {
     header.fontSize = "80px";
     panel.addControl(header);
 
-    const button_1 = Button.CreateSimpleButton("", "Easy");
+    const button_1 = Button.CreateSimpleButton("Easy", "Easy");
+    button_1.top = "0%";
+    button_1.color = '#fff';
     button_1.fontSizeInPixels = 12;
     button_1.paddingTop = "10px";
+    button_1.paddingBottom = "10px";
     button_1.fontWeight = '300';
     button_1.width = 0.2;
     button_1.height = "100px";
-    button_1.color = '#fff';
     button_1.fontSize = "40px";
     panel.addControl(button_1);
 
-    const button_2 = Button.CreateSimpleButton("", "Medium");
+    const button_2 = Button.CreateSimpleButton("Medium", "Medium");
+    button_2.color = '#fff';
     button_2.fontSizeInPixels = 12;
     button_2.fontWeight = '300';
     button_2.paddingTop = "10px";
+    button_2.paddingBottom = "10px";
     button_2.width = 0.2;
     button_2.height = "100px";
-    button_2.color = '#fff';
     button_2.fontSize = "40px";
     panel.addControl(button_2);
 
-    const button_3 = Button.CreateSimpleButton("", "Hard");
+    const button_3 = Button.CreateSimpleButton("Hard", "Hard");
+    button_3.color = '#fff';
     button_3.fontSizeInPixels = 12;
     button_3.paddingTop = "10px";
+    button_3.paddingBottom = "10px";
     button_3.width = 0.2;
     button_3.fontWeight = '300';
     button_3.height = "100px";
-    button_3.color = '#fff';
     button_3.fontSize = "40px";
     panel.addControl(button_3);
+
+    if (info.difficulty === button_1.name) {
+      button_1.background = '#fff';
+      button_1.color = '';
+      button_2.background = '';
+      button_3.background = '';
+    } else if (info.difficulty === button_2.name) {
+      button_1.background = '';
+      button_2.background = '#fff';
+      button_2.color = '';
+      button_3.background = '';
+    } else if (info.difficulty === button_3.name) {
+      button_1.background = '';
+      button_2.background = '';
+      button_3.background = '#fff';
+      button_3.color = '';
+    }
+
+
+    button_1.onPointerClickObservable.add(() => {
+      info.difficulty = button_1.name;
+      globalSpeed = 1;
+      localStorage.setItem('info', JSON.stringify(info));
+      button_1.background = '#fff';
+      button_1.color = '';
+      button_2.color = '#fff';
+      button_2.background = '';
+      button_3.background = '';
+      button_3.color = '#fff';
+    });
+
+    button_2.onPointerClickObservable.add(() => {
+      info.difficulty = button_2.name;
+      globalSpeed = 3;
+      localStorage.setItem('info', JSON.stringify(info));
+      button_1.color = '#fff';
+      button_1.background = '';
+      button_2.background = '#fff';
+      button_2.color = '';
+      button_3.background = '';
+      button_3.color = '#fff';
+    });
+
+    button_3.onPointerClickObservable.add(() => {
+      info.difficulty = button_3.name;
+      globalSpeed = 5;
+      localStorage.setItem('info', JSON.stringify(info));
+      button_1.color = '#fff';
+      button_1.background = '';
+      button_2.background = '';
+      button_2.color = '#fff';
+      button_3.background = '#fff';
+      button_3.color = '';
+    });
 
 
     const panel2 = new StackPanel("panel2");
     advancedTexture2.addControl(panel2);
-
     const center = new TextBlock();
     center.text = "";
     center.height = "500px";
@@ -282,160 +334,132 @@ try {
 
 
 
- let globalSpeed = 5;
+    let globalSpeed = 1;
 
- let interval = null;
+    let interval = null;
 
- function getTimerLeft(sec) {
-    if(paused){
-      panel.isVisible = false;
-      if(interval) clearInterval(interval);
-      interval = setInterval(() => {
-        center.text = sec.toString();
-        console.log(sec);
-        if (sec <= 0) {
-          center.text = "Go!";
-          paused = false;
-          clearInterval(interval);
-          setTimeout(() => {
-            center.text = "";
-          }, 1000);
+    function getTimerLeft(sec) {
+      if (paused) {
+        plane.isVisible = false;
+        if (interval) clearInterval(interval);
+        interval = setInterval(() => {
+          if (!plane2.isVisible) plane2.isVisible = true;
+          center.text = sec.toString();
+          console.log(sec);
+          if (sec <= 0) {
+            pos.copyFrom(xr.baseExperience.camera.position);
+            center.text = "Go!";
+            paused = false;
+            clearInterval(interval);
+            setTimeout(() => {
+              plane2.isVisible = false;
+              center.text = "";
+            }, 1000);
+          }
+          sec--;
+        }, 1000);
+      } else {
+        clearInterval(interval);
+      }
+    }
+
+    function offOnGloves(controller, gloves) {
+      left.isVisible = true;
+      right.isVisible = true;
+      [left, right].forEach((model) => {
+        if (model.meshes[0].parent) {
+          model.meshes[0].parent.getChildMeshes().forEach((mesh) => {
+            mesh.isVisible = controller;
+          });
         }
-        sec--;
-      }, 1000);
-    }else{
-      clearInterval(interval);
+        model.meshes.forEach((mesh) => {
+          if (mesh.name === "LeftGlove" || mesh.name === "RightGlove") {
+            mesh.isVisible = gloves;
+          }
+        });
+      });
     }
-  }
 
-  function openMenu() {
-    if(interval) {
-      clearInterval(interval);
-      interval = null;
+    function openMenu() {
+      paused = true;
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+      offOnGloves(true, false);
+      plane.isVisible = true;
+      if (plane2.isVisible) plane2.isVisible = false;
+      center.text = "";
+      left.isVisible = false;
+      right.isVisible = false;
+      targets.forEach((target) => {
+        target.dispose();
+      });
+      targets = [];
     }
-    panel.isVisible = true;
-    center.text = "";
-    left.isVisible = false;
-    right.isVisible = false;
-    targets.forEach((target) => {
-      target.dispose();
-    });
-    targets = [];
-    paused = true;
-  }
-
 
     let targets = [];
 
 
-
-    function combo_1() {
-      const newBlackTarget = blackSide.createInstance("black");
-      newBlackTarget.addChild(blackTarget.createInstance("b"));
-      newBlackTarget.position.copyFrom(pos);
-      newBlackTarget.position.y -= 0.2;
-      newBlackTarget.position.z += 15;
-      newBlackTarget.position.x += 0.1;
-      newBlackTarget.speed = globalSpeed;
-      newBlackTarget.isVisible = true;
-      newBlackTarget.rotation.x = Math.PI / 2;
-      newBlackTarget.rotation.z = Math.PI / 4;
-      targets.push(newBlackTarget);
-      const newTellowTarget = yellowSide.createInstance("yellow");
-      newTellowTarget.addChild(yellowTarget.createInstance("y"));
-      newTellowTarget.position.copyFrom(pos);
-      newTellowTarget.position.y -= 0.2;
-      newTellowTarget.position.z += 5;
-      newTellowTarget.position.x -= 0.1;
-      newTellowTarget.speed = globalSpeed;
-      newTellowTarget.isVisible = true;
-      newTellowTarget.rotation.x = Math.PI / 2;
-      newTellowTarget.rotation.z = -Math.PI / 4;
-      targets.push(newTellowTarget);
+    async function createBlackTarget() {
+      return new Promise((res, rej) => {
+        const newBlackTarget = blackTarget.createInstance("black");
+        newBlackTarget.addChild(blackSide.createInstance("b"));
+        newBlackTarget.position.copyFrom(pos);
+        newBlackTarget.position.y -= 0.2;
+        newBlackTarget.position.z += 5;
+        newBlackTarget.position.x += 0.1;
+        newBlackTarget.isVisible = true;
+        newBlackTarget.rotation.x = Math.PI / 2;
+        newBlackTarget.showBoundingBox = true;
+        res(newBlackTarget);
+      });
     }
 
-    function combo_2() {
-      const newBlackTarget = blackSide.createInstance("black");
-      newBlackTarget.addChild(blackTarget.createInstance("black"));
-      newBlackTarget.position.copyFrom(pos);
-      newBlackTarget.position.y -= 0.5;
-      newBlackTarget.position.z += 15;
-      newBlackTarget.position.x += 0.1;
-      newBlackTarget.speed = globalSpeed;
-      newBlackTarget.isVisible = true;
-      newBlackTarget.rotation.x = Math.PI / 2;
-      newBlackTarget.rotation.z = Math.PI / 4;
-      targets.push(newBlackTarget);
-      const newTellowTarget = yellowSide.createInstance("yellow");
-      newTellowTarget.addChild(yellowTarget.createInstance("yellow"));
-      newTellowTarget.position.copyFrom(pos);
-      newTellowTarget.position.y -= 0.5;
-      newTellowTarget.position.z += 5;
-      newTellowTarget.position.x -= 0.1;
-      newTellowTarget.speed = globalSpeed;
-      newTellowTarget.isVisible = true;
-      newTellowTarget.rotation.x = Math.PI / 2;
-      newTellowTarget.rotation.z = -Math.PI / 4;
-      targets.push(newTellowTarget);
+    async function createYellowTarget() {
+      return new Promise((res, rej) => {
+        const newTellowTarget = yellowSide.createInstance("yellow");
+        newTellowTarget.addChild(yellowTarget.createInstance("y"));
+        newTellowTarget.position.copyFrom(pos);
+        newTellowTarget.position.y -= 0.2;
+        newTellowTarget.position.z += 5;
+        newTellowTarget.position.x -= 0.1;
+        newTellowTarget.isVisible = true;
+        newTellowTarget.rotation.x = Math.PI / 2;
+        newTellowTarget.rotation.z = -Math.PI / 4;
+        newTellowTarget.showBoundingBox = true;
+        res(newTellowTarget);
+      });
     }
 
-    function combo_3() {
-      const newBlackTarget = blackSide.createInstance("black");
-      newBlackTarget.addChild(blackTarget.createInstance("black"));
-      newBlackTarget.position.copyFrom(pos);
-      newBlackTarget.position.y -= 0.2;
-      newBlackTarget.position.z += 15;
-      newBlackTarget.position.x += 0.1;
-      newBlackTarget.speed = globalSpeed;
-      newBlackTarget.isVisible = true;
-      newBlackTarget.rotation.x = Math.PI / 2;
-      newBlackTarget.showBoundingBox = true;
-      targets.push(newBlackTarget);
-      const newTellowTarget = yellowSide.createInstance("yellow");
-      newTellowTarget.addChild(yellowTarget.createInstance("yelow"));
-      newTellowTarget.position.copyFrom(pos);
-      newTellowTarget.position.y -= 0.2;
-      newTellowTarget.position.z += 5;
-      newTellowTarget.position.x -= 0.1;
-      newTellowTarget.speed = globalSpeed;
-      newTellowTarget.isVisible = true;
-      newTellowTarget.rotation.x = Math.PI / 2;
-      newTellowTarget.showBoundingBox = true;
-      targets.push(newTellowTarget);
+    async function createUpper() {
+      return new Promise((res, rej) => {
+        const newUpper = upper.createInstance("upper");
+        newUpper.position.copyFrom(pos);
+        newUpper.position.z += 5;
+        newUpper.isVisible = true;
+        newUpper.showBoundingBox = true;
+        res(newUpper);
+      });
     }
 
-    function combo_4() {
-      const newBlackTarget = blackSide.createInstance("black");
-      newBlackTarget.addChild(blackTarget.createInstance("black"));
-      newBlackTarget.position.copyFrom(pos);
-      newBlackTarget.position.y -= 0.5;
-      newBlackTarget.position.z += 15;
-      newBlackTarget.position.x += 0.1;
-      newBlackTarget.speed = globalSpeed;
-      newBlackTarget.isVisible = true;
-      newBlackTarget.rotation.x = Math.PI / 2;
-      newBlackTarget.showBoundingBox = true;
-      targets.push(newBlackTarget);
-      const newTellowTarget = yellowSide.createInstance("yellow");
-      newTellowTarget.addChild(yellowTarget.createInstance("yellow"));
-      newTellowTarget.position.copyFrom(pos);
-      newTellowTarget.position.y -= 0.5;
-      newTellowTarget.position.z += 5;
-      newTellowTarget.position.x -= 0.1;
-      newTellowTarget.speed = globalSpeed;
-      newTellowTarget.isVisible = true;
-      newTellowTarget.rotation.x = Math.PI / 2;
-      newTellowTarget.showBoundingBox = true;
-      targets.push(newTellowTarget);
+    async function combo_1() {
+      const tb = await createBlackTarget();
+      targets.push(tb);
+      const ty = await createYellowTarget();
+      targets.push(ty);
+      // const tu = await createUpper();
+      // targets.push(tu);
+
+
+      ty.position.z += 5;
+      tb.speed = globalSpeed;
+      ty.speed = globalSpeed;
+      // tu.speed = globalSpeed;
     }
 
-    function combo_5() {
-      const newUpper = upper.createInstance("upper");
-      newUpper.position.copyFrom(pos);
-      newUpper.position.z += 5;
-      newUpper.speed = globalSpeed;
-      newUpper.isVisible = true;
-      targets.push(newUpper);
+    async function combo_5() {
+
     }
 
 
@@ -443,22 +467,38 @@ try {
     setInterval(async () => {
       if (paused) return;
       if (Math.random() > 0.5) {
-        combo_1();
-      }else {
-        combo_5();
+        await combo_1();
+      } else {
+        await combo_5();
       }
 
     }, 1500);
 
 
+    // const {radio_meshes, radio_animationGroups} = await SceneLoader.ImportMeshAsync(null, "./models/", "radio.glb", scene);
+
+
+    const leftCollision = MeshBuilder.CreateSphere("dummyCam", {diameter:0.25}, scene, true);
+    leftCollision.isVisible = false;
+    leftCollision.showBoundingBox = true;
+    const rightCollision = MeshBuilder.CreateSphere("dummyCam", {diameter:0.25}, scene, true);
+    rightCollision.showBoundingBox = true;
+    rightCollision.isVisible = false;
+
+
+
     const left = await SceneLoader.ImportMeshAsync(null, "./models/", "left.glb", scene);
     left.velocity = new Vector3(0, 0, 0);
-    left.isVisible = false;
 
     const right = await SceneLoader.ImportMeshAsync(null, "./models/", "right.glb", scene);
     right.velocity = new Vector3(0, 0, 0);
-    right.isVisible = false;
 
+
+    [left, right].forEach((model) => {
+      model.meshes.forEach((mesh) => {
+        mesh.isVisible = false;
+      });
+    });
 
 
 
@@ -467,10 +507,7 @@ try {
       if (targets.length > 0) {
         targets.forEach((target) => {
 
-          if (left.meshes[0].intersectsMesh(target, true) && right.meshes[0].intersectsMesh(target, true)) {
-
-          }
-          if (left.meshes[0].intersectsMesh(target, false)) {
+          if (leftCollision.intersectsMesh(target, true)) {
             if (target.name === "yellow") {
               if (left.velocity.length() > 0.9) {
 
@@ -482,7 +519,7 @@ try {
 
             }
           }
-          if (right.meshes[0].intersectsMesh(target, false)) {
+          if (rightCollision.intersectsMesh(target, true)) {
             if (target.name === "black") {
               if (right.velocity.length() > 0.9) {
 
@@ -505,19 +542,20 @@ try {
     });
 
 
-    document.addEventListener("keydown", function(event) {
+    document.addEventListener("keydown", function (event) {
       if (event.key === "p") {
         if (paused) {
 
-          if(interval){
-            panel.isVisible = true;
+          if (interval) {
+            plane.isVisible = true;
+            if (plane2.isVisible) plane2.isVisible = false;
             center.text = "";
             clearInterval(interval);
             interval = null;
-          }else{
-            left.isVisible = true;
-            right.isVisible = true;
-            getTimerLeft(10);
+            offOnGloves(true, false);
+          } else {
+            offOnGloves(false, true);
+            getTimerLeft(1);
           }
 
         } else {
@@ -539,35 +577,41 @@ try {
           const squeeze = motionController.getComponent(ids[1]);
           const a_or_x_Button = motionController.getComponent(ids[3]);
           const b_or_y_Button = motionController.getComponent(ids[4]);
+          const thumb_stick = motionController.getComponent(ids[2]);
 
+          thumb_stick.onButtonStateChangedObservable.add(() => {
+            if (thumb_stick.pressed) {
 
-          b_or_y_Button.onButtonStateChangedObservable.add(() => {
-            if (b_or_y_Button.pressed) {
               if (paused) {
-
-                if(interval){
-                  panel.isVisible = true;
+                if (interval) {
+                  plane.isVisible = true;
+                  if (plane2.isVisible) plane2.isVisible = false;
                   center.text = "";
                   clearInterval(interval);
                   interval = null;
-                }else{
-                  left.isVisible = true;
-                  right.isVisible = true;
-                  getTimerLeft(10);
+                  offOnGloves(true, false);
+                } else {
+                  offOnGloves(false, true);
+                  getTimerLeft(1);
                 }
-      
-              } else {
+              }else{
                 openMenu();
               }
+            }
+          });
+
+          b_or_y_Button.onButtonStateChangedObservable.add(() => {
+            if (b_or_y_Button.pressed) {
+
             }
           });
 
 
 
           if (motionController.handness === 'left') {
-  
 
-
+            leftCollision.position = controller.grip.position;
+            leftCollision.position.y -= 0.03;
             leftController = controller;
             left.meshes[0].parent = controller.grip || controller.pointer;
 
@@ -578,19 +622,19 @@ try {
                 if (xr.pointerSelection.getMeshUnderPointer) {
                   target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
                 }
-                if (target && target.name === "panel" && target.parent === null) {
-    
-                
-      
-                }else{
-          
-                }
+                if (target && target.name === "plane" && target.parent === null && paused) {
+
+                  target.setParent(motionController.rootMesh);
+
+              } else if(target.parent === null && paused){
+                  target && target.setParent(null);
+              }
               }
             });
           }
           if (motionController.handness === 'right') {
-   
-  
+            rightCollision.position = controller.grip.position;
+            rightCollision.position.y -= 0.03;
             rightController = controller;
             right.meshes[0].parent = controller.grip || controller.pointer;
 
@@ -601,20 +645,16 @@ try {
                 if (xr.pointerSelection.getMeshUnderPointer) {
                   target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
                 }
-           
-                if (target && target.name === "panel" && target.parent === null) {
-    
-                  // target.setParent(motionController.rootMesh);
-      
-                }else{
-                  // target && target.setParent(null);
+
+                if (target && target.name === "plane" && target.parent === null && paused) {
+
+                    target.setParent(motionController.rootMesh);
+
+                  } else if(target.parent === null && paused){
+                    target && target.setParent(null);
                 }
               }
             });
-          }
-
-          if (motionController.handness === 'left' && motionController.handedness === 'right') {
-
           }
         }
       );
@@ -628,6 +668,7 @@ try {
 
     engine.runRenderLoop(() => {
       scene.render();
+
       if (leftController) {
         const currentPosition = leftController.grip.position.clone();
         const currentTime = performance.now();
@@ -671,6 +712,11 @@ try {
             targets.splice(targets.indexOf(target), 1);
           }
           target.position.z -= target.speed * delta;
+        });
+      }else if (targets.length > 0 && paused){
+        targets.forEach((target) => {
+          target.dispose();
+          targets.splice(targets.indexOf(target), 1);
         });
       }
     });
