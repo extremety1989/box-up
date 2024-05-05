@@ -707,7 +707,7 @@ try {
           b_or_y_Button.onButtonStateChangedObservable.add(() => {
             if (b_or_y_Button.pressed && paused && !plane.isVisible && floorPosition.isVisible) {
             
-              info.floorPosition = floorPosition.getAbsolutePosition().y;
+              info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
               localStorage.setItem('info', JSON.stringify(info));
               assetContainers[currentSceneIndex].meshes.forEach((mesh) => {
                 if (mesh.name === "__root__") {
@@ -771,12 +771,14 @@ try {
             leftCollision.position.y -= 0.03;
             leftController = controller;
             left.meshes[0].parent = controller.grip || controller.pointer;
+            left.meshes[0].position.x -= 0.03;
           }
           if (motionController.handness === 'right') {    
             rightCollision.position = controller.grip.position;
             rightCollision.position.y -= 0.03;
             rightController = controller;
             right.meshes[0].parent = controller.grip || controller.pointer;
+            right.meshes[0].position.x += 0.03;
           }
         }
       );
@@ -796,7 +798,17 @@ try {
       if (leftController) {
         const currentPosition = leftController.grip.position.clone();
 
+        if(floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed){
 
+          let distance = Vector3.Distance(currentPosition, floorPosition.position);
+          if (distance <= 0.4) {
+            if(floorPosition.parent === null){
+              floorPosition.position.y = currentPosition.y - 0.05;
+              floorPosition.position.x = 0;
+              floorPosition.position.z = 0;
+            }
+          }
+        }
 
         const currentTime = performance.now();
         if (leftPreviousPosition && leftPreviousTime) {
@@ -818,9 +830,9 @@ try {
         if(floorPosition.isVisible && !plane.isVisible){
 
           let distance = Vector3.Distance(currentPosition, floorPosition.position);
-          if (distance <= 0.4 && floorPosition.isPressed) {
+          if (distance <= 0.3 && floorPosition.isPressed) {
             if(floorPosition.parent === null){
-              floorPosition.position.y = currentPosition.y - 0.05;
+              floorPosition.position.y = currentPosition.y;
               floorPosition.position.x = 0;
               floorPosition.position.z = 0;
             }
