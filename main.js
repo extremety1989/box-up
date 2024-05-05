@@ -647,7 +647,6 @@ try {
     document.addEventListener("keydown", function (event) {
       if (event.key === "p") {
         if (paused) {
-
           if (interval) {
             plane.isVisible = true;
             if (plane2.isVisible) plane2.isVisible = false;
@@ -706,7 +705,7 @@ try {
           });
 
           b_or_y_Button.onButtonStateChangedObservable.add(() => {
-            if (b_or_y_Button.pressed && paused && floorPosition.isVisible && floorPosition.parent !== null && !plane.isVisible) {
+            if (b_or_y_Button.pressed && paused && !plane.isVisible) {
             
               info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
               localStorage.setItem('info', JSON.stringify(info));
