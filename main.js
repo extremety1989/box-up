@@ -705,7 +705,7 @@ try {
           });
 
           b_or_y_Button.onButtonStateChangedObservable.add(() => {
-            if (b_or_y_Button.pressed && paused && !plane.isVisible) {
+            if (b_or_y_Button.pressed && paused && !plane.isVisible && floorPosition.isVisible) {
             
               info.floorPosition = floorPosition.getAbsolutePosition().y + 0.05;
               localStorage.setItem('info', JSON.stringify(info));
@@ -730,7 +730,7 @@ try {
                 target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
               }
               if(target && target.name === "floorPlane" && floorPosition.isVisible && target.parent === null){ 
-                target.position.y = controller.grip.position.y || controller.pointer.position.y;
+                target.parent = controller.grip || controller.pointer;
                 target.rotationQuaternion = new Quaternion(0, 0, 0, 1);
               }
               else if (target && target.name === "plane" && target.parent === null && paused) {
@@ -747,13 +747,13 @@ try {
                 target = null;
               }
 
-              if (target.name.startsWith("Circle.00")) {
+              else if (target.name.startsWith("Circle.00")) {
                 xr.baseExperience.camera.position.x = -target.position.x;
                 xr.baseExperience.camera.position.z = target.position.z;
                 target = null;
               }
 
-              if (target.name === "plane") {
+              else if (target.name === "plane" || target.name === "floorPlane") {
                 target.setParent(null);
                 target = null;
               }
