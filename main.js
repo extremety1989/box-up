@@ -5,6 +5,7 @@ import {
   HemisphericLight,
   Scene,
   Vector3,
+  Quaternion,
   StandardMaterial,
   Color3,
   MeshBuilder,
@@ -404,7 +405,7 @@ try {
     });
     let localAxes = new AxesViewer(scene, 1);
     const floorPosition = MeshBuilder.CreateGround("floorPlane", {width: 2, height: 2}, scene);
-    
+    floorPosition.position.y = 0.05;
     localAxes.xAxis.parent = floorPosition;
     localAxes.yAxis.parent = floorPosition;
     localAxes.zAxis.parent = floorPosition;	
@@ -732,7 +733,7 @@ try {
               if(target && target.name === "floorPlane" && 
               floorPosition && floorPosition.isVisible && floorPosition.parent === null && target.parent === null){ 
                 target.parent = controller.grip || controller.pointer;
-                target.rotationQuaternion = new BABYLON.Quaternion(0, 0, 0, 1);
+                target.rotationQuaternion = new Quaternion(0, 0, 0, 1);
               }
               if (target && target.name === "plane" && target.parent === null && paused) {
 
