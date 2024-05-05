@@ -405,7 +405,7 @@ try {
     });
     let localAxes = new AxesViewer(scene, 1);
     const floorPosition = MeshBuilder.CreateGround("floorPlane", {width: 2, height: 2}, scene);
-    floorPosition.position.y = 0.05;
+    floorPosition.position.y = xr.baseExperience.camera.position.y + 1.5;
     localAxes.xAxis.parent = floorPosition;
     localAxes.yAxis.parent = floorPosition;
     localAxes.zAxis.parent = floorPosition;	
@@ -729,31 +729,33 @@ try {
               if (xr.pointerSelection.getMeshUnderPointer) {
                 target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
               }
-              if(target && target.name === "floorPlane" && floorPosition.isVisible && target.parent === null){ 
-                target.parent = controller.grip || controller.pointer;
-                target.rotationQuaternion = new Quaternion(0, 0, 0, 1);
+              if(target && target.name === "floorPlane" && floorPosition.isVisible && 
+              target.parent === null && !plane.isVisible){ 
+
+                let distance = Vector3.Distance(controller.grip.position, target.position);
+                if (distance <= 0.5 && floorPosition.position.y <= controller.grip.position.y) {
+                  floorPosition.position.y = leftController.grip.position.y;
+                }
               }
-              else if (target && target.name === "plane" && target.parent === null && paused) {
-
+              else if (target && target.name === "plane" && target.parent === null && !floorPosition.isVisible) {
                 target.setParent(motionController.rootMesh);
-
               }
             } else if (paused && target) {
 
             
-              if (target.name === "Circle") {
+              if (target.name === "Circle" && !floorPosition.isVisible) {
                 xr.baseExperience.camera.position.x = 0;
                 xr.baseExperience.camera.position.z = 0;
                 target = null;
               }
 
-              else if (target.name.startsWith("Circle.00")) {
+              else if (target.name.startsWith("Circle.00") && !floorPosition.isVisible) {
                 xr.baseExperience.camera.position.x = -target.position.x;
                 xr.baseExperience.camera.position.z = target.position.z;
                 target = null;
               }
 
-              else if (target.name === "plane" || target.name === "floorPlane") {
+              else if (target.name === "plane") {
                 target.setParent(null);
                 target = null;
               }
@@ -794,7 +796,6 @@ try {
       if (leftController) {
         const currentPosition = leftController.grip.position.clone();
         const currentTime = performance.now();
-
         if (leftPreviousPosition && leftPreviousTime) {
           const deltaTime = (currentTime - leftPreviousTime) / 1000;
           if (deltaTime > 0) {
