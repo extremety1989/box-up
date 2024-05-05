@@ -707,7 +707,7 @@ try {
           b_or_y_Button.onButtonStateChangedObservable.add(() => {
             if (b_or_y_Button.pressed && paused && !plane.isVisible && floorPosition.isVisible) {
             
-              info.floorPosition = floorPosition.getAbsolutePosition().y + 0.05;
+              info.floorPosition = floorPosition.getAbsolutePosition().y;
               localStorage.setItem('info', JSON.stringify(info));
               assetContainers[currentSceneIndex].meshes.forEach((mesh) => {
                 if (mesh.name === "__root__") {
@@ -731,11 +731,8 @@ try {
               }
               if(target && target.name === "floorPlane" && floorPosition.isVisible && 
               target.parent === null && !plane.isVisible){ 
-
-                let distance = Vector3.Distance(controller.grip.position, target.position);
-                if (distance <= 0.5 && floorPosition.position.y <= controller.grip.position.y) {
-                  floorPosition.position.y = leftController.grip.position.y;
-                }
+              
+                target.isPressed = true;
               }
               else if (target && target.name === "plane" && target.parent === null && !floorPosition.isVisible) {
                 target.setParent(motionController.rootMesh);
@@ -746,19 +743,20 @@ try {
               if (target.name === "Circle" && !floorPosition.isVisible) {
                 xr.baseExperience.camera.position.x = 0;
                 xr.baseExperience.camera.position.z = 0;
-                target = null;
               }
 
               else if (target.name.startsWith("Circle.00") && !floorPosition.isVisible) {
                 xr.baseExperience.camera.position.x = -target.position.x;
                 xr.baseExperience.camera.position.z = target.position.z;
-                target = null;
               }
 
               else if (target.name === "plane") {
                 target.setParent(null);
-                target = null;
               }
+              if(floorPosition.isVisible){
+                floorPosition.isPressed = false;
+              }
+              target = null;
             }
           });
 
@@ -793,8 +791,13 @@ try {
     engine.runRenderLoop(() => {
       scene.render();
 
+
+
       if (leftController) {
         const currentPosition = leftController.grip.position.clone();
+
+
+
         const currentTime = performance.now();
         if (leftPreviousPosition && leftPreviousTime) {
           const deltaTime = (currentTime - leftPreviousTime) / 1000;
@@ -811,6 +814,19 @@ try {
 
       if (rightController) {
         const currentPosition = rightController.grip.position.clone();
+
+        if(floorPosition.isVisible && !plane.isVisible){
+
+          let distance = Vector3.Distance(currentPosition, floorPosition.position);
+          if (distance <= 0.4 && floorPosition.isPressed) {
+            if(floorPosition.parent === null){
+              floorPosition.position.y = currentPosition.y - 0.05;
+              floorPosition.position.x = 0;
+              floorPosition.position.z = 0;
+            }
+          }
+        }
+
         const currentTime = performance.now();
 
         if (rightPreviousPosition && rightPreviousTime) {
