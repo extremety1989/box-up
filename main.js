@@ -707,7 +707,7 @@ try {
           b_or_y_Button.onButtonStateChangedObservable.add(() => {
             if (b_or_y_Button.pressed && paused && !plane.isVisible) {
             
-              info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
+              info.floorPosition = floorPosition.getAbsolutePosition().y + 0.05;
               localStorage.setItem('info', JSON.stringify(info));
               assetContainers[currentSceneIndex].meshes.forEach((mesh) => {
                 if (mesh.name === "__root__") {
