@@ -740,12 +740,16 @@ try {
                 localAxes.yAxis.parent = controller.grip || controller.pointer;
               }
    
-
+           
               target = scene.meshUnderPointer;
               if (xr.pointerSelection.getMeshUnderPointer) {
                 target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
               }
-  
+        
+              if(target && target.name === "Circle.005"){
+                console.log(target && target.name);
+                console.log(target.position);
+              }
               if (target && target.name === "plane" && target.parent === null && paused) {
 
                 target.setParent(motionController.rootMesh);
@@ -753,13 +757,15 @@ try {
               }
             } else if (paused) {
 
+            
               if (target && target.name === "Circle") {
                 xr.baseExperience.camera.position.x = 0;
                 xr.baseExperience.camera.position.z = 0;
                 target = null;
               }
-              if (target && target.name.startsWith("Circle.")) {
-                xr.baseExperience.camera.position.x = target.position.x;
+
+              if (target && target.name.startsWith("Circle.00")) {
+                xr.baseExperience.camera.position.x = -target.position.x;
                 xr.baseExperience.camera.position.z = target.position.z;
                 target = null;
               }
