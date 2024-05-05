@@ -16,6 +16,7 @@ import {
   AxesViewer,
   Plane,
   Engine,
+  Mesh,
 } from '@babylonjs/core';
 
 import "@babylonjs/loaders/glTF";
