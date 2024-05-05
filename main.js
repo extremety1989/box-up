@@ -729,12 +729,11 @@ try {
               if (xr.pointerSelection.getMeshUnderPointer) {
                 target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
               }
-              if(target && target.name === "floorPlane" && 
-              floorPosition && floorPosition.isVisible && floorPosition.parent === null && target.parent === null){ 
-                target.parent = controller.grip || controller.pointer;
+              if(target && target.name === "floorPlane" && floorPosition.isVisible && target.parent === null){ 
+                target.position.y = controller.grip.position.y || controller.pointer.position.y;
                 target.rotationQuaternion = new Quaternion(0, 0, 0, 1);
               }
-              if (target && target.name === "plane" && target.parent === null && paused) {
+              else if (target && target.name === "plane" && target.parent === null && paused) {
 
                 target.setParent(motionController.rootMesh);
 
@@ -754,7 +753,7 @@ try {
                 target = null;
               }
 
-              if (target.name === "plane" || target.name === "floorPlane") {
+              if (target.name === "plane") {
                 target.setParent(null);
                 target = null;
               }
