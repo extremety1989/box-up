@@ -14,6 +14,7 @@ import {
   SceneLoader,
   ShadowGenerator,
   AxesViewer,
+  Plane,
   Engine,
 } from '@babylonjs/core';
 
@@ -22,7 +23,7 @@ import '@babylonjs/core/Materials/Node/Blocks'
 
 
 import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock'
-import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control, Line, Rectangle, Ellipse } from '@babylonjs/gui'
+import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control, Line, Rectangle } from '@babylonjs/gui'
 
 
 
@@ -259,7 +260,7 @@ try {
 
     const plane2 = MeshBuilder.CreatePlane("plane2", { size: 2 }, scene);
     plane2.isVisible = false;
-    plane2.position = new Vector3(1, 1.5, 1);
+    plane2.position = new Vector3(0, 0, 0);
 
 
     const advancedTexture = AdvancedDynamicTexture.CreateForMesh(
@@ -404,20 +405,16 @@ try {
   
     });
     let localAxes = new AxesViewer(scene, 1);
-    localAxes.zAxis.position.y = -100;
-    localAxes.yAxis.position.y = -100;
-    localAxes.xAxis.position.y = -100;
-    localAxes.isVisible = false;
+    const abstractPlane = Plane.FromPositionAndNormal(new Vector3(1, 1, 1), new Vector3(0.2, 0.5, -1));
+    const floorPosition = MeshBuilder.CreatePlane("floorPlane", {sourcePlane: abstractPlane, sideOrientation: Mesh.DOUBLESIDE});
+    localAxes.xAxis.parent = floorPosition;
+    localAxes.yAxis.parent = floorPosition;
+    localAxes.zAxis.parent = floorPosition;	
+    floorPosition.isVisible = false;
     button_5.onPointerClickObservable.add(() => {
-      if(localAxes.isVisible){
-        localAxes.zAxis.parent = null;
-        localAxes.yAxis.parent = null;
-        localAxes.isVisible = false;
-        localAxes.zAxis.position.y = -100;
-        localAxes.yAxis.position.y = -100;
-        localAxes.xAxis.position.y = -100;
-      }else{
-        localAxes.isVisible = true;
+      if(!floorPosition.isVisible && paused){
+        plane.isVisible = false;
+        floorPosition.isVisible = true;
       }
     });
 
@@ -682,13 +679,9 @@ try {
             if (thumb_stick.pressed) {
 
               if (paused) {
-                if(localAxes.isVisible){
-                  localAxes.zAxis.parent = null;
-                  localAxes.yAxis.parent = null;
-                  localAxes.isVisible = false;
-                  localAxes.zAxis.position.y = -100;
-                  localAxes.yAxis.position.y = -100;
-                  localAxes.xAxis.position.y = -100;
+                if(floorPosition.isVisible){
+                  floorPosition.parent = null;
+                  floorPosition.isVisible = false;
                 }
                 if (interval) {
                   plane.isVisible = true;
@@ -708,21 +701,18 @@ try {
           });
 
           b_or_y_Button.onButtonStateChangedObservable.add(() => {
-            if (b_or_y_Button.pressed && paused && localAxes.isVisible && localAxes.zAxis.parent !== null) {
+            if (b_or_y_Button.pressed && paused && floorPosition.isVisible && floorPosition.parent !== null) {
             
-              info.floorPosition = localAxes.yAxis.getAbsolutePosition().y - 0.05;
+              info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
               localStorage.setItem('info', JSON.stringify(info));
               assetContainers[currentSceneIndex].meshes.forEach((mesh) => {
                 if (mesh.name === "__root__") {
                   mesh.position.y = info.floorPosition;
                 }
               });
-              localAxes.zAxis.parent = null;
-              localAxes.yAxis.parent = null;
-              localAxes.isVisible = false;
-              localAxes.zAxis.position.y = -100;
-              localAxes.yAxis.position.y = -100;
-              localAxes.xAxis.position.y = -100;
+              plane.isVisible = true;
+              floorPosition.parent = null;
+              floorPosition.isVisible = false;
             }
           });
 
@@ -730,25 +720,14 @@ try {
           trigger.onButtonStateChangedObservable.add(() => {
 
             if (trigger.pressed && paused) {
-
-
-              if (localAxes && localAxes.isVisible && localAxes.zAxis.parent === null) {
-                localAxes.zAxis.position.y = 0;
-                localAxes.yAxis.position.y = 0;
-                localAxes.xAxis.position.y = 0;
-                localAxes.zAxis.parent = controller.grip || controller.pointer;
-                localAxes.yAxis.parent = controller.grip || controller.pointer;
-              }
-   
            
               target = scene.meshUnderPointer;
               if (xr.pointerSelection.getMeshUnderPointer) {
                 target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
               }
-        
-              if(target && target.name === "Circle.005"){
-                console.log(target && target.name);
-                console.log(target.position);
+              if(target && target.name === "floorPlane" && 
+              floorPosition && floorPosition.isVisible && floorPosition.parent === null && target.parent === null){ 
+                target.parent = controller.grip || controller.pointer;
               }
               if (target && target.name === "plane" && target.parent === null && paused) {
 
@@ -770,7 +749,7 @@ try {
                 target = null;
               }
 
-              if (target && target.name === "plane") {
+              if (target && target.name === "plane" || target.name === "floorPlane") {
                 target && target.setParent(null);
                 target = null;
               }
@@ -779,21 +758,17 @@ try {
 
           if (motionController.handness === 'left' && motionController.handness === 'right') {
             comboCounter.isVisible = true;
+            plane2.position.copyFrom(xr.baseExperience.camera.position);
+            plane2.position.z += 1;
           }
 
-
           if (motionController.handness === 'left') {
-
-  
-
             leftCollision.position = controller.grip.position;
             leftCollision.position.y -= 0.03;
             leftController = controller;
             left.meshes[0].parent = controller.grip || controller.pointer;
           }
-          if (motionController.handness === 'right') {
-
-            
+          if (motionController.handness === 'right') {    
             rightCollision.position = controller.grip.position;
             rightCollision.position.y -= 0.03;
             rightController = controller;
