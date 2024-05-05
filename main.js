@@ -676,8 +676,7 @@ try {
           const thumb_stick = motionController.getComponent(ids[2]);
 
           thumb_stick.onButtonStateChangedObservable.add(() => {
-            if (thumb_stick.pressed) {
-
+            if (thumb_stick.pressed && !floorPosition.isVisible) {
               if (paused) {
                 if(floorPosition.isVisible){
                   floorPosition.parent = null;
@@ -701,7 +700,7 @@ try {
           });
 
           b_or_y_Button.onButtonStateChangedObservable.add(() => {
-            if (b_or_y_Button.pressed && paused && floorPosition.isVisible && floorPosition.parent !== null) {
+            if (b_or_y_Button.pressed && paused && floorPosition.isVisible && floorPosition.parent !== null && !plane.isVisible) {
             
               info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
               localStorage.setItem('info', JSON.stringify(info));
