@@ -368,7 +368,6 @@ try {
 
     button_1.onPointerClickObservable.add(() => {
       info.difficulty = button_1.name;
-      globalSpeed = 1;
       localStorage.setItem('info', JSON.stringify(info));
       button_1.background = '#fff';
       button_1.color = '';
@@ -380,7 +379,6 @@ try {
 
     button_2.onPointerClickObservable.add(() => {
       info.difficulty = button_2.name;
-      globalSpeed = 3;
       localStorage.setItem('info', JSON.stringify(info));
       button_1.color = '#fff';
       button_1.background = '';
@@ -392,7 +390,6 @@ try {
 
     button_3.onPointerClickObservable.add(() => {
       info.difficulty = button_3.name;
-      globalSpeed = 5;
       localStorage.setItem('info', JSON.stringify(info));
       button_1.color = '#fff';
       button_1.background = '';
@@ -406,8 +403,8 @@ try {
   
     });
     let localAxes = new AxesViewer(scene, 1);
-    const abstractPlane = Plane.FromPositionAndNormal(new Vector3(1, 1, 1), new Vector3(0.2, 0.5, -1));
-    const floorPosition = MeshBuilder.CreatePlane("floorPlane", {sourcePlane: abstractPlane, sideOrientation: Mesh.DOUBLESIDE});
+    const floorPosition = MeshBuilder.CreateGround("floorPlane", {width: 2, height: 2}, scene);
+    
     localAxes.xAxis.parent = floorPosition;
     localAxes.yAxis.parent = floorPosition;
     localAxes.zAxis.parent = floorPosition;	
@@ -452,6 +449,13 @@ try {
             paused = false;
             clearInterval(interval);
             setTimeout(() => {
+              if(info.difficulty === "Easy"){
+                globalSpeed = 2;
+              } else if(info.difficulty === "Medium"){
+                globalSpeed = 2.5;
+              } else if(info.difficulty === "Hard"){
+                globalSpeed = 5;
+              }
               plane2.isVisible = false;
               center.text = "";
             }, 1000);
@@ -728,29 +732,30 @@ try {
               if(target && target.name === "floorPlane" && 
               floorPosition && floorPosition.isVisible && floorPosition.parent === null && target.parent === null){ 
                 target.parent = controller.grip || controller.pointer;
+                target.rotationQuaternion = new BABYLON.Quaternion(0, 0, 0, 1);
               }
               if (target && target.name === "plane" && target.parent === null && paused) {
 
                 target.setParent(motionController.rootMesh);
 
               }
-            } else if (paused) {
+            } else if (paused && target) {
 
             
-              if (target && target.name === "Circle") {
+              if (target.name === "Circle") {
                 xr.baseExperience.camera.position.x = 0;
                 xr.baseExperience.camera.position.z = 0;
                 target = null;
               }
 
-              if (target && target.name.startsWith("Circle.00")) {
+              if (target.name.startsWith("Circle.00")) {
                 xr.baseExperience.camera.position.x = -target.position.x;
                 xr.baseExperience.camera.position.z = target.position.z;
                 target = null;
               }
 
-              if (target && target.name === "plane" || target.name === "floorPlane") {
-                target && target.setParent(null);
+              if (target.name === "plane" || target.name === "floorPlane") {
+                target.setParent(null);
                 target = null;
               }
             }
