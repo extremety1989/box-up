@@ -86,7 +86,7 @@ try {
 
     const radioPlane = MeshBuilder.CreatePlane("radioPlane", { size: 0.5 }, scene);
     radioPlane.isVisible = true;
-    radioPlane.position = new Vector3(1.5, 1.5, -1);
+    radioPlane.position = new Vector3(2.5, 1.5, 0);
     radioPlane.rotation = new Vector3(0, Math.PI / 2, 0);
  
     const advancedTextureRadio2 = AdvancedDynamicTexture.CreateForMesh(
@@ -101,6 +101,7 @@ try {
     const gridRadio = new Grid("Grid");
     gridRadio.height = "256px"
     gridRadio.addRowDefinition(200, true);
+    gridRadio.addRowDefinition(200, true);
     gridRadio.addColumnDefinition(320, true)
     gridRadio.addColumnDefinition(320, true)
     gridRadio.addColumnDefinition(320, true)
@@ -114,6 +115,25 @@ try {
     playRadio.fontWeight = '300';
     playRadio.fontSize = "40px";
 
+    const soundSlider = new Slider();
+    soundSlider.minimum = 0.1;
+    soundSlider.maximum = 1.0;
+    soundSlider.value = 0.5;
+    soundSlider.height = "20px";
+    soundSlider.width = "200px";
+
+
+    let mp3_index = 0;
+    const mp3s = []
+
+   mp3s.push(new Howl({
+    src: ['./sounds/2Pac - Time Back.mp3'],
+    volume: 0.1,
+    bias: 0.5,
+    autoplay: false,
+    loop: false,
+    html5: true
+  }));
 
     playRadio.onPointerClickObservable.add(() => {
       if(playRadio.textBlock.text === "Play"){
@@ -121,11 +141,13 @@ try {
         level.loadedAnimationGroups.forEach((anim) => {
           anim.play();
         });
+        mp3s[mp3_index].play();
       }else{
         playRadio.textBlock.text = "Play";
         level.loadedAnimationGroups.forEach((anim) => {
           anim.stop();
         });
+        mp3s[mp3_index].stop();
       }
     });
 
@@ -137,6 +159,14 @@ try {
     forwardRadio.fontSizeInPixels = 12;
     forwardRadio.fontWeight = '300';
     forwardRadio.fontSize = "40px";
+    forwardRadio.onPointerClickObservable.add(() => {
+      mp3s[mp3_index].stop();
+      mp3_index++;
+      if(mp3_index >= mp3s.length){
+        mp3_index = 0;
+      }
+      mp3s[mp3_index].play();
+    });
 
     const backwardRadio = Button.CreateSimpleButton("backwardRadio", "<<");
     backwardRadio.paddingTop = "40px";
@@ -146,10 +176,24 @@ try {
     backwardRadio.fontWeight = '300';
     backwardRadio.fontSize = "40px";
 
+    backwardRadio.onPointerClickObservable.add(() => {
+      mp3s[mp3_index].stop();
+      mp3_index--;
+      if(mp3_index < 0){
+        mp3_index = mp3s.length - 1;
+      }
+      mp3s[mp3_index].play();
+    });
+
+    soundSlider.onValueChangedObservable.add(function(value) {
+      mp3s[mp3_index].volume(value);
+    });
+
     panelRadio.addControl(gridRadio);
     gridRadio.addControl(playRadio, 0, 0);
     gridRadio.addControl(backwardRadio, 0, 1);
     gridRadio.addControl(forwardRadio, 0, 2);
+    gridRadio.addControl(soundSlider, 1, 0);
 
 
     const assetsManager = new AssetsManager(scene);
@@ -779,7 +823,6 @@ try {
 
           if(floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed){
         
-            let distance = Vector3.Distance(currentPosition, floorPosition.position); 
             if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
               let targetPosition = new Vector3(0, currentPosition.y, 0);
               floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.1);
