@@ -110,7 +110,7 @@ try {
 
     const radioHeader = new TextBlock();
     radioHeader.text = "";
-    radioHeader.paddingTop = "40px";
+    radioHeader.paddingTop = "260px";
     radioHeader.paddingLeft = "40px";
     radioHeader.color = '#fff';
     radioHeader.fontSizeInPixels = 12;
@@ -161,7 +161,7 @@ try {
 
     playRadio.onPointerClickObservable.add(() => {
       if(playRadio.textBlock.text === "Play"){
-        playRadio.textBlock.text = "Pause";
+        playRadio.textBlock.text = "Stop";
         level.loadedAnimationGroups.forEach((anim) => {
           anim.play();
         });
