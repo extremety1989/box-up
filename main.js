@@ -5,6 +5,7 @@ import {
   HemisphericLight,
   Scene,
   Vector3,
+  Scalar,
   Quaternion,
   StandardMaterial,
   Color3,
@@ -14,10 +15,9 @@ import {
   WebXRControllerComponent,
   SceneLoader,
   ShadowGenerator,
+  AssetsManager,
   AxesViewer,
-  Plane,
   Engine,
-  Mesh,
 } from '@babylonjs/core';
 
 import "@babylonjs/loaders/glTF";
@@ -43,18 +43,6 @@ try {
       });
     }
   }
-
-  const scenes = [
-    {
-      root: '',
-      file: '',
-    },
-    {
-      root: '/box-up/models/',
-      file: 'gym.glb',
-    }
-  ];
-
 
 
 
@@ -98,76 +86,75 @@ try {
 
     const advancedTextureRadio = AdvancedDynamicTexture.CreateFullscreenUI("RADIO_UI");
     advancedTextureRadio.idealWidth = 600;
-    
-    const rect1 = new Rectangle();
 
-    rect1.width = 0.2;
-    rect1.height = "40px";
-    rect1.cornerRadius = 20;
-    rect1.color = "#fff";
-    rect1.thickness = 4;
-    rect1.background = "black";
-    rect1.alpha = 0.8;
-    advancedTextureRadio.addControl(rect1);
+
+    const radioPlane = MeshBuilder.CreatePlane("radioPlane", { size: 1 }, scene);
+    radioPlane.isVisible = false;
  
-    rect1.linkOffsetY = -100;
+    const advancedTextureRadio2 = AdvancedDynamicTexture.CreateForMesh(
+      radioPlane
+    );
 
-    const RadioLabel = new TextBlock();
-    RadioLabel.text = "...";
-    rect1.addControl(RadioLabel);
+    const panelRadio = new StackPanel("panelRadio");
+    panelRadio.background = "black";
+    panelRadio.alpha = 0.8;
+    advancedTextureRadio2.addControl(panelRadio);
 
-    
+    const gridRadio = new Grid("Grid");
+    gridRadio.height = "200px"
+    gridRadio.addRowDefinition(100, true);
+    gridRadio.addColumnDefinition(500, true)
+    gridRadio.addColumnDefinition(500, true)
+    gridRadio.addColumnDefinition(500, true)
+    gridRadio.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER
 
+    const playRadio = Button.CreateSimpleButton("playRadio", ">");
+    playRadio.paddingTop = "40px";
+    playRadio.paddingLeft = "40px";
+    playRadio.color = '#fff';
+    playRadio.fontSizeInPixels = 12;
+    playRadio.fontWeight = '300';
+    playRadio.fontSize = "40px";
 
-    const line = new Line();
-    line.lineWidth = 4;
-    line.color = "#fff";
-    line.y2 = 20;
-    line.linkOffsetZ += 1;
-    line.linkOffsetY = -20;
-    advancedTextureRadio.addControl(line);
+    const stopRadio = Button.CreateSimpleButton("stopRadio", "[]");
+    stopRadio.paddingTop = "40px";
+    stopRadio.paddingLeft = "40px";
+    stopRadio.color = '#fff';
+    stopRadio.fontSizeInPixels = 12;
+    stopRadio.fontWeight = '300';
+    stopRadio.fontSize = "40px";
+    panelRadio.addControl(gridRadio);
+    gridRadio.addControl(playRadio, 0, 0);
+    gridRadio.addControl(stopRadio, 0, 1);
 
+    const assetsManager = new AssetsManager(scene);
+    const level = assetsManager.addMeshTask("Gym", "", "/box-up/models/", "gym.glb");
 
-    line.connectedControl = rect1;
-    for (let i = 0; i < scenes.length; i++) {
-      if (scenes[i].file === '') continue;
-      const assets = await loadPromise(scenes[i].root, scenes[i].file, scene);
-
-      assets.meshes.forEach((mesh) => {
-        mesh.computeWorldMatrix(true);
-        if(mesh.name === "RadioModel") {
-          rect1.linkWithMesh(mesh);  
-          line.linkWithMesh(mesh); 
-        }
+    level.onSuccess = function (task) {
+      task.loadedAnimationGroups.forEach((anim) => {
+        anim.stop();
       });
-      if (assets.lights.length == 0) {
-        const light = new HemisphericLight(
-          'light',
-          new Vector3(-0.5, -1, -0.25),
-          scene
-        );
+    };
 
-        light.diffuse = Color3.FromHexString('#ffffff');
-        light.groundColor = Color3.FromHexString('#bbbbff');
-        light.intensity = 0.7;
+    assetsManager.onProgress = function (remainingCount, totalCount, lastFinishedTask) {
+      engine.loadingUIText = "We are loading the scene. " + remainingCount + " out of " + totalCount + " items still need to be loaded.";
+    };
+    const light = new HemisphericLight(
+      'light',
+      new Vector3(-0.5, -1, -0.25),
+      scene
+    );
 
+    light.diffuse = Color3.FromHexString('#ffffff');
+    light.groundColor = Color3.FromHexString('#bbbbff');
+    light.intensity = 0.7;
 
-        scene.removeLight(light);
-        assets.lights.push(light);
-        const dirLight = new DirectionalLight(
-          'light',
-          new Vector3(0, -1, -0.5),
-          scene
-        );
-        dirLight.position = new Vector3(0, 5, -5);
-        scene.removeLight(dirLight);
-        assets.lights.push(dirLight);
-      }
-      assetContainers.push(assets);
-    }
-
-    assetContainers[currentSceneIndex].addAllToScene();
-
+    const dirLight = new DirectionalLight(
+      'light',
+      new Vector3(0, -1, -0.5),
+      scene
+    );
+    dirLight.position = new Vector3(0, 5, -5);
 
     const xr = await scene.createDefaultXRExperienceAsync({
       uiOptions: {
@@ -186,12 +173,6 @@ try {
     });
 
     let pos = new Vector3(0, 0, 0);
-
-    function changeMap() {
-      assetContainers[currentSceneIndex].removeAllFromScene();
-      currentSceneIndex = ++currentSceneIndex % assetContainers.length;
-      assetContainers[currentSceneIndex].addAllToScene();
-    }
 
     const destroyedTarget = new Howl({
       src: ['./sounds/break_1.mp3']
@@ -338,8 +319,6 @@ try {
     button_5.fontSize = "40px";
 
 
-
-
     panel.addControl(grid);
     grid.addControl(button_1, 0, 0);
     grid.addControl(button_2, 1, 0);
@@ -405,18 +384,28 @@ try {
     });
     let localAxes = new AxesViewer(scene, 1);
     const floorPosition = MeshBuilder.CreateGround("floorPlane", {width: 2, height: 2}, scene);
-    floorPosition.position.y = xr.baseExperience.camera.position.y + 1.5;
+    floorPosition.position.y = xr.baseExperience.camera.position.y + 0.5;
     localAxes.xAxis.parent = floorPosition;
     localAxes.yAxis.parent = floorPosition;
     localAxes.zAxis.parent = floorPosition;	
     floorPosition.isVisible = false;
     button_5.onPointerClickObservable.add(() => {
       if(!floorPosition.isVisible && paused){
-        plane.isVisible = false;
-        floorPosition.isVisible = true;
+
       }
     });
 
+    button_5.onPointerDownObservable.add(() => {
+      if(!floorPosition.isVisible && paused){
+        plane.isVisible = false;
+        floorPosition.isVisible = true;
+        level.loadedMeshes.forEach((mesh) => {
+          mesh.isVisible = false;
+        });
+      }
+    });
+
+  
 
     const panel2 = new StackPanel("panel2");
     advancedTexture2.addControl(panel2);
@@ -637,34 +626,6 @@ try {
       }
     });
 
-    scene.meshes.forEach((mesh) => {
-      if (mesh.name === "Radio") {
-
-      }
-    });
-
-
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "p") {
-        if (paused) {
-          if (interval) {
-            plane.isVisible = true;
-            if (plane2.isVisible) plane2.isVisible = false;
-            center.text = "";
-            clearInterval(interval);
-            interval = null;
-            offOnGloves(true, false);
-          } else {
-            offOnGloves(false, true);
-            getTimerLeft(1);
-          }
-
-        } else {
-          openMenu();
-        }
-      }
-    });
-
     let target;
     let leftController;
     let rightController;
@@ -675,9 +636,6 @@ try {
 
           const ids = motionController.getComponentIds();
           const trigger = motionController.getComponent(ids[0]);
-          const squeeze = motionController.getComponent(ids[1]);
-          const a_or_x_Button = motionController.getComponent(ids[3]);
-          const b_or_y_Button = motionController.getComponent(ids[4]);
           const thumb_stick = motionController.getComponent(ids[2]);
 
           thumb_stick.onButtonStateChangedObservable.add(() => {
@@ -703,23 +661,6 @@ try {
               }
             }
           });
-
-          b_or_y_Button.onButtonStateChangedObservable.add(() => {
-            if (b_or_y_Button.pressed && paused && !plane.isVisible && floorPosition.isVisible) {
-            
-              info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
-              localStorage.setItem('info', JSON.stringify(info));
-              assetContainers[currentSceneIndex].meshes.forEach((mesh) => {
-                if (mesh.name === "__root__") {
-                  mesh.position.y = info.floorPosition;
-                }
-              });
-              plane.isVisible = true;
-              floorPosition.parent = null;
-              floorPosition.isVisible = false;
-            }
-          });
-
           
           trigger.onButtonStateChangedObservable.add(() => {
 
@@ -731,15 +672,15 @@ try {
               }
               if(target && target.name === "floorPlane" && floorPosition.isVisible && 
               target.parent === null && !plane.isVisible){ 
-              
                 target.isPressed = true;
               }
               else if (target && target.name === "plane" && target.parent === null && !floorPosition.isVisible) {
                 target.setParent(motionController.rootMesh);
               }
-            } else if (paused && target) {
+            } else if (paused) {
 
-            
+              if(target){
+                    
               if (target.name === "Circle" && !floorPosition.isVisible) {
                 xr.baseExperience.camera.position.x = 0;
                 xr.baseExperience.camera.position.z = 0;
@@ -753,10 +694,24 @@ try {
               else if (target.name === "plane") {
                 target.setParent(null);
               }
-              if(floorPosition.isVisible){
-                floorPosition.isPressed = false;
-              }
               target = null;
+              }
+
+              if(floorPosition.isVisible && !plane.isVisible){ 
+              
+                floorPosition.isPressed = false;
+                localStorage.setItem('info', JSON.stringify(info));
+
+                level.loadedMeshes.forEach((mesh) => {
+                  mesh.isVisible = true;
+                  if (mesh.name === "__root__") {
+                    mesh.position.y = info.floorPosition;
+                  }
+                });
+                plane.isVisible = true;
+                floorPosition.parent = null;
+                floorPosition.isVisible = false;
+              }
             }
           });
 
@@ -790,87 +745,76 @@ try {
     let rightPreviousPosition = null;
     let rightPreviousTime = null;
 
-    engine.runRenderLoop(() => {
-      scene.render();
-
-
-
-      if (leftController) {
-        const currentPosition = leftController.grip.position.clone();
-
-        if(floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed){
-
-          let distance = Vector3.Distance(currentPosition, floorPosition.position);
-          if (distance <= 0.4) {
-            if(floorPosition.parent === null){
-              floorPosition.position.y = currentPosition.y - 0.05;
-              floorPosition.position.x = 0;
-              floorPosition.position.z = 0;
-            }
-          }
-        }
-
+    assetsManager.onFinish = function (tasks) {
+      engine.runRenderLoop(() => {
+        scene.render();
+    
         const currentTime = performance.now();
-        if (leftPreviousPosition && leftPreviousTime) {
-          const deltaTime = (currentTime - leftPreviousTime) / 1000;
-          if (deltaTime > 0) {
-            const velocity = currentPosition.subtract(leftPreviousPosition).scale(1 / deltaTime);
-            if (velocity.length() > 0.1) {
-              left.velocity = velocity;
+        const delta = engine.getDeltaTime() / 1000;
+
+        if (leftController) {
+          const currentPosition = leftController.grip.position.clone();  
+          if (leftPreviousPosition && leftPreviousTime) {
+            const deltaTime = (currentTime - leftPreviousTime) / 1000;
+            if (deltaTime > 0) {
+              const velocity = currentPosition.subtract(leftPreviousPosition).scale(1 / deltaTime);
+              if (velocity.length() > 0.1) {
+                left.velocity = velocity;
+              }
             }
           }
+          leftPreviousPosition = currentPosition;
+          leftPreviousTime = currentTime;
         }
-        leftPreviousPosition = currentPosition;
-        leftPreviousTime = currentTime;
-      }
-
-      if (rightController) {
-        const currentPosition = rightController.grip.position.clone();
-
-        if(floorPosition.isVisible && !plane.isVisible){
-
-          let distance = Vector3.Distance(currentPosition, floorPosition.position);
-          if (distance <= 0.3 && floorPosition.isPressed) {
-            if(floorPosition.parent === null){
-              floorPosition.position.y = currentPosition.y;
-              floorPosition.position.x = 0;
-              floorPosition.position.z = 0;
+  
+        if (rightController) {
+          const currentPosition = rightController.grip.position.clone();
+          if (rightPreviousPosition && rightPreviousTime) {
+            const deltaTime = (currentTime - rightPreviousTime) / 1000;
+            if (deltaTime > 0) {
+              const velocity = currentPosition.subtract(rightPreviousPosition).scale(1 / deltaTime);
+              if (velocity.length() > 0.1) {
+                right.velocity = velocity;
+              }
             }
           }
-        }
 
-        const currentTime = performance.now();
 
-        if (rightPreviousPosition && rightPreviousTime) {
-          const deltaTime = (currentTime - rightPreviousTime) / 1000;
-          if (deltaTime > 0) {
-            const velocity = currentPosition.subtract(rightPreviousPosition).scale(1 / deltaTime);
-            if (velocity.length() > 0.1) {
-              right.velocity = velocity;
+          if(floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed){
+        
+            let distance = Vector3.Distance(currentPosition, floorPosition.position); 
+            if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
+              let targetPosition = new Vector3(0, currentPosition.y, 0);
+              floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.1);
+              floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.1);
+              floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.1);
+              info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
             }
-          }
+          }  
+
+
+          rightPreviousPosition = currentPosition;
+          rightPreviousTime = currentTime;
         }
-        rightPreviousPosition = currentPosition;
-        rightPreviousTime = currentTime;
-      }
+  
 
-
-      const delta = engine.getDeltaTime() / 1000;
-      if (targets.length > 0 && !paused) {
-        targets.forEach((target) => {
-          if (target.position.z < -1) {
+        if (targets.length > 0 && !paused) {
+          targets.forEach((target) => {
+            if (target.position.z < -1) {
+              target.dispose();
+              targets.splice(targets.indexOf(target), 1);
+            }
+            target.position.z -= target.speed * delta;
+          });
+        } else if (targets.length > 0 && paused) {
+          targets.forEach((target) => {
             target.dispose();
             targets.splice(targets.indexOf(target), 1);
-          }
-          target.position.z -= target.speed * delta;
-        });
-      } else if (targets.length > 0 && paused) {
-        targets.forEach((target) => {
-          target.dispose();
-          targets.splice(targets.indexOf(target), 1);
-        });
-      }
-    });
+          });
+        }
+      });
+    };
+    assetsManager.load();
   }
 
   run()
