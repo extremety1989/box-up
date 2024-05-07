@@ -101,9 +101,9 @@ try {
     const gridRadio = new Grid("Grid");
     gridRadio.height = "256px"
     gridRadio.addRowDefinition(200, true);
-    gridRadio.addColumnDefinition(256, true)
-    gridRadio.addColumnDefinition(256, true)
-    gridRadio.addColumnDefinition(256, true)
+    gridRadio.addColumnDefinition(320, true)
+    gridRadio.addColumnDefinition(320, true)
+    gridRadio.addColumnDefinition(320, true)
     gridRadio.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER
 
     const playRadio = Button.CreateSimpleButton("playRadio", "Play");
@@ -116,7 +116,17 @@ try {
 
 
     playRadio.onPointerClickObservable.add(() => {
-      playRadio.textBlock.text = "Pause";
+      if(playRadio.textBlock.text === "Play"){
+        playRadio.textBlock.text = "Pause";
+        level.loadedAnimationGroups.forEach((anim) => {
+          anim.play();
+        });
+      }else{
+        playRadio.textBlock.text = "Play";
+        level.loadedAnimationGroups.forEach((anim) => {
+          anim.stop();
+        });
+      }
     });
 
 
@@ -400,11 +410,6 @@ try {
    
     const floorPosition = MeshBuilder.CreateGround("floorPlane", {width: 2, height: 2}, scene);
     floorPosition.isVisible = false;
-    button_5.onPointerClickObservable.add(() => {
-      if(!floorPosition.isVisible && paused){
-
-      }
-    });
 
     button_5.onPointerDownObservable.add(() => {
       if(!floorPosition.isVisible && paused){
@@ -756,10 +761,11 @@ try {
       engine.runRenderLoop(() => {
         scene.render();
     
-        const currentTime = performance.now();
+    
         const delta = engine.getDeltaTime() / 1000;
 
         if (leftController) {
+          const currentTime = performance.now();
           const currentPosition = leftController.grip.position.clone();  
           if (leftPreviousPosition && leftPreviousTime) {
             const deltaTime = (currentTime - leftPreviousTime) / 1000;
@@ -770,11 +776,25 @@ try {
               }
             }
           }
+
+          if(floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed){
+        
+            let distance = Vector3.Distance(currentPosition, floorPosition.position); 
+            if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
+              let targetPosition = new Vector3(0, currentPosition.y, 0);
+              floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.1);
+              floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.1);
+              floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.1);
+              info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
+            }
+          }  
+
           leftPreviousPosition = currentPosition;
           leftPreviousTime = currentTime;
         }
   
         if (rightController) {
+          const currentTime = performance.now();
           const currentPosition = rightController.grip.position.clone();
           if (rightPreviousPosition && rightPreviousTime) {
             const deltaTime = (currentTime - rightPreviousTime) / 1000;
