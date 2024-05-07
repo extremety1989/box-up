@@ -80,15 +80,14 @@ try {
     ];
 
 
-    const assetContainers = [];
-    let currentSceneIndex = 0;
-
     const advancedTextureRadio = AdvancedDynamicTexture.CreateFullscreenUI("RADIO_UI");
     advancedTextureRadio.idealWidth = 600;
 
 
-    const radioPlane = MeshBuilder.CreatePlane("radioPlane", { size: 1 }, scene);
-    radioPlane.isVisible = false;
+    const radioPlane = MeshBuilder.CreatePlane("radioPlane", { size: 0.5 }, scene);
+    radioPlane.isVisible = true;
+    radioPlane.position = new Vector3(1.5, 1.5, -1);
+    radioPlane.rotation = new Vector3(0, Math.PI / 2, 0);
  
     const advancedTextureRadio2 = AdvancedDynamicTexture.CreateForMesh(
       radioPlane
@@ -100,14 +99,14 @@ try {
     advancedTextureRadio2.addControl(panelRadio);
 
     const gridRadio = new Grid("Grid");
-    gridRadio.height = "200px"
-    gridRadio.addRowDefinition(100, true);
-    gridRadio.addColumnDefinition(500, true)
-    gridRadio.addColumnDefinition(500, true)
-    gridRadio.addColumnDefinition(500, true)
+    gridRadio.height = "256px"
+    gridRadio.addRowDefinition(200, true);
+    gridRadio.addColumnDefinition(256, true)
+    gridRadio.addColumnDefinition(256, true)
+    gridRadio.addColumnDefinition(256, true)
     gridRadio.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER
 
-    const playRadio = Button.CreateSimpleButton("playRadio", ">");
+    const playRadio = Button.CreateSimpleButton("playRadio", "Play");
     playRadio.paddingTop = "40px";
     playRadio.paddingLeft = "40px";
     playRadio.color = '#fff';
@@ -115,16 +114,33 @@ try {
     playRadio.fontWeight = '300';
     playRadio.fontSize = "40px";
 
-    const stopRadio = Button.CreateSimpleButton("stopRadio", "[]");
-    stopRadio.paddingTop = "40px";
-    stopRadio.paddingLeft = "40px";
-    stopRadio.color = '#fff';
-    stopRadio.fontSizeInPixels = 12;
-    stopRadio.fontWeight = '300';
-    stopRadio.fontSize = "40px";
+
+    playRadio.onPointerClickObservable.add(() => {
+      playRadio.textBlock.text = "Pause";
+    });
+
+
+    const forwardRadio = Button.CreateSimpleButton("forwardRadio", ">>");
+    forwardRadio.paddingTop = "40px";
+    forwardRadio.paddingLeft = "40px";
+    forwardRadio.color = '#fff';
+    forwardRadio.fontSizeInPixels = 12;
+    forwardRadio.fontWeight = '300';
+    forwardRadio.fontSize = "40px";
+
+    const backwardRadio = Button.CreateSimpleButton("backwardRadio", "<<");
+    backwardRadio.paddingTop = "40px";
+    backwardRadio.paddingLeft = "40px";
+    backwardRadio.color = '#fff';
+    backwardRadio.fontSizeInPixels = 12;
+    backwardRadio.fontWeight = '300';
+    backwardRadio.fontSize = "40px";
+
     panelRadio.addControl(gridRadio);
     gridRadio.addControl(playRadio, 0, 0);
-    gridRadio.addControl(stopRadio, 0, 1);
+    gridRadio.addControl(backwardRadio, 0, 1);
+    gridRadio.addControl(forwardRadio, 0, 2);
+
 
     const assetsManager = new AssetsManager(scene);
     const level = assetsManager.addMeshTask("Gym", "", "/box-up/models/", "gym.glb");
