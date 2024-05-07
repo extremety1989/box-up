@@ -16,6 +16,7 @@ import {
   SceneLoader,
   ShadowGenerator,
   AssetsManager,
+
   Engine,
 } from '@babylonjs/core';
 
@@ -24,7 +25,7 @@ import '@babylonjs/core/Materials/Node/Blocks'
 
 
 import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock'
-import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control, Line, Rectangle } from '@babylonjs/gui'
+import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control, Slider } from '@babylonjs/gui'
 
 
 
@@ -84,7 +85,7 @@ try {
     advancedTextureRadio.idealWidth = 600;
 
 
-    const radioPlane = MeshBuilder.CreatePlane("radioPlane", { size: 0.5 }, scene);
+    const radioPlane = MeshBuilder.CreatePlane("radioPlane", { size: 1.0 }, scene);
     radioPlane.isVisible = true;
     radioPlane.position = new Vector3(2.5, 1.5, 0);
     radioPlane.rotation = new Vector3(0, Math.PI / 2, 0);
@@ -99,13 +100,22 @@ try {
     advancedTextureRadio2.addControl(panelRadio);
 
     const gridRadio = new Grid("Grid");
-    gridRadio.height = "256px"
+    gridRadio.height = "600px"
     gridRadio.addRowDefinition(200, true);
     gridRadio.addRowDefinition(200, true);
-    gridRadio.addColumnDefinition(320, true)
-    gridRadio.addColumnDefinition(320, true)
-    gridRadio.addColumnDefinition(320, true)
+    gridRadio.addColumnDefinition(300, true)
+    gridRadio.addColumnDefinition(300, true)
+    gridRadio.addColumnDefinition(300, true)
     gridRadio.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER
+
+    const radioHeader = new TextBlock();
+    radioHeader.text = "";
+    radioHeader.paddingTop = "40px";
+    radioHeader.paddingLeft = "40px";
+    radioHeader.color = '#fff';
+    radioHeader.fontSizeInPixels = 12;
+    radioHeader.fontWeight = '300';
+    radioHeader.fontSize = "100px";
 
     const playRadio = Button.CreateSimpleButton("playRadio", "Play");
     playRadio.paddingTop = "40px";
@@ -113,14 +123,19 @@ try {
     playRadio.color = '#fff';
     playRadio.fontSizeInPixels = 12;
     playRadio.fontWeight = '300';
-    playRadio.fontSize = "40px";
+    playRadio.fontSize = "80px";
 
     const soundSlider = new Slider();
+    soundSlider.paddingLeft = "40px";
     soundSlider.minimum = 0.1;
     soundSlider.maximum = 1.0;
     soundSlider.value = 0.5;
+    soundSlider.color = '#fff';
+    soundSlider.fontSizeInPixels = 12;
+    soundSlider.fontWeight = '300';
+    soundSlider.fontSize = "50px";
     soundSlider.height = "20px";
-    soundSlider.width = "200px";
+    soundSlider.width = "640px";
 
 
     let mp3_index = 0;
@@ -131,7 +146,16 @@ try {
     volume: 0.1,
     bias: 0.5,
     autoplay: false,
-    loop: false,
+    loop: true,
+    html5: true
+  }));
+  
+  mp3s.push(new Howl({
+    src: ['./sounds/a-ha - Take On Me.mp3'],
+    volume: 0.1,
+    bias: 0.5,
+    autoplay: false,
+    loop: true,
     html5: true
   }));
 
@@ -141,12 +165,14 @@ try {
         level.loadedAnimationGroups.forEach((anim) => {
           anim.play();
         });
+        radioHeader.text = `${mp3s[mp3_index]._src.replace('./sounds/', '').replace('.mp3', '')}`;
         mp3s[mp3_index].play();
       }else{
         playRadio.textBlock.text = "Play";
         level.loadedAnimationGroups.forEach((anim) => {
           anim.stop();
         });
+        radioHeader.text = ""
         mp3s[mp3_index].stop();
       }
     });
@@ -158,13 +184,14 @@ try {
     forwardRadio.color = '#fff';
     forwardRadio.fontSizeInPixels = 12;
     forwardRadio.fontWeight = '300';
-    forwardRadio.fontSize = "40px";
+    forwardRadio.fontSize = "100px";
     forwardRadio.onPointerClickObservable.add(() => {
       mp3s[mp3_index].stop();
       mp3_index++;
       if(mp3_index >= mp3s.length){
         mp3_index = 0;
       }
+      radioHeader.text = `${mp3s[mp3_index]._src.replace('./sounds/', '').replace('.mp3', '')}`;
       mp3s[mp3_index].play();
     });
 
@@ -174,7 +201,7 @@ try {
     backwardRadio.color = '#fff';
     backwardRadio.fontSizeInPixels = 12;
     backwardRadio.fontWeight = '300';
-    backwardRadio.fontSize = "40px";
+    backwardRadio.fontSize = "100px";
 
     backwardRadio.onPointerClickObservable.add(() => {
       mp3s[mp3_index].stop();
@@ -182,6 +209,7 @@ try {
       if(mp3_index < 0){
         mp3_index = mp3s.length - 1;
       }
+      radioHeader.text = `${mp3s[mp3_index]._src.replace('./sounds/', '').replace('.mp3', '')}`;
       mp3s[mp3_index].play();
     });
 
@@ -189,11 +217,12 @@ try {
       mp3s[mp3_index].volume(value);
     });
 
+    panelRadio.addControl(radioHeader);
     panelRadio.addControl(gridRadio);
     gridRadio.addControl(playRadio, 0, 0);
     gridRadio.addControl(backwardRadio, 0, 1);
     gridRadio.addControl(forwardRadio, 0, 2);
-    gridRadio.addControl(soundSlider, 1, 0);
+    gridRadio.addControl(soundSlider, 1, 1);
 
 
     const assetsManager = new AssetsManager(scene);
