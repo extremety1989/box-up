@@ -163,14 +163,18 @@ try {
       if(playRadio.textBlock.text === "Play"){
         playRadio.textBlock.text = "Stop";
         level.loadedAnimationGroups.forEach((anim) => {
-          anim.play();
+          if(anim.name === "play"){
+            anim.play();
+          }
         });
         radioHeader.text = `${mp3s[mp3_index]._src.replace('./sounds/', '').replace('.mp3', '')}`;
         mp3s[mp3_index].play();
       }else{
         playRadio.textBlock.text = "Play";
         level.loadedAnimationGroups.forEach((anim) => {
-          anim.stop();
+          if(anim.name === "stop"){
+            anim.stop();
+          }
         });
         radioHeader.text = ""
         mp3s[mp3_index].stop();
@@ -192,6 +196,11 @@ try {
         mp3_index = 0;
       }
       radioHeader.text = `${mp3s[mp3_index]._src.replace('./sounds/', '').replace('.mp3', '')}`;
+      level.loadedAnimationGroups.forEach((anim) => {
+        if(anim.name === "play"){
+          anim.play();
+        }
+      });
       mp3s[mp3_index].play();
     });
 
@@ -210,6 +219,11 @@ try {
         mp3_index = mp3s.length - 1;
       }
       radioHeader.text = `${mp3s[mp3_index]._src.replace('./sounds/', '').replace('.mp3', '')}`;
+      level.loadedAnimationGroups.forEach((anim) => {
+        if(anim.name === "play"){
+          anim.play();
+        }
+      });
       mp3s[mp3_index].play();
     });
 
@@ -230,7 +244,9 @@ try {
 
     level.onSuccess = function (task) {
       task.loadedAnimationGroups.forEach((anim) => {
-        anim.stop();
+        if(anim.name === "play"){
+          anim.play();
+        }
       });
     };
 
