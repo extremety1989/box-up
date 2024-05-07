@@ -16,7 +16,6 @@ import {
   SceneLoader,
   ShadowGenerator,
   AssetsManager,
-  AxesViewer,
   Engine,
 } from '@babylonjs/core';
 
@@ -382,12 +381,8 @@ try {
     button_4.onPointerClickObservable.add(() => {
   
     });
-    let localAxes = new AxesViewer(scene, 1);
+   
     const floorPosition = MeshBuilder.CreateGround("floorPlane", {width: 2, height: 2}, scene);
-    floorPosition.position.y = xr.baseExperience.camera.position.y + 0.5;
-    localAxes.xAxis.parent = floorPosition;
-    localAxes.yAxis.parent = floorPosition;
-    localAxes.zAxis.parent = floorPosition;	
     floorPosition.isVisible = false;
     button_5.onPointerClickObservable.add(() => {
       if(!floorPosition.isVisible && paused){
@@ -398,7 +393,10 @@ try {
     button_5.onPointerDownObservable.add(() => {
       if(!floorPosition.isVisible && paused){
         plane.isVisible = false;
+        const fcp = xr.baseExperience.camera.position
+        floorPosition.position.y = fcp.y - 0.5;
         floorPosition.isVisible = true;
+        floorPosition.isPressed = true;
         level.loadedMeshes.forEach((mesh) => {
           mesh.isVisible = false;
         });
@@ -415,9 +413,6 @@ try {
     center.color = '#fff';
     center.fontSize = "120px";
     panel2.addControl(center);
-
-
-
 
 
     let globalSpeed = 1;
@@ -670,11 +665,7 @@ try {
               if (xr.pointerSelection.getMeshUnderPointer) {
                 target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
               }
-              if(target && target.name === "floorPlane" && floorPosition.isVisible && 
-              target.parent === null && !plane.isVisible){ 
-                target.isPressed = true;
-              }
-              else if (target && target.name === "plane" && target.parent === null && !floorPosition.isVisible) {
+              if (target && target.name === "plane" && target.parent === null && !floorPosition.isVisible) {
                 target.setParent(motionController.rootMesh);
               }
             } else if (paused) {
