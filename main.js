@@ -1,5 +1,4 @@
 import './style.css';
-import { Howl, Howler } from 'howler';
 
 import {
   HemisphericLight,
@@ -16,7 +15,7 @@ import {
   SceneLoader,
   ShadowGenerator,
   AssetsManager,
-
+  Sound,
   Engine,
 } from '@babylonjs/core';
 
@@ -34,17 +33,6 @@ import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control, Slider } fro
 const info = localStorage.getItem('info') ? JSON.parse(localStorage.getItem('info')) : {};
 
 try {
-  async function loadPromise(root, file, scene) {
-    if (file !== '') {
-      return new Promise((res, rej) => {
-        SceneLoader.LoadAssetContainer(root, file, scene, function (container) {
-          res(container);
-        });
-      });
-    }
-  }
-
-
 
   async function run() {
     if (info.difficulty === undefined) {
@@ -141,24 +129,21 @@ try {
     let mp3_index = 0;
     const mp3s = []
 
-   mp3s.push(new Howl({
-    src: ['./sounds/2Pac - Time Back.mp3'],
+
+  mp3s.push(new Sound("2Pac - Time Back", "./sounds/2Pac - Time Back.mp3", scene, null, {
     volume: 0.1,
-    bias: 0.5,
+    loop: false,
     autoplay: false,
-    loop: true,
-    html5: true
   }));
   
-  mp3s.push(new Howl({
-    src: ['./sounds/a-ha - Take On Me.mp3'],
+
+  mp3s.push(new Sound("a-ha - Take On Me", "./sounds/a-ha - Take On Me.mp3", scene, null, {
     volume: 0.1,
-    bias: 0.5,
+    loop: false,
     autoplay: false,
-    loop: true,
-    html5: true
   }));
 
+ 
     playRadio.onPointerClickObservable.add(() => {
       if(playRadio.textBlock.text === "Play"){
         playRadio.textBlock.text = "Stop";
@@ -167,7 +152,7 @@ try {
             anim.play();
           }
         });
-        radioHeader.text = `${mp3s[mp3_index]._src.replace('./sounds/', '').replace('.mp3', '')}`;
+        radioHeader.text = `${mp3s[mp3_index].name}`;
         mp3s[mp3_index].play();
       }else{
         playRadio.textBlock.text = "Play";
@@ -195,7 +180,7 @@ try {
       if(mp3_index >= mp3s.length){
         mp3_index = 0;
       }
-      radioHeader.text = `${mp3s[mp3_index]._src.replace('./sounds/', '').replace('.mp3', '')}`;
+      radioHeader.text = `${mp3s[mp3_index].name}`;
       level.loadedAnimationGroups.forEach((anim) => {
         if(anim.name === "play"){
           anim.play();
@@ -218,7 +203,7 @@ try {
       if(mp3_index < 0){
         mp3_index = mp3s.length - 1;
       }
-      radioHeader.text = `${mp3s[mp3_index]._src.replace('./sounds/', '').replace('.mp3', '')}`;
+      radioHeader.text = `${mp3s[mp3_index].name}`;
       level.loadedAnimationGroups.forEach((anim) => {
         if(anim.name === "play"){
           anim.play();
@@ -247,6 +232,13 @@ try {
         if(anim.name === "play"){
           anim.play();
         }
+      });
+    };
+
+    const yellowSide = assetsManager.addMeshTask("yellow", "", "/box-up/models/", "yellow.glb");
+    yellowSide.onSuccess = function (task) {
+      task.loadedMeshes.forEach((mesh) => {
+        mesh.isVisible = false;
       });
     };
 
@@ -288,8 +280,9 @@ try {
 
     let pos = new Vector3(0, 0, 0);
 
-    const destroyedTarget = new Howl({
-      src: ['./sounds/break_1.mp3']
+    const destroyedTargetSound = new Sound("break", "./sounds/break_1.mp3", scene, null, {
+      loop: false,
+      autoplay: false,
     });
 
 
@@ -306,11 +299,12 @@ try {
     blackSide.material.diffuseColor = Color3.Black();
 
 
-    const yellowSide = MeshBuilder.CreateCylinder("yellow", { height: 0.05, diameter: 0.2 }, scene);
-    yellowSide.isVisible = false;
-    yellowSide.position.y = -0.028;
-    yellowSide.material = new StandardMaterial('blackMaterial', scene);
-    yellowSide.material.diffuseColor = Color3.Yellow();
+    // const yellowSide = MeshBuilder.CreateCylinder("yellow", { height: 0.05, diameter: 0.2 }, scene);
+    // yellowSide.isVisible = false;
+    // yellowSide.position.y = -0.028;
+    // yellowSide.material = new StandardMaterial('blackMaterial', scene);
+    // yellowSide.material.diffuseColor = Color3.Yellow();
+
 
     const blackTarget = MeshBuilder.CreateSphere(
       'black',
@@ -616,8 +610,8 @@ try {
 
     async function createYellowTarget() {
       return new Promise((res, rej) => {
-        const newTellowTarget = yellowSide.createInstance("yellow");
-        newTellowTarget.addChild(yellowTarget.createInstance("y"));
+        const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
+        newTellowTarget.addChild(yellowTarget);
         newTellowTarget.position.copyFrom(pos);
         newTellowTarget.position.y -= 0.2;
         newTellowTarget.position.z += 5;
@@ -708,7 +702,10 @@ try {
               if (left.velocity.length() > 0.9) {
                 comboCounter.text = (parseInt(comboCounter.text) + 1).toString();
               }
-              destroyedTarget.play();
+              destroyedTargetSound.play();
+              target.animationGroups.forEach((anim) => {
+                anim.play();
+              });
               target.dispose();
               targets.splice(targets.indexOf(target), 1);
             } else {
@@ -720,7 +717,7 @@ try {
               if (right.velocity.length() > 0.9) {
                 comboCounter.text = (parseInt(comboCounter.text) + 1).toString();
               }
-              destroyedTarget.play();
+              destroyedTargetSound.play();
               target.dispose();
               targets.splice(targets.indexOf(target), 1);
             } else {
