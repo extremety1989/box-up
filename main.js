@@ -424,7 +424,7 @@ try {
     button_4.fontWeight = '300';
     button_4.fontSize = "40px";
 
-    const button_5 = Button.CreateSimpleButton("SETFLOOR", "Set floor position");
+    const button_5 = Button.CreateSimpleButton("ADJUSTFLOOR", "Adjust floor position");
     button_5.paddingTop = "40px";
     button_5.paddingLeft = "40px";
     button_5.color = '#fff';
