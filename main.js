@@ -147,19 +147,15 @@ try {
     playRadio.onPointerClickObservable.add(() => {
       if(playRadio.textBlock.text === "Play"){
         playRadio.textBlock.text = "Stop";
-        level.loadedAnimationGroups.forEach((anim) => {
-          if(anim.name === "play"){
-            anim.play();
-          }
+        radioPlayer.loadedAnimationGroups.forEach((anim) => {
+          anim.play();
         });
         radioHeader.text = `${mp3s[mp3_index].name}`;
         mp3s[mp3_index].play();
       }else{
         playRadio.textBlock.text = "Play";
-        level.loadedAnimationGroups.forEach((anim) => {
-          if(anim.name === "stop"){
-            anim.stop();
-          }
+        radioPlayer.loadedAnimationGroups.forEach((anim) => {
+          anim.stop();
         });
         radioHeader.text = ""
         mp3s[mp3_index].stop();
@@ -175,16 +171,17 @@ try {
     forwardRadio.fontWeight = '300';
     forwardRadio.fontSize = "100px";
     forwardRadio.onPointerClickObservable.add(() => {
+      radioPlayer.loadedAnimationGroups.forEach((anim) => {
+        anim.stop();
+      });
       mp3s[mp3_index].stop();
       mp3_index++;
       if(mp3_index >= mp3s.length){
         mp3_index = 0;
       }
       radioHeader.text = `${mp3s[mp3_index].name}`;
-      level.loadedAnimationGroups.forEach((anim) => {
-        if(anim.name === "play"){
-          anim.play();
-        }
+      radioPlayer.loadedAnimationGroups.forEach((anim) => {
+        anim.play();
       });
       mp3s[mp3_index].play();
     });
@@ -198,16 +195,17 @@ try {
     backwardRadio.fontSize = "100px";
 
     backwardRadio.onPointerClickObservable.add(() => {
+      radioPlayer.loadedAnimationGroups.forEach((anim) => {
+        anim.stop();
+      });
       mp3s[mp3_index].stop();
       mp3_index--;
       if(mp3_index < 0){
         mp3_index = mp3s.length - 1;
       }
       radioHeader.text = `${mp3s[mp3_index].name}`;
-      level.loadedAnimationGroups.forEach((anim) => {
-        if(anim.name === "play"){
-          anim.play();
-        }
+      radioPlayer.loadedAnimationGroups.forEach((anim) => {
+        anim.stop();
       });
       mp3s[mp3_index].play();
     });
@@ -238,7 +236,12 @@ try {
     const radioPlayer = assetsManager.addMeshTask("radio", "", "/box-up/models/", "radio.glb");
     radioPlayer.onSuccess = function (task) {
       task.loadedMeshes.forEach((mesh) => {
-        mesh.isVisible = false;
+       console.log(mesh.position);
+      });
+      task.loadedAnimationGroups.forEach((anim) => {
+        if(anim.name === "play"){
+          anim.stop();
+        }
       });
     };
 
@@ -678,14 +681,10 @@ try {
 
     }, 1500);
 
-
-    // const {radio_meshes, radio_animationGroups} = await SceneLoader.ImportMeshAsync(null, "./models/", "radio.glb", scene);
-
-
     const leftCollision = MeshBuilder.CreateSphere("dummyCam", { diameter: 0.25 }, scene, true);
     leftCollision.isVisible = false;
     leftCollision.showBoundingBox = true;
-    const rightCollision = MeshBuilder.CreateSphere("dummyCam", { diameter: 0.25 }, scene, true);
+    const rightCollision = MeshBuilder.CreateSphere("dummyCam2", { diameter: 0.25 }, scene, true);
     rightCollision.showBoundingBox = true;
     rightCollision.isVisible = false;
 
