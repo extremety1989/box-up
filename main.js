@@ -235,12 +235,26 @@ try {
       });
     };
 
+    const radioPlayer = assetsManager.addMeshTask("radio", "", "/box-up/models/", "radio.glb");
+    radioPlayer.onSuccess = function (task) {
+      task.loadedMeshes.forEach((mesh) => {
+        mesh.isVisible = false;
+      });
+    };
+
     const yellowSide = assetsManager.addMeshTask("yellow", "", "/box-up/models/", "yellow.glb");
     yellowSide.onSuccess = function (task) {
       task.loadedMeshes.forEach((mesh) => {
         mesh.isVisible = false;
       });
     };
+
+    // const blackSide = assetsManager.addMeshTask("black", "", "/box-up/models/", "black.glb");
+    // blackSide.onSuccess = function (task) {
+    //   task.loadedMeshes.forEach((mesh) => {
+    //     mesh.isVisible = false;
+    //   });
+    // };
 
     assetsManager.onProgress = function (remainingCount, totalCount, lastFinishedTask) {
       engine.loadingUIText = "We are loading the scene. " + remainingCount + " out of " + totalCount + " items still need to be loaded.";
