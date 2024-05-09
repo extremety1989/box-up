@@ -794,7 +794,7 @@ try {
                   offOnGloves(true, false);
                 } else {
                   offOnGloves(false, true);
-                  getTimerLeft(10);
+                  getTimerLeft(3);
                 }
               } else {
                 openMenu();
