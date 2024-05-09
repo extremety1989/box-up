@@ -364,10 +364,16 @@ try {
     plane.rotation = new Vector3(0, Math.PI / 9, 0);
 
 
-    const advancedTextureComboCounter = AdvancedDynamicTexture.CreateFullscreenUI("COMBO_UI");
+    const ComboPlane = MeshBuilder.CreatePlane("ComboPlane", { size: 20 }, scene);
+    ComboPlane.position = new Vector3(0, 1.5, -1);
+    const advancedTextureComboCounter = AdvancedDynamicTexture.CreateForMesh(
+      ComboPlane
+    );
+    ComboPlane.position = new Vector3(0, 1.5, 10);
+
     const comboCounter = new TextBlock();
     comboCounter.isVisible = true;
-    comboCounter.text = "HEllo";
+    comboCounter.text = "COMBO \n0";
     comboCounter.width = "100px";
     comboCounter.height = "100px";
     comboCounter.color = "#fff";
@@ -375,8 +381,7 @@ try {
     comboCounter.background = "black";
     comboCounter.alpha = 0.8;
 
-    comboCounter.position = new Vector3(1, 1.5, 1);
-    comboCounter.rotation = new Vector3(0, Math.PI / 9, 0);
+
   
     advancedTextureComboCounter.addControl(comboCounter);
 
@@ -554,10 +559,10 @@ try {
 
     let interval = null;
 
-    function getTimerLeft(sec) {
+    function getTimer(sec) {
       if (paused) {
         plane.isVisible = false;
-        comboCounter.text = "0";
+        comboCounter.text = "COMBO \n0";
         if (interval) clearInterval(interval);
         interval = setInterval(() => {
           if (!plane2.isVisible) plane2.isVisible = true;
@@ -731,7 +736,7 @@ try {
           if (leftCollision.intersectsMesh(target, true)) {
             if (target.name === "yellow") {
               if (left.velocity.length() > 0.9) {
-                comboCounter.text = (parseInt(comboCounter.text) + 1).toString();
+                comboCounter.text = `COMBO\n${(parseInt(comboCounter.text) + 1).toString()}`;
               }
               destroyedTargetSound.play();
               if(target.animationGroups){
@@ -748,7 +753,7 @@ try {
           if (rightCollision.intersectsMesh(target, true)) {
             if (target.name === "black") {
               if (right.velocity.length() > 0.9) {
-                comboCounter.text = (parseInt(comboCounter.text) + 1).toString();
+                comboCounter.text = `COMBO\n${(parseInt(comboCounter.text) + 1).toString()}`;
               }
               destroyedTargetSound.play();
               if(target.animationGroups){
@@ -794,7 +799,7 @@ try {
                   offOnGloves(true, false);
                 } else {
                   offOnGloves(false, true);
-                  getTimerLeft(3);
+                  getTimer(3);
                 }
               } else {
                 openMenu();
@@ -857,8 +862,8 @@ try {
 
           if (motionController.handness === 'left' && motionController.handness === 'right') {
             comboCounter.isVisible = true;
-            plane2.position.z = xr.baseExperience.camera.position.z + 3;
-            plane2.position.y = xr.baseExperience.camera.position.y + 1.5;
+            plane2.position.z = -10;
+            plane2.position.y = info.floorPosition + 1.5;
           }
 
           if (motionController.handness === 'left') {
