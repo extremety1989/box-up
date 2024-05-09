@@ -381,6 +381,7 @@ try {
     advancedTextureComboCounter.addControl(comboCounter);
 
     const plane2 = MeshBuilder.CreatePlane("plane2", { size: 2 }, scene);
+    plane2.position = new Vector3(0, 1.5, 0);
     plane2.isVisible = false;
 
 
@@ -793,7 +794,7 @@ try {
                   offOnGloves(true, false);
                 } else {
                   offOnGloves(false, true);
-                  getTimerLeft(1);
+                  getTimerLeft(10);
                 }
               } else {
                 openMenu();
@@ -856,8 +857,8 @@ try {
 
           if (motionController.handness === 'left' && motionController.handness === 'right') {
             comboCounter.isVisible = true;
-            plane2.position.copyFrom(xr.baseExperience.camera.position);
-            plane2.position.y += 0.5;
+            plane2.position.z = xr.baseExperience.camera.position.z + 3;
+            plane2.position.y = xr.baseExperience.camera.position.y + 1.5;
           }
 
           if (motionController.handness === 'left') {
