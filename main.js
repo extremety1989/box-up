@@ -795,6 +795,9 @@ try {
                 target.setParent(motionController.rootMesh);
               }
             } else if (paused) {
+              if(plane.parent){
+                plane.setParent(null);
+              }
 
               if(target){
                     
@@ -803,14 +806,11 @@ try {
                 xr.baseExperience.camera.position.z = 0;
               }
 
-              else if (target.name.startsWith("Circle.00") && !floorPosition.isVisible) {
+             if (target.name.startsWith("Circle.00") && !floorPosition.isVisible) {
                 xr.baseExperience.camera.position.x = -target.position.x;
                 xr.baseExperience.camera.position.z = target.position.z;
               }
 
-              else if (target.name === "plane") {
-                target.setParent(null);
-              }
               target = null;
               }
 
