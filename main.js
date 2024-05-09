@@ -1,5 +1,7 @@
 import './style.css';
 
+import {Howl, Howler} from 'howler';
+
 import {
   HemisphericLight,
   Scene,
@@ -130,29 +132,27 @@ try {
     soundSlider.maximum = 1.0;
     soundSlider.value = 0.5;
     soundSlider.color = '#fff';
-    soundSlider.fontSizeInPixels = 12;
-    soundSlider.fontWeight = '300';
-    soundSlider.fontSize = "50px";
-    soundSlider.height = "20px";
-    soundSlider.width = "640px";
+    soundSlider.height = "120px";
 
 
     let mp3_index = 0;
     const mp3s = []
 
+mp3s.push(new Howl({
+  name: "2Pac - Time Back",
+  src: "./sounds/2Pac - Time Back.mp3",
+  autoplay: false,
+  loop: true,
+  volume: 0.5
+}));
 
-  mp3s.push(new Sound("2Pac - Time Back", "./sounds/2Pac - Time Back.mp3", scene, null, {
-    volume: 0.1,
-    loop: false,
-    autoplay: false,
-  }));
-  
-
-  mp3s.push(new Sound("a-ha - Take On Me", "./sounds/a-ha - Take On Me.mp3", scene, null, {
-    volume: 0.1,
-    loop: false,
-    autoplay: false,
-  }));
+mp3s.push(new Howl({
+  name: "a-ha - Take On Me",
+  src: "./sounds/a-ha - Take On Me.mp3",
+  autoplay: false,
+  loop: true,
+  volume: 0.5
+}));
 
  
     playRadio.onPointerClickObservable.add(() => {
@@ -237,6 +237,11 @@ try {
     const level = assetsManager.addMeshTask("Gym", "", "/box-up/models/", "gym.glb");
 
     level.onSuccess = function (task) {
+      task.loadedMeshes.forEach((mesh) => {
+         if(mesh.name === "Ground"){
+            shadowGenerator.addShadowCaster(mesh);
+         }
+      });
       task.loadedAnimationGroups.forEach((anim) => {
         if(anim.name === "play"){
           anim.play();
@@ -253,6 +258,12 @@ try {
       });
     };
 
+
+    const destroyedTargetSound = new Sound("break", "./sounds/break_1.mp3", scene, null, {
+      loop: false,
+      autoplay: false,
+    });
+
     const yellowSide = assetsManager.addMeshTask("yellow", "", "/box-up/models/", "yellow.glb");
     yellowSide.onSuccess = function (task) {
       task.loadedMeshes.forEach((mesh) => {
@@ -260,26 +271,41 @@ try {
       });
     };
 
+
+ 
     const yellowSideFracture = assetsManager.addMeshTask("yellow_fracture", "", "/box-up/models/", "yellow_fracture.glb");
     yellowSideFracture.onSuccess = function (task) {
       task.loadedMeshes.forEach((mesh) => {
         mesh.isVisible = false;
       });
-    };
 
-    const blackSide = assetsManager.addMeshTask("black_fracture", "", "/box-up/models/", "black.glb");
+      task.loadedAnimationGroups.forEach((anim) => {
+        anim.stop();
+      });
+      
+    };
+    
+   
+
+    const blackSide = assetsManager.addMeshTask("black", "", "/box-up/models/", "black.glb");
     blackSide.onSuccess = function (task) {
       task.loadedMeshes.forEach((mesh) => {
         mesh.isVisible = false;
       });
     };
 
-    const blackSideFracture = assetsManager.addMeshTask("black", "", "/box-up/models/", "black_fracture.glb");
+    const blackSideFracture = assetsManager.addMeshTask("black_fracture", "", "/box-up/models/", "black_fracture.glb");
     blackSideFracture.onSuccess = function (task) {
       task.loadedMeshes.forEach((mesh) => {
         mesh.isVisible = false;
       });
+
+      task.loadedAnimationGroups.forEach((anim) => {
+        anim.stop();
+      });
+
     };
+   
 
 
     assetsManager.onProgress = function (remainingCount, totalCount, lastFinishedTask) {
@@ -325,12 +351,6 @@ try {
     });
 
     let pos = new Vector3(0, 0, 0);
-
-    const destroyedTargetSound = new Sound("break", "./sounds/break_1.mp3", scene, null, {
-      loop: false,
-      autoplay: false,
-    });
-
 
     const upper = MeshBuilder.CreateBox("upper", { width: 1.0, height: 0.5 }, scene);
     upper.material = new StandardMaterial('blackMaterial', scene);
@@ -387,6 +407,7 @@ try {
     ComboPlane.position = new Vector3(0, 1.5, 10);
 
     const comboCounter = new TextBlock();
+    comboCounter.value = 0;
     comboCounter.isVisible = true;
     comboCounter.text = "COMBO\n\n0";
     comboCounter.width = "100px";
@@ -572,14 +593,14 @@ try {
 
     let globalSpeed = 1;
 
-    let interval = null;
+    let timerInterval = null;
 
     function getTimer(sec) {
       if (paused) {
         plane.isVisible = false;
         comboCounter.text = "COMBO\n\n0";
-        if (interval) clearInterval(interval);
-        interval = setInterval(() => {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
           if (!plane2.isVisible) plane2.isVisible = true;
  
           center.text = sec.toString();
@@ -587,7 +608,7 @@ try {
             pos.copyFrom(xr.baseExperience.camera.position);
             center.text = "Go!";
             paused = false;
-            clearInterval(interval);
+            clearInterval(timerInterval);
             setTimeout(() => {
               if(info.difficulty === "Easy"){
                 globalSpeed = 2;
@@ -603,7 +624,7 @@ try {
           sec--;
         }, 1000);
       } else {
-        clearInterval(interval);
+        clearInterval(timerInterval);
       }
     }
 
@@ -626,9 +647,9 @@ try {
 
     function openMenu() {
       paused = true;
-      if (interval) {
-        clearInterval(interval);
-        interval = null;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
       }
       offOnGloves(true, false);
       plane.isVisible = true;
@@ -645,11 +666,11 @@ try {
     let targets = [];
 
 
-    async function createBlackTarget() {
-      return new Promise((res, rej) => {
+    function createBlackTarget() {
         // const newBlackTarget = blackTarget.createInstance("black");
         const newBlackTarget = blackSide.loadedMeshes[0].instantiateHierarchy();
-        newBlackTarget.setParent(blackSideFracture.loadedMeshes[0].instantiateHierarchy());
+        newBlackTarget.dts = destroyedTargetSound;
+        newBlackTarget.name = "black";
         newBlackTarget.position.copyFrom(pos);
         newBlackTarget.position.y -= 0.2;
         newBlackTarget.position.z += 5;
@@ -657,64 +678,40 @@ try {
         newBlackTarget.isVisible = true;
         newBlackTarget.rotation.x = Math.PI / 2;
         shadowGenerator.addShadowCaster(newBlackTarget);
-        res(newBlackTarget);
-      });
+        return newBlackTarget;
     }
 
-    async function createYellowTarget() {
-      return new Promise((res, rej) => {
-        const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
-        // const newTellowTarget = yellowTarget.createInstance("yellow");
-        newTellowTarget.setParent(yellowSideFracture.loadedMeshes[0].instantiateHierarchy());
-        newTellowTarget.position.copyFrom(pos);
-        newTellowTarget.position.y -= 0.2;
-        newTellowTarget.position.z += 5;
-        newTellowTarget.position.x -= 0.1;
-        newTellowTarget.isVisible = true;
-        newTellowTarget.rotation.x = Math.PI / 2;
-        newTellowTarget.rotation.z = -Math.PI / 4;
-        shadowGenerator.addShadowCaster(newTellowTarget);
-        res(newTellowTarget);
-      });
+    function createYellowTarget() {
+      const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
+      newTellowTarget.name = "yellow";
+
+      newTellowTarget.position.copyFrom(pos);
+      newTellowTarget.position.y -= 0.2;
+      newTellowTarget.position.z += 5;
+      newTellowTarget.position.x -= 0.1;
+      newTellowTarget.isVisible = true;
+      newTellowTarget.rotation.x = Math.PI / 2;
+      newTellowTarget.rotation.z = -Math.PI / 4;
+      newTellowTarget.dts = destroyedTargetSound;
+      shadowGenerator.addShadowCaster(newTellowTarget);
+      return newTellowTarget;
     }
 
-    async function createUpper() {
-      return new Promise((res, rej) => {
-        const newUpper = upper.createInstance("upper");
-        newUpper.position.copyFrom(pos);
-        newUpper.position.z += 5;
-        newUpper.isVisible = true;
-        res(newUpper);
-      });
+    function createUpper() {
+      const newUpper = upper.createInstance("upper");
+      newUpper.position.copyFrom(pos);
+      newUpper.position.z += 5;
+      newUpper.isVisible = true;
+      return newUpper;
     }
 
-    async function combo_1() {
-      const tb = await createBlackTarget();
-      const ty = await createYellowTarget();
-
-      // const tu = await createUpper();
-      // targets.push(tu);
-
-
-      ty.position.z += 5;
-      tb.speed = globalSpeed;
-      ty.speed = globalSpeed;
-
-      targets.push(tb);
-      targets.push(ty);
-    }
-
-    async function combo_5() {
+    function combo_1() {
 
     }
 
+    function combo_5() {
 
-
-    setInterval(async () => {
-      if (paused) return;
-      await combo_1();
-
-    }, 1500);
+    }
 
     const leftCollision = MeshBuilder.CreateSphere("dummyCam", { diameter: 0.25 }, scene, true);
     leftCollision.isVisible = false;
@@ -746,44 +743,61 @@ try {
 
 
     scene.registerBeforeRender(function () {
+  
       if (targets.length > 0) {
         targets.forEach((target) => {
-
           if (leftCollision.intersectsMesh(target, true)) {
             if (target.name === "yellow") {
-              target.isVisible = false;
+              target.speed = 0;
+
+              // const fracture = blackSideFracture.loadedMeshes[0].instantiateHierarchy();
+              // fracture.animations = blackSideFracture.loadedAnimationGroups;
+
+
               if (left.velocity.length() > 0.9) {
-                comboCounter.text = `COMBO\n\n${(parseInt(comboCounter.text) + 1).toString()}`;
+                comboCounter.text = `COMBO\n\n${(comboCounter.value += 1).toString()}`;
               }
-              destroyedTargetSound.play();
-              if(target.animationGroups){
-                target.animationGroups.forEach((anim) => {
-                  anim.play();
+              target.dts.play();
+              if(target.animations){
+                target.animations.forEach((anim) => {
+                  if(!anim.isPlaying){
+                    anim.play();
+                  }
+               
+    
                   anim.onAnimationEndObservable.addOnce(() => {
-                    target.dispose();
-                    targets.splice(targets.indexOf(target), 1);
+            
                   });
                 });
               }
-         
+              target.dispose();
               targets.splice(targets.indexOf(target), 1);
             }
           }
           if (rightCollision.intersectsMesh(target, true)) {
             if (target.name === "black") {
+              target.speed = 0;
               if (right.velocity.length() > 0.9) {
-                comboCounter.text = `COMBO\n\n${(parseInt(comboCounter.text) + 1).toString()}`;
+                comboCounter.text = `COMBO\n\n${(comboCounter.value += 1).toString()}`;
               }
-              destroyedTargetSound.play();
-              if(target.animationGroups){
-                target.animationGroups.forEach((anim) => {
-                  anim.play();
+              target.dts.play();
+              if(target.animations){
+                target.animations.forEach((anim) => {
+                
+                  if(!anim.isPlaying){
+                    anim.play();
+                  }
+            
+           
                   anim.onAnimationEndObservable.addOnce(() => {
-                    target.dispose();
-                    targets.splice(targets.indexOf(target), 1);
+                 
                   });
+  
                 });
               }
+
+              target.dispose();
+              targets.splice(targets.indexOf(target), 1);
             } 
           }
         });
@@ -809,12 +823,12 @@ try {
                   floorPosition.parent = null;
                   floorPosition.isVisible = false;
                 }
-                if (interval) {
+                if (timerInterval) {
                   plane.isVisible = true;
                   if (plane2.isVisible) plane2.isVisible = false;
                   center.text = "";
-                  clearInterval(interval);
-                  interval = null;
+                  clearInterval(timerInterval);
+                  timerInterval = null;
                   offOnGloves(true, false);
                 } else {
                   offOnGloves(false, true);
@@ -870,6 +884,8 @@ try {
                     }
                   });
                 });
+                plane2.position.z = -10;
+                plane2.position.y = info.floorPosition + 1.5;
                 ComboPlane.position.y = info.floorPosition + 1.5;
                 radioPlane.position.y = info.floorPosition + 1.5;
                 plane.position.y = info.floorPosition + 1.5;
@@ -882,8 +898,6 @@ try {
 
           if (motionController.handness === 'left' && motionController.handness === 'right') {
             comboCounter.isVisible = true;
-            plane2.position.z = -10;
-            plane2.position.y = info.floorPosition + 1.5;
           }
 
           if (motionController.handness === 'left') {
@@ -910,11 +924,29 @@ try {
     let rightPreviousPosition = null;
     let rightPreviousTime = null;
 
+    let lastTime = 0;
+ 
     assetsManager.onFinish = function (tasks) {
       engine.runRenderLoop(() => {
         scene.render();
     
-    
+        const now = performance.now(); // get the current time in milliseconds
+        if (!paused && (now - lastTime >= 1000)) {
+          lastTime = now; // reset the last time
+      
+          const tb = createBlackTarget();
+          const ty = createYellowTarget();
+          tb.position.y = floorPosition.position.y + 1.5;
+          tb.position.z = 15;
+          tb.speed = globalSpeed;
+          ty.position.y = floorPosition.position.y + 1.5;
+          ty.position.z = 16;
+          ty.speed = globalSpeed;
+      
+          targets.push(tb);
+          targets.push(ty);
+          console.log('Targets added'); // logging for debug purposes
+        }
         const delta = engine.getDeltaTime() / 1000;
 
         if (leftController) {
