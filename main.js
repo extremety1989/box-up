@@ -870,6 +870,7 @@ try {
                     }
                   });
                 });
+                ComboPlane.position.y = info.floorPosition + 1.5;
                 radioPlane.position.y = info.floorPosition + 1.5;
                 plane.position.y = info.floorPosition + 1.5;
                 plane.isVisible = true;
