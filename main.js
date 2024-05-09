@@ -121,9 +121,10 @@ try {
     sliderHeader.color = '#fff';
     sliderHeader.fontSizeInPixels = 12;
     sliderHeader.fontWeight = '300';
-    sliderHeader.fontSize = "100px";
+    sliderHeader.fontSize = "80px";
 
     const soundSlider = new Slider();
+    soundSlider.paddingTop = "40px";
     soundSlider.paddingLeft = "40px";
     soundSlider.minimum = 0.1;
     soundSlider.maximum = 1.0;
@@ -228,8 +229,8 @@ try {
     gridRadio.addControl(playRadio, 0, 0);
     gridRadio.addControl(backwardRadio, 0, 1);
     gridRadio.addControl(forwardRadio, 0, 2);
-    gridRadio.addControl(sliderHeader, 0, 1);
-    gridRadio.addControl(soundSlider, 1, 1);
+    gridRadio.addControl(sliderHeader, 1, 0);
+    gridRadio.addControl(soundSlider, 1, 2);
 
 
     const assetsManager = new AssetsManager(scene);
