@@ -253,19 +253,34 @@ try {
       });
     };
 
-    // const yellowSide = assetsManager.addMeshTask("yellow", "", "/box-up/models/", "yellow.glb");
-    // yellowSide.onSuccess = function (task) {
-    //   task.loadedMeshes.forEach((mesh) => {
-    //     mesh.isVisible = false;
-    //   });
-    // };
+    const yellowSide = assetsManager.addMeshTask("yellow", "", "/box-up/models/", "yellow.glb");
+    yellowSide.onSuccess = function (task) {
+      task.loadedMeshes.forEach((mesh) => {
+        mesh.isVisible = false;
+      });
+    };
 
-    // const blackSide = assetsManager.addMeshTask("black", "", "/box-up/models/", "black.glb");
-    // blackSide.onSuccess = function (task) {
-    //   task.loadedMeshes.forEach((mesh) => {
-    //     mesh.isVisible = false;
-    //   });
-    // };
+    const yellowSideFracture = assetsManager.addMeshTask("yellow_fracture", "", "/box-up/models/", "yellow_fracture.glb");
+    yellowSideFracture.onSuccess = function (task) {
+      task.loadedMeshes.forEach((mesh) => {
+        mesh.isVisible = false;
+      });
+    };
+
+    const blackSide = assetsManager.addMeshTask("black_fracture", "", "/box-up/models/", "black.glb");
+    blackSide.onSuccess = function (task) {
+      task.loadedMeshes.forEach((mesh) => {
+        mesh.isVisible = false;
+      });
+    };
+
+    const blackSideFracture = assetsManager.addMeshTask("black", "", "/box-up/models/", "black_fracture.glb");
+    blackSideFracture.onSuccess = function (task) {
+      task.loadedMeshes.forEach((mesh) => {
+        mesh.isVisible = false;
+      });
+    };
+
 
     assetsManager.onProgress = function (remainingCount, totalCount, lastFinishedTask) {
       engine.loadingUIText = "We are loading the scene. " + remainingCount + " out of " + totalCount + " items still need to be loaded.";
@@ -323,41 +338,41 @@ try {
     upper.isVisible = false;
     upper.speed = 0;
 
-    const blackSide = MeshBuilder.CreateCylinder("black", { height: 0.05, diameter: 0.2 }, scene);
-    blackSide.isVisible = false;
-    blackSide.position.y = -0.028;
-    blackSide.material = new StandardMaterial('blackMaterial', scene);
-    blackSide.material.diffuseColor = Color3.Black();
+    // const blackSide = MeshBuilder.CreateCylinder("black", { height: 0.05, diameter: 0.2 }, scene);
+    // blackSide.isVisible = false;
+    // blackSide.position.y = -0.028;
+    // blackSide.material = new StandardMaterial('blackMaterial', scene);
+    // blackSide.material.diffuseColor = Color3.Black();
 
 
-    const yellowSide = MeshBuilder.CreateCylinder("yellow", { height: 0.05, diameter: 0.2 }, scene);
-    yellowSide.isVisible = false;
-    yellowSide.position.y = -0.028;
-    yellowSide.material = new StandardMaterial('blackMaterial', scene);
-    yellowSide.material.diffuseColor = Color3.Yellow();
+    // const yellowSide = MeshBuilder.CreateCylinder("yellow", { height: 0.05, diameter: 0.2 }, scene);
+    // yellowSide.isVisible = false;
+    // yellowSide.position.y = -0.028;
+    // yellowSide.material = new StandardMaterial('blackMaterial', scene);
+    // yellowSide.material.diffuseColor = Color3.Yellow();
 
 
-    const blackTarget = MeshBuilder.CreateSphere(
-      'black',
-      { diameter: 0.2, slice: 0.5 },
-      scene
-    );
-    blackTarget.isVisible = false;
-    blackTarget.speed = 0;
-    blackTarget.material = new StandardMaterial('blackMaterial', scene);
-    blackTarget.material.diffuseColor = Color3.Black();
+    // const blackTarget = MeshBuilder.CreateSphere(
+    //   'black',
+    //   { diameter: 0.2, slice: 0.5 },
+    //   scene
+    // );
+    // blackTarget.isVisible = false;
+    // blackTarget.speed = 0;
+    // blackTarget.material = new StandardMaterial('blackMaterial', scene);
+    // blackTarget.material.diffuseColor = Color3.Black();
 
 
 
-    const yellowTarget = MeshBuilder.CreateSphere(
-      'yellow',
-      { diameter: 0.2, slice: 0.5 },
-      scene
-    );
-    yellowTarget.isVisible = false;
-    yellowTarget.speed = 0;
-    yellowTarget.material = new StandardMaterial('yellowMaterial', scene);
-    yellowTarget.material.diffuseColor = Color3.Yellow();
+    // const yellowTarget = MeshBuilder.CreateSphere(
+    //   'yellow',
+    //   { diameter: 0.2, slice: 0.5 },
+    //   scene
+    // );
+    // yellowTarget.isVisible = false;
+    // yellowTarget.speed = 0;
+    // yellowTarget.material = new StandardMaterial('yellowMaterial', scene);
+    // yellowTarget.material.diffuseColor = Color3.Yellow();
 
     const plane = MeshBuilder.CreatePlane("plane", { size: 1 }, scene);
     plane.position = new Vector3(1, 1.5, 1);
@@ -632,8 +647,9 @@ try {
 
     async function createBlackTarget() {
       return new Promise((res, rej) => {
-        const newBlackTarget = blackTarget.createInstance("black");
-        newBlackTarget.addChild(blackSide.createInstance("b"));
+        // const newBlackTarget = blackTarget.createInstance("black");
+        const newBlackTarget = blackSide.loadedMeshes[0].instantiateHierarchy();
+        newBlackTarget.setParent(blackSideFracture.loadedMeshes[0].instantiateHierarchy());
         newBlackTarget.position.copyFrom(pos);
         newBlackTarget.position.y -= 0.2;
         newBlackTarget.position.z += 5;
@@ -647,9 +663,9 @@ try {
 
     async function createYellowTarget() {
       return new Promise((res, rej) => {
-        // const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
-        const newTellowTarget = yellowTarget.createInstance("yellow");
-        newTellowTarget.addChild(yellowSide.createInstance("y"));
+        const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
+        // const newTellowTarget = yellowTarget.createInstance("yellow");
+        newTellowTarget.setParent(yellowSideFracture.loadedMeshes[0].instantiateHierarchy());
         newTellowTarget.position.copyFrom(pos);
         newTellowTarget.position.y -= 0.2;
         newTellowTarget.position.z += 5;
@@ -735,6 +751,7 @@ try {
 
           if (leftCollision.intersectsMesh(target, true)) {
             if (target.name === "yellow") {
+              target.isVisible = false;
               if (left.velocity.length() > 0.9) {
                 comboCounter.text = `COMBO\n\n${(parseInt(comboCounter.text) + 1).toString()}`;
               }
@@ -742,12 +759,14 @@ try {
               if(target.animationGroups){
                 target.animationGroups.forEach((anim) => {
                   anim.play();
+                  anim.onAnimationEndObservable.addOnce(() => {
+                    target.dispose();
+                    targets.splice(targets.indexOf(target), 1);
+                  });
                 });
               }
-              target.dispose();
+         
               targets.splice(targets.indexOf(target), 1);
-            } else {
-
             }
           }
           if (rightCollision.intersectsMesh(target, true)) {
@@ -759,13 +778,13 @@ try {
               if(target.animationGroups){
                 target.animationGroups.forEach((anim) => {
                   anim.play();
+                  anim.onAnimationEndObservable.addOnce(() => {
+                    target.dispose();
+                    targets.splice(targets.indexOf(target), 1);
+                  });
                 });
               }
-              target.dispose();
-              targets.splice(targets.indexOf(target), 1);
-            } else {
-
-            }
+            } 
           }
         });
       }
@@ -914,9 +933,9 @@ try {
         
             if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
               let targetPosition = new Vector3(0, currentPosition.y, 0);
-              floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.1);
-              floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.1);
-              floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.1);
+              floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.2);
+              floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.2);
+              floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.2);
               info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
             }
           }  
@@ -940,13 +959,11 @@ try {
 
 
           if(floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed){
-        
-            let distance = Vector3.Distance(currentPosition, floorPosition.position); 
             if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
               let targetPosition = new Vector3(0, currentPosition.y, 0);
-              floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.1);
-              floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.1);
-              floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.1);
+              floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.2);
+              floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.2);
+              floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.2);
               info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
             }
           }  
