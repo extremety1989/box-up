@@ -41,7 +41,7 @@ try {
       info.difficulty = "Easy";
     }
 
-    let paused = true;
+    let stopped = true;
 
     const app = document.getElementById('app');
     const canvas = document.createElement('canvas');
@@ -221,7 +221,7 @@ mp3s.push(new Howl({
       mp3s[mp3_index].play();
     });
     soundSlider.onValueChangedObservable.add(function(value) {
-      mp3s[mp3_index]._volume = value;
+      mp3s[mp3_index].volume = value;
     });
 
     panelRadio.addControl(radioHeader);
@@ -422,7 +422,7 @@ mp3s.push(new Howl({
     advancedTextureComboCounter.addControl(comboCounter);
 
     const plane2 = MeshBuilder.CreatePlane("plane2", { size: 2 }, scene);
-    plane2.position = new Vector3(0, 1.5, 0);
+    plane2.position = new Vector3(0, 1.5, -2);
     plane2.isVisible = false;
 
 
@@ -567,7 +567,7 @@ mp3s.push(new Howl({
     floorPosition.isVisible = false;
 
     button_5.onPointerDownObservable.add(() => {
-      if(!floorPosition.isVisible && paused){
+      if(!floorPosition.isVisible && stopped){
         plane.isVisible = false;
         const fcp = xr.baseExperience.camera.position
         floorPosition.position.y = fcp.y - 0.5;
@@ -596,7 +596,7 @@ mp3s.push(new Howl({
     let timerInterval = null;
 
     function getTimer(sec) {
-      if (paused) {
+      if (stopped) {
         plane.isVisible = false;
         comboCounter.text = "COMBO\n\n0";
         if (timerInterval) clearInterval(timerInterval);
@@ -607,7 +607,7 @@ mp3s.push(new Howl({
           if (sec <= 0) {
             pos.copyFrom(xr.baseExperience.camera.position);
             center.text = "Go!";
-            paused = false;
+            stopped = false;
             clearInterval(timerInterval);
             setTimeout(() => {
               if(info.difficulty === "Easy"){
@@ -645,8 +645,9 @@ mp3s.push(new Howl({
       });
     }
 
+  
     function openMenu() {
-      paused = true;
+      stopped = true;
       if (timerInterval) {
         clearInterval(timerInterval);
         timerInterval = null;
@@ -818,7 +819,7 @@ mp3s.push(new Howl({
 
           thumb_stick.onButtonStateChangedObservable.add(() => {
             if (thumb_stick.pressed && !floorPosition.isVisible) {
-              if (paused) {
+              if (stopped) {
                 if(floorPosition.isVisible){
                   floorPosition.parent = null;
                   floorPosition.isVisible = false;
@@ -842,7 +843,7 @@ mp3s.push(new Howl({
           
           trigger.onButtonStateChangedObservable.add(() => {
 
-            if (trigger.pressed && paused) {
+            if (trigger.pressed && stopped) {
            
               target = scene.meshUnderPointer;
               if (xr.pointerSelection.getMeshUnderPointer) {
@@ -851,7 +852,7 @@ mp3s.push(new Howl({
               if (target && target.name === "plane" && target.parent === null && !floorPosition.isVisible) {
                 target.setParent(motionController.rootMesh);
               }
-            } else if (paused) {
+            } else if (stopped) {
               if(plane.parent){
                 plane.setParent(null);
               }
@@ -919,36 +920,61 @@ mp3s.push(new Howl({
 
     });
 
-    let leftPreviousPosition = null;
-    let leftPreviousTime = null;
-    let rightPreviousPosition = null;
-    let rightPreviousTime = null;
 
-    let lastTime = 0;
- 
     assetsManager.onFinish = function (tasks) {
+      let leftPreviousPosition = null;
+      let leftPreviousTime = null;
+      let rightPreviousPosition = null;
+      let rightPreviousTime = null;
+  
+  
+      let paused = false;
+      let lastTime = 0;
+      let startTime = performance.now();
+      const endTime = 1 * 60 * 1000;
+      let global_count = 0;
+      let progression = 0;
       engine.runRenderLoop(() => {
         scene.render();
-    
-        const now = performance.now(); // get the current time in milliseconds
-        if (!paused && (now - lastTime >= 1000)) {
-          lastTime = now; // reset the last time
+  
+        const now = performance.now();
+
+        if(progression === 1){
+
+        }
+        if (!stopped && (now - lastTime >= 1000) && !paused) {
+          lastTime = now;
       
           const tb = createBlackTarget();
           const ty = createYellowTarget();
-          tb.position.y = floorPosition.position.y + 1.5;
+          global_count++;
+          tb.position.y = xr.baseExperience.camera.position.y - 0.1;
           tb.position.z = 15;
           tb.speed = globalSpeed;
-          ty.position.y = floorPosition.position.y + 1.5;
+          ty.position.y = xr.baseExperience.camera.position.y - 0.1;
           ty.position.z = 16;
           ty.speed = globalSpeed;
       
           targets.push(tb);
           targets.push(ty);
-          console.log('Targets added'); // logging for debug purposes
         }
-        const delta = engine.getDeltaTime() / 1000;
-
+      
+        if (now - startTime >= endTime) {
+          if (paused) {
+            const timeLeft = 30 - Math.floor((now - (endTime + startTime)) / 1000);
+            center.text = timeLeft.toString();
+            if (timeLeft <= 0) {
+              plane2.isVisible = false;
+              startTime = performance.now(); 
+              global_count = 0;
+              paused = false;
+            }
+          } else {
+            paused = true;
+            plane2.isVisible = true;
+            center.text = "30";
+          }
+        }
         if (leftController) {
           const currentTime = performance.now();
           const currentPosition = leftController.grip.position.clone();  
@@ -1006,8 +1032,8 @@ mp3s.push(new Howl({
           rightPreviousTime = currentTime;
         }
   
-
-        if (targets.length > 0 && !paused) {
+        const delta = engine.getDeltaTime() / 1000;
+        if (targets.length > 0 && !stopped) {
           targets.forEach((target) => {
             if (target.position.z < -1) {
               target.dispose();
@@ -1015,7 +1041,7 @@ mp3s.push(new Howl({
             }
             target.position.z -= target.speed * delta;
           });
-        } else if (targets.length > 0 && paused) {
+        } else if (targets.length > 0 && stopped) {
           targets.forEach((target) => {
             target.dispose();
             targets.splice(targets.indexOf(target), 1);
