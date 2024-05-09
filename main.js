@@ -827,7 +827,7 @@ try {
                     }
                   });
                 });
-
+                plane.position.y = info.floorPosition + 0.5;
                 plane.isVisible = true;
                 floorPosition.parent = null;
                 floorPosition.isVisible = false;
