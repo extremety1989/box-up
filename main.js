@@ -49,6 +49,7 @@ try {
     const scene = new Scene(engine);
 
 
+
     const swappedHandednessConfiguration = [
       {
         allowedComponentTypes: [
@@ -209,9 +210,8 @@ try {
       });
       mp3s[mp3_index].play();
     });
-
     soundSlider.onValueChangedObservable.add(function(value) {
-      mp3s[mp3_index].volume(value);
+      mp3s[mp3_index]._volume = value;
     });
 
     panelRadio.addControl(radioHeader);
@@ -235,9 +235,6 @@ try {
 
     const radioPlayer = assetsManager.addMeshTask("radio", "", "/box-up/models/", "radio.glb");
     radioPlayer.onSuccess = function (task) {
-      task.loadedMeshes.forEach((mesh) => {
-       console.log(mesh.position);
-      });
       task.loadedAnimationGroups.forEach((anim) => {
         if(anim.name === "play"){
           anim.stop();
@@ -245,12 +242,12 @@ try {
       });
     };
 
-    const yellowSide = assetsManager.addMeshTask("yellow", "", "/box-up/models/", "yellow.glb");
-    yellowSide.onSuccess = function (task) {
-      task.loadedMeshes.forEach((mesh) => {
-        mesh.isVisible = false;
-      });
-    };
+    // const yellowSide = assetsManager.addMeshTask("yellow", "", "/box-up/models/", "yellow.glb");
+    // yellowSide.onSuccess = function (task) {
+    //   task.loadedMeshes.forEach((mesh) => {
+    //     mesh.isVisible = false;
+    //   });
+    // };
 
     // const blackSide = assetsManager.addMeshTask("black", "", "/box-up/models/", "black.glb");
     // blackSide.onSuccess = function (task) {
@@ -272,12 +269,18 @@ try {
     light.groundColor = Color3.FromHexString('#bbbbff');
     light.intensity = 0.7;
 
+    
+
     const dirLight = new DirectionalLight(
       'light',
       new Vector3(0, -1, -0.5),
       scene
     );
     dirLight.position = new Vector3(0, 5, -5);
+
+    const shadowGenerator = new ShadowGenerator(1024, dirLight);
+    shadowGenerator.useBlurExponentialShadowMap = true;
+    shadowGenerator.blurKernel = 32;
 
     const xr = await scene.createDefaultXRExperienceAsync({
       uiOptions: {
@@ -316,11 +319,11 @@ try {
     blackSide.material.diffuseColor = Color3.Black();
 
 
-    // const yellowSide = MeshBuilder.CreateCylinder("yellow", { height: 0.05, diameter: 0.2 }, scene);
-    // yellowSide.isVisible = false;
-    // yellowSide.position.y = -0.028;
-    // yellowSide.material = new StandardMaterial('blackMaterial', scene);
-    // yellowSide.material.diffuseColor = Color3.Yellow();
+    const yellowSide = MeshBuilder.CreateCylinder("yellow", { height: 0.05, diameter: 0.2 }, scene);
+    yellowSide.isVisible = false;
+    yellowSide.position.y = -0.028;
+    yellowSide.material = new StandardMaterial('blackMaterial', scene);
+    yellowSide.material.diffuseColor = Color3.Yellow();
 
 
     const blackTarget = MeshBuilder.CreateSphere(
@@ -368,7 +371,6 @@ try {
 
     const plane2 = MeshBuilder.CreatePlane("plane2", { size: 2 }, scene);
     plane2.isVisible = false;
-    plane2.position = new Vector3(0, 0, 0);
 
 
     const advancedTexture = AdvancedDynamicTexture.CreateForMesh(
@@ -621,13 +623,15 @@ try {
         newBlackTarget.position.x += 0.1;
         newBlackTarget.isVisible = true;
         newBlackTarget.rotation.x = Math.PI / 2;
+        shadowGenerator.addShadowCaster(newBlackTarget);
         res(newBlackTarget);
       });
     }
 
     async function createYellowTarget() {
       return new Promise((res, rej) => {
-        const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
+        // const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
+        const newTellowTarget = yellowSide.instantiateHierarchy();
         newTellowTarget.addChild(yellowTarget);
         newTellowTarget.position.copyFrom(pos);
         newTellowTarget.position.y -= 0.2;
@@ -636,6 +640,7 @@ try {
         newTellowTarget.isVisible = true;
         newTellowTarget.rotation.x = Math.PI / 2;
         newTellowTarget.rotation.z = -Math.PI / 4;
+        shadowGenerator.addShadowCaster(newTellowTarget);
         res(newTellowTarget);
       });
     }
@@ -652,9 +657,8 @@ try {
 
     async function combo_1() {
       const tb = await createBlackTarget();
-      targets.push(tb);
       const ty = await createYellowTarget();
-      targets.push(ty);
+
       // const tu = await createUpper();
       // targets.push(tu);
 
@@ -662,7 +666,9 @@ try {
       ty.position.z += 5;
       tb.speed = globalSpeed;
       ty.speed = globalSpeed;
-      // tu.speed = globalSpeed;
+
+      targets.push(tb);
+      targets.push(ty);
     }
 
     async function combo_5() {
@@ -673,11 +679,7 @@ try {
 
     setInterval(async () => {
       if (paused) return;
-      if (Math.random() > 0.5) {
-        await combo_1();
-      } else {
-        await combo_5();
-      }
+      await combo_1();
 
     }, 1500);
 
@@ -693,8 +695,12 @@ try {
     const left = await SceneLoader.ImportMeshAsync(null, "./models/", "left.glb", scene);
     left.velocity = new Vector3(0, 0, 0);
 
+
+
     const right = await SceneLoader.ImportMeshAsync(null, "./models/", "right.glb", scene);
     right.velocity = new Vector3(0, 0, 0);
+
+
 
 
     [left, right].forEach((model) => {
@@ -813,12 +819,15 @@ try {
                 floorPosition.isPressed = false;
                 localStorage.setItem('info', JSON.stringify(info));
 
-                level.loadedMeshes.forEach((mesh) => {
-                  mesh.isVisible = true;
-                  if (mesh.name === "__root__") {
-                    mesh.position.y = info.floorPosition;
-                  }
+                [level, radioPlayer].forEach((task) => {
+                  task.loadedMeshes.forEach((mesh) => {
+                    mesh.isVisible = true;
+                    if (mesh.name === "__root__") {
+                      mesh.position.y = info.floorPosition;
+                    }
+                  });
                 });
+
                 plane.isVisible = true;
                 floorPosition.parent = null;
                 floorPosition.isVisible = false;
@@ -829,7 +838,7 @@ try {
           if (motionController.handness === 'left' && motionController.handness === 'right') {
             comboCounter.isVisible = true;
             plane2.position.copyFrom(xr.baseExperience.camera.position);
-            plane2.position.z += 1;
+            plane2.position.y += 0.5;
           }
 
           if (motionController.handness === 'left') {
