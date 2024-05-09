@@ -631,7 +631,7 @@ try {
     async function createYellowTarget() {
       return new Promise((res, rej) => {
         // const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
-        const newTellowTarget = yellowSide.createInstance("yellow");
+        const newTellowTarget = yellowTarget.createInstance("yellow");
         newTellowTarget.addChild(yellowSide.createInstance("y"));
         newTellowTarget.position.copyFrom(pos);
         newTellowTarget.position.y -= 0.2;
@@ -722,9 +722,11 @@ try {
                 comboCounter.text = (parseInt(comboCounter.text) + 1).toString();
               }
               destroyedTargetSound.play();
-              target.animationGroups.forEach((anim) => {
-                anim.play();
-              });
+              if(target.animationGroups){
+                target.animationGroups.forEach((anim) => {
+                  anim.play();
+                });
+              }
               target.dispose();
               targets.splice(targets.indexOf(target), 1);
             } else {
@@ -737,6 +739,11 @@ try {
                 comboCounter.text = (parseInt(comboCounter.text) + 1).toString();
               }
               destroyedTargetSound.play();
+              if(target.animationGroups){
+                target.animationGroups.forEach((anim) => {
+                  anim.play();
+                });
+              }
               target.dispose();
               targets.splice(targets.indexOf(target), 1);
             } else {
