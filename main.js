@@ -631,8 +631,8 @@ try {
     async function createYellowTarget() {
       return new Promise((res, rej) => {
         // const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
-        const newTellowTarget = yellowSide.instantiateHierarchy();
-        newTellowTarget.addChild(yellowTarget);
+        const newTellowTarget = yellowSide.createInstance("yellow");
+        newTellowTarget.addChild(yellowSide.createInstance("y"));
         newTellowTarget.position.copyFrom(pos);
         newTellowTarget.position.y -= 0.2;
         newTellowTarget.position.z += 5;
