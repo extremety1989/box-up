@@ -373,7 +373,7 @@ try {
 
     const comboCounter = new TextBlock();
     comboCounter.isVisible = true;
-    comboCounter.text = "COMBO \n0";
+    comboCounter.text = "COMBO\n\n0";
     comboCounter.width = "100px";
     comboCounter.height = "100px";
     comboCounter.color = "#fff";
@@ -562,7 +562,7 @@ try {
     function getTimer(sec) {
       if (paused) {
         plane.isVisible = false;
-        comboCounter.text = "COMBO \n0";
+        comboCounter.text = "COMBO\n\n0";
         if (interval) clearInterval(interval);
         interval = setInterval(() => {
           if (!plane2.isVisible) plane2.isVisible = true;
@@ -736,7 +736,7 @@ try {
           if (leftCollision.intersectsMesh(target, true)) {
             if (target.name === "yellow") {
               if (left.velocity.length() > 0.9) {
-                comboCounter.text = `COMBO\n${(parseInt(comboCounter.text) + 1).toString()}`;
+                comboCounter.text = `COMBO\n\n${(parseInt(comboCounter.text) + 1).toString()}`;
               }
               destroyedTargetSound.play();
               if(target.animationGroups){
@@ -753,7 +753,7 @@ try {
           if (rightCollision.intersectsMesh(target, true)) {
             if (target.name === "black") {
               if (right.velocity.length() > 0.9) {
-                comboCounter.text = `COMBO\n${(parseInt(comboCounter.text) + 1).toString()}`;
+                comboCounter.text = `COMBO\n\n${(parseInt(comboCounter.text) + 1).toString()}`;
               }
               destroyedTargetSound.play();
               if(target.animationGroups){
