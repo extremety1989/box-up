@@ -251,7 +251,9 @@ ddioqjoidjq.name = "2Pac - Time Back";
 
 
   const destroyedTargetSound = new Howl({
-    src: "./sounds/destroyed.mp3",
+    volume: 0.5,
+    html5: true,
+    src: "./sounds/break_1.mp3",
     autoplay: false,
     loop: false,
   });
@@ -777,6 +779,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
         if (rightCollision.intersectsMesh(target, true)) {
           if (target.name === "black") {
             target.speed = 0;
+            console.log(destroyedTargetSound);
             destroyedTargetSound.play();
             target.dispose();
             targets.splice(targets.indexOf(target), 1);
