@@ -264,7 +264,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
   };
 
 
-  const destroyedTargetSound = new Howl({
+  let destroyedTargetSound = new Howl({
     volume: 0.5,
     html5: true,
     src: "./sounds/break_1.mp3",
@@ -278,7 +278,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
       mesh.isVisible = false;
     });
   };
-
+  yellowSide.dts = destroyedTargetSound;
 
 
   const yellowSideFracture = assetsManager.addMeshTask("yellow_fracture", "", "/box-up/models/", "yellow_fracture.glb");
@@ -301,6 +301,8 @@ ddioqjoidjq.name = "2Pac - Time Back";
       mesh.isVisible = false;
     });
   };
+
+  blackSide.dts = destroyedTargetSound;
 
   const blackSideFracture = assetsManager.addMeshTask("black_fracture", "", "/box-up/models/", "black_fracture.glb");
   blackSideFracture.onSuccess = function (task) {
@@ -722,7 +724,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
         if (leftCollision.intersectsMesh(target, true)) {
           if (target.name === "yellow") {
             target.speed = 0;
-            destroyedTargetSound.play();
+            target.dts.play();
             target.dispose();
             targets.splice(targets.indexOf(target), 1);
             yellowSideFracture.loadedMeshes.forEach((mesh) => {
@@ -757,8 +759,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
         if (rightCollision.intersectsMesh(target, true)) {
           if (target.name === "black") {
             target.speed = 0;
-            console.log(destroyedTargetSound);
-            destroyedTargetSound.play();
+            target.dts.play();
             target.dispose();
             targets.splice(targets.indexOf(target), 1);
             blackSideFracture.loadedMeshes.forEach((mesh) => {
