@@ -133,22 +133,24 @@ async function run() {
 
   let mp3_index = 0;
   const mp3s = []
-
-  mp3s.push(new Howl({
-    name: "2Pac - Time Back",
-    src: "./sounds/2Pac - Time Back.mp3",
-    autoplay: false,
-    loop: true,
-    volume: 0.5
-  }));
-
-  mp3s.push(new Howl({
-    name: "a-ha - Take On Me",
+const ddioqjoidjq = new Howl({
+  name: "2Pac - Time Back",
+  src: "./sounds/2Pac - Time Back.mp3",
+  autoplay: false,
+  loop: true,
+  volume: 0.5
+})
+ddioqjoidjq.name = "2Pac - Time Back";
+  mp3s.push(ddioqjoidjq);
+  const dzdjjzaioj = new Howl({
     src: "./sounds/a-ha - Take On Me.mp3",
     autoplay: false,
     loop: true,
     volume: 0.5
-  }));
+  })
+  dzdjjzaioj.name = "a-ha - Take On Me";
+  mp3s.push(dzdjjzaioj);
+
 
 
   playRadio.onPointerClickObservable.add(() => {
@@ -217,7 +219,7 @@ async function run() {
     mp3s[mp3_index].play();
   });
   soundSlider.onValueChangedObservable.add(function (value) {
-    mp3s[mp3_index].volume = value;
+    mp3s[mp3_index].volume(value);
   });
 
   panelRadio.addControl(radioHeader);
@@ -238,26 +240,20 @@ async function run() {
         shadowGenerator.addShadowCaster(mesh);
       }
     });
-    task.loadedAnimationGroups.forEach((anim) => {
-      if (anim.name === "play") {
-        anim.play();
-      }
-    });
   };
 
   const radioPlayer = assetsManager.addMeshTask("radio", "", "/box-up/models/", "radio.glb");
   radioPlayer.onSuccess = function (task) {
     task.loadedAnimationGroups.forEach((anim) => {
-      if (anim.name === "play") {
-        anim.stop();
-      }
+      anim.stop();
     });
   };
 
 
-  const destroyedTargetSound = new Sound("break", "./sounds/break_1.mp3", scene, null, {
-    loop: false,
+  const destroyedTargetSound = new Howl({
+    src: "./sounds/destroyed.mp3",
     autoplay: false,
+    loop: false,
   });
 
   const yellowSide = assetsManager.addMeshTask("yellow", "", "/box-up/models/", "yellow.glb");
@@ -394,23 +390,6 @@ async function run() {
   plane.position = new Vector3(1, 1.5, 1);
   plane.rotation = new Vector3(0, Math.PI / 9, 0);
 
-  const ProgressionPlane = MeshBuilder.CreatePlane("ProgressionPlane", { size: 1 }, scene);
-  ProgressionPlane.position = new Vector3(-1, 1.5, 1);
-  ProgressionPlane.rotation = new Vector3(0, -Math.PI / 9, 0);
-  const advancedTextureProgressionPlane = AdvancedDynamicTexture.CreateForMesh(
-    ProgressionPlane
-  );
-  const progressionHeader = new TextBlock();
-  progressionHeader.value = 0;
-  progressionHeader.isVisible = true;
-  progressionHeader.text = "COMBO\n\n0";
-  progressionHeader.width = "100px";
-  progressionHeader.height = "100px";
-  progressionHeader.color = "#fff";
-  progressionHeader.thickness = 4;
-  progressionHeader.background = "black";
-  progressionHeader.alpha = 0.8;
-
 
   const ComboPlane = MeshBuilder.CreatePlane("ComboPlane", { size: 20 }, scene);
   ComboPlane.position = new Vector3(0, 1.5, -1);
@@ -434,18 +413,12 @@ async function run() {
 
   advancedTextureComboCounter.addControl(comboCounter);
 
-  const plane2 = MeshBuilder.CreatePlane("plane2", { size: 2 }, scene);
-  plane2.position = new Vector3(0, 1.5, -2);
-  plane2.isVisible = false;
 
 
   const advancedTexture = AdvancedDynamicTexture.CreateForMesh(
     plane
   );
 
-  const advancedTexture2 = AdvancedDynamicTexture.CreateForMesh(
-    plane2
-  );
 
 
   const panel = new StackPanel("panel");
@@ -594,6 +567,14 @@ async function run() {
 
 
 
+
+  const plane2 = MeshBuilder.CreatePlane("plane2", { size: 2 }, scene);
+  plane2.position = new Vector3(0, 1.5, 2);
+  plane2.isVisible = false;
+
+  const advancedTexture2 = AdvancedDynamicTexture.CreateForMesh(
+    plane2
+  );
   const panel2 = new StackPanel("panel2");
   advancedTexture2.addControl(panel2);
   const center = new TextBlock();
@@ -683,7 +664,6 @@ async function run() {
   function createBlackTarget() {
     // const newBlackTarget = blackTarget.createInstance("black");
     const newBlackTarget = blackSide.loadedMeshes[0].instantiateHierarchy();
-    newBlackTarget.dts = destroyedTargetSound;
     newBlackTarget.name = "black";
     newBlackTarget.position.copyFrom(pos);
     newBlackTarget.position.y -= 0.2;
@@ -706,7 +686,6 @@ async function run() {
     newTellowTarget.isVisible = true;
     newTellowTarget.rotation.x = Math.PI / 2;
     newTellowTarget.rotation.z = -Math.PI / 4;
-    newTellowTarget.dts = destroyedTargetSound;
     shadowGenerator.addShadowCaster(newTellowTarget);
     return newTellowTarget;
   }
@@ -763,55 +742,72 @@ async function run() {
         if (leftCollision.intersectsMesh(target, true)) {
           if (target.name === "yellow") {
             target.speed = 0;
-
-            // const fracture = blackSideFracture.loadedMeshes[0].instantiateHierarchy();
-            // fracture.animations = blackSideFracture.loadedAnimationGroups;
+            destroyedTargetSound.play();
+            target.dispose();
+            targets.splice(targets.indexOf(target), 1);
+            yellowSideFracture.loadedMeshes.forEach((mesh) => {
+              mesh.isVisible = true;
+              if (mesh.name === "__root__") {
+                mesh.position = target.position;
+              }
+            });
+            const fracture = yellowSideFracture.loadedMeshes[0].instantiateHierarchy();
+            fracture.animations = yellowSideFracture.loadedAnimationGroups;
 
 
             if (left.velocity.length() > 0.9) {
               comboCounter.text = `COMBO\n\n${(comboCounter.value += 1).toString()}`;
             }
-            target.dts.play();
-            if (target.animations) {
-              target.animations.forEach((anim) => {
+      
+            if (fracture.animations) {
+              fracture.animations.forEach((anim) => {
                 if (!anim.isPlaying) {
                   anim.play();
                 }
-
-
                 anim.onAnimationEndObservable.addOnce(() => {
-
+                  yellowSideFracture.loadedMeshes.forEach((mesh) => {
+                    mesh.isVisible = false;
+                  });
                 });
               });
             }
-            target.dispose();
-            targets.splice(targets.indexOf(target), 1);
+            fracture.dispose();
           }
         }
         if (rightCollision.intersectsMesh(target, true)) {
           if (target.name === "black") {
             target.speed = 0;
+            destroyedTargetSound.play();
+            target.dispose();
+            targets.splice(targets.indexOf(target), 1);
+            blackSideFracture.loadedMeshes.forEach((mesh) => {
+              mesh.isVisible = true;
+              if (mesh.name === "__root__") {
+                mesh.position = target.position;
+              }
+            });
+            const fracture = blackSideFracture.loadedMeshes[0].instantiateHierarchy();
+            fracture.animations = blackSideFracture.loadedAnimationGroups;
             if (right.velocity.length() > 0.9) {
               comboCounter.text = `COMBO\n\n${(comboCounter.value += 1).toString()}`;
             }
-            target.dts.play();
-            if (target.animations) {
-              target.animations.forEach((anim) => {
+           
+            if (fracture.animations) {
+              fracture.animations.forEach((anim) => {
 
                 if (!anim.isPlaying) {
                   anim.play();
                 }
-
-
                 anim.onAnimationEndObservable.addOnce(() => {
-
+                  blackSideFracture.loadedMeshes.forEach((mesh) => {
+                    mesh.isVisible = false;
+                  });
                 });
 
               });
             }
-
-            target.dispose();
-            targets.splice(targets.indexOf(target), 1);
+            fracture.dispose();
+      
           }
         }
       });
@@ -898,7 +894,6 @@ async function run() {
                   }
                 });
               });
-              plane2.position.z = -10;
               plane2.position.y = info.floorPosition + 1.5;
               ComboPlane.position.y = info.floorPosition + 1.5;
               radioPlane.position.y = info.floorPosition + 1.5;
@@ -957,19 +952,19 @@ async function run() {
       }
       if (!stopped && (now - lastTime >= 1000) && !paused) {
         lastTime = now;
-
-        const tb = createBlackTarget();
-        const ty = createYellowTarget();
-        global_count++;
-        tb.position.y = xr.baseExperience.camera.position.y - 0.1;
-        tb.position.z = 15;
-        tb.speed = globalSpeed;
-        ty.position.y = xr.baseExperience.camera.position.y - 0.1;
-        ty.position.z = 16;
-        ty.speed = globalSpeed;
-
-        targets.push(tb);
-        targets.push(ty);
+        if(now - startTime < endTime - 1000){
+          const tb = createBlackTarget();
+          const ty = createYellowTarget();
+          global_count++;
+          tb.position.y = xr.baseExperience.camera.position.y - 0.1;
+          tb.position.z = 15;
+          tb.speed = globalSpeed;
+          ty.position.y = xr.baseExperience.camera.position.y - 0.1;
+          ty.position.z = 16;
+          ty.speed = globalSpeed;
+          targets.push(tb);
+          targets.push(ty);
+        }
       }
 
       if (now - startTime >= endTime) {
@@ -1045,20 +1040,25 @@ async function run() {
         rightPreviousTime = currentTime;
       }
 
-      const delta = engine.getDeltaTime() / 1000;
       if (targets.length > 0 && !stopped) {
-        targets.forEach((target) => {
+        for (let i = targets.length - 1; i >= 0; i--) {
+          const target = targets[i];
           if (target.position.z < -1) {
-            target.dispose();
-            targets.splice(targets.indexOf(target), 1);
+              target.dispose();
+              targets.splice(i, 1);
+          } else {
+            const delta = Math.min(engine.getDeltaTime() / 1000, 0.016);
+            target.position.z -= target.speed * delta;
           }
-          target.position.z -= target.speed * delta;
-        });
+      }
       } else if (targets.length > 0 && stopped) {
-        targets.forEach((target) => {
-          target.dispose();
-          targets.splice(targets.indexOf(target), 1);
-        });
+        for (let i = targets.length - 1; i >= 0; i--) {
+          const target = targets[i];
+          if (target.position.z < -1) {
+              target.dispose();
+              targets.splice(i, 1);
+          } 
+       }
       }
     });
   };
