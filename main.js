@@ -180,19 +180,26 @@ ddioqjoidjq.name = "2Pac - Time Back";
   forwardRadio.fontWeight = '300';
   forwardRadio.fontSize = "100px";
   forwardRadio.onPointerClickObservable.add(() => {
-    radioPlayer.loadedAnimationGroups.forEach((anim) => {
-      anim.stop();
-    });
-    mp3s[mp3_index].stop();
+    let was_playing = false;
+    if(mp3s[mp3_index].isPlaying()){
+      was_playing = true;
+      radioPlayer.loadedAnimationGroups.forEach((anim) => {
+        anim.stop();
+      });
+      mp3s[mp3_index].stop();
+    }
+
     mp3_index++;
     if (mp3_index >= mp3s.length) {
       mp3_index = 0;
     }
     radioHeader.text = `${mp3s[mp3_index].name}`;
-    radioPlayer.loadedAnimationGroups.forEach((anim) => {
-      anim.play();
-    });
-    mp3s[mp3_index].play();
+    if(was_playing){
+      radioPlayer.loadedAnimationGroups.forEach((anim) => {
+        anim.play();
+      });
+      mp3s[mp3_index].play();
+    }
   });
 
   const backwardRadio = Button.CreateSimpleButton("backwardRadio", "<<");
@@ -204,19 +211,26 @@ ddioqjoidjq.name = "2Pac - Time Back";
   backwardRadio.fontSize = "100px";
 
   backwardRadio.onPointerClickObservable.add(() => {
-    radioPlayer.loadedAnimationGroups.forEach((anim) => {
-      anim.stop();
-    });
-    mp3s[mp3_index].stop();
+    let was_playing = false;
+    if(mp3s[mp3_index].isPlaying()){
+      was_playing = true;
+      radioPlayer.loadedAnimationGroups.forEach((anim) => {
+        anim.stop();
+      });
+      mp3s[mp3_index].stop();
+    }
+
     mp3_index--;
     if (mp3_index < 0) {
       mp3_index = mp3s.length - 1;
     }
     radioHeader.text = `${mp3s[mp3_index].name}`;
-    radioPlayer.loadedAnimationGroups.forEach((anim) => {
-      anim.stop();
-    });
-    mp3s[mp3_index].play();
+    if(was_playing){
+      radioPlayer.loadedAnimationGroups.forEach((anim) => {
+        anim.play();
+      });
+      mp3s[mp3_index].play();
+    }
   });
   soundSlider.onValueChangedObservable.add(function (value) {
     mp3s[mp3_index].volume(value);
@@ -351,42 +365,6 @@ ddioqjoidjq.name = "2Pac - Time Back";
   upper.material.diffuseColor = Color3.Black();
   upper.isVisible = false;
   upper.speed = 0;
-
-  // const blackSide = MeshBuilder.CreateCylinder("black", { height: 0.05, diameter: 0.2 }, scene);
-  // blackSide.isVisible = false;
-  // blackSide.position.y = -0.028;
-  // blackSide.material = new StandardMaterial('blackMaterial', scene);
-  // blackSide.material.diffuseColor = Color3.Black();
-
-
-  // const yellowSide = MeshBuilder.CreateCylinder("yellow", { height: 0.05, diameter: 0.2 }, scene);
-  // yellowSide.isVisible = false;
-  // yellowSide.position.y = -0.028;
-  // yellowSide.material = new StandardMaterial('blackMaterial', scene);
-  // yellowSide.material.diffuseColor = Color3.Yellow();
-
-
-  // const blackTarget = MeshBuilder.CreateSphere(
-  //   'black',
-  //   { diameter: 0.2, slice: 0.5 },
-  //   scene
-  // );
-  // blackTarget.isVisible = false;
-  // blackTarget.speed = 0;
-  // blackTarget.material = new StandardMaterial('blackMaterial', scene);
-  // blackTarget.material.diffuseColor = Color3.Black();
-
-
-
-  // const yellowTarget = MeshBuilder.CreateSphere(
-  //   'yellow',
-  //   { diameter: 0.2, slice: 0.5 },
-  //   scene
-  // );
-  // yellowTarget.isVisible = false;
-  // yellowTarget.speed = 0;
-  // yellowTarget.material = new StandardMaterial('yellowMaterial', scene);
-  // yellowTarget.material.diffuseColor = Color3.Yellow();
 
   const plane = MeshBuilder.CreatePlane("plane", { size: 1 }, scene);
   plane.position = new Vector3(1, 1.5, 1);
