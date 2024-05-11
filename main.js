@@ -24,7 +24,6 @@ import {
 import "@babylonjs/loaders/glTF";
 import '@babylonjs/core/Materials/Node/Blocks'
 
-
 import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock'
 import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control, Slider } from '@babylonjs/gui'
 
@@ -33,6 +32,10 @@ import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control, Slider } fro
 const info = localStorage.getItem('info') ? JSON.parse(localStorage.getItem('info')) : {};
 
 async function run() {
+
+  let startTime = performance.now();
+  let endTime = 1 * 60 * 1000;
+
   if (info.difficulty === undefined) {
     info.difficulty = "Easy";
   }
@@ -45,9 +48,6 @@ async function run() {
   const engine = new Engine(canvas, true);
 
   const scene = new Scene(engine);
-
-
-
   const swappedHandednessConfiguration = [
     {
       allowedComponentTypes: [
@@ -278,12 +278,13 @@ ddioqjoidjq.name = "2Pac - Time Back";
       mesh.isVisible = false;
     });
   };
-  yellowSide.dts = destroyedTargetSound;
-
 
   const yellowSideFracture = assetsManager.addMeshTask("yellow_fracture", "", "/box-up/models/", "yellow_fracture.glb");
   yellowSideFracture.onSuccess = function (task) {
     task.loadedMeshes.forEach((mesh) => {
+      if(mesh.name === "__root__"){
+        mesh.position.x = 0;
+      }
       mesh.isVisible = false;
     });
 
@@ -298,11 +299,12 @@ ddioqjoidjq.name = "2Pac - Time Back";
   const blackSide = assetsManager.addMeshTask("black", "", "/box-up/models/", "black.glb");
   blackSide.onSuccess = function (task) {
     task.loadedMeshes.forEach((mesh) => {
+      if(mesh.name === "__root__"){
+        mesh.position.x = 0;
+      }
       mesh.isVisible = false;
     });
   };
-
-  blackSide.dts = destroyedTargetSound;
 
   const blackSideFracture = assetsManager.addMeshTask("black_fracture", "", "/box-up/models/", "black_fracture.glb");
   blackSideFracture.onSuccess = function (task) {
@@ -624,6 +626,8 @@ ddioqjoidjq.name = "2Pac - Time Back";
 
   function openMenu() {
     stopped = true;
+    startTime = performance.now();
+    endTime = 1 * 60 * 1000;
     if (timerInterval) {
       clearInterval(timerInterval);
       timerInterval = null;
@@ -646,13 +650,14 @@ ddioqjoidjq.name = "2Pac - Time Back";
   function createBlackTarget() {
     // const newBlackTarget = blackTarget.createInstance("black");
     const newBlackTarget = blackSide.loadedMeshes[0].instantiateHierarchy();
+    newBlackTarget.dts = destroyedTargetSound;
     newBlackTarget.name = "black";
     newBlackTarget.position.copyFrom(pos);
     newBlackTarget.position.y -= 0.2;
     newBlackTarget.position.z += 5;
     newBlackTarget.position.x += 0.1;
     newBlackTarget.isVisible = true;
-    newBlackTarget.rotation.x = Math.PI / 2;
+    // newBlackTarget.rotation.x = Math.PI / 2;
     shadowGenerator.addShadowCaster(newBlackTarget);
     return newBlackTarget;
   }
@@ -660,14 +665,14 @@ ddioqjoidjq.name = "2Pac - Time Back";
   function createYellowTarget() {
     const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
     newTellowTarget.name = "yellow";
-
+    newTellowTarget.dts = destroyedTargetSound;
     newTellowTarget.position.copyFrom(pos);
     newTellowTarget.position.y -= 0.2;
     newTellowTarget.position.z += 5;
     newTellowTarget.position.x -= 0.1;
     newTellowTarget.isVisible = true;
-    newTellowTarget.rotation.x = Math.PI / 2;
-    newTellowTarget.rotation.z = -Math.PI / 4;
+    // newTellowTarget.rotation.x = Math.PI / 2;
+    // newTellowTarget.rotation.z = -Math.PI / 4;
     shadowGenerator.addShadowCaster(newTellowTarget);
     return newTellowTarget;
   }
@@ -920,8 +925,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
 
     let paused = false;
     let lastTime = 0;
-    let startTime = performance.now();
-    const endTime = 1 * 60 * 1000;
+
     let global_count = 0;
     let progression = 0;
     engine.runRenderLoop(() => {
@@ -934,7 +938,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
       }
       if (!stopped && (now - lastTime >= 1000) && !paused) {
         lastTime = now;
-        if(now - startTime < endTime - 1000){
+        if(!(now - startTime >= endTime)){
           const tb = createBlackTarget();
           const ty = createYellowTarget();
           global_count++;
@@ -950,8 +954,8 @@ ddioqjoidjq.name = "2Pac - Time Back";
       }
 
       if (now - startTime >= endTime) {
-        if (paused) {
-          const timeLeft = 30 - Math.floor((now - (endTime + startTime)) / 1000);
+        if (paused && targets.length === 0) {
+          const timeLeft = 33 - Math.floor((now - (endTime + startTime)) / 1000);
           center.text = timeLeft.toString();
           if (timeLeft <= 0) {
             plane2.isVisible = false;
@@ -959,10 +963,9 @@ ddioqjoidjq.name = "2Pac - Time Back";
             global_count = 0;
             paused = false;
           }
-        } else {
+        } else if(targets.length === 0){
           paused = true;
           plane2.isVisible = true;
-          center.text = "30";
         }
       }
       if (leftController) {
@@ -1023,19 +1026,19 @@ ddioqjoidjq.name = "2Pac - Time Back";
       }
 
       if (targets.length > 0 && !stopped) {
+        const delta = Math.min(engine.getDeltaTime() / 1000, 0.016);
         for (let i = targets.length - 1; i >= 0; i--) {
           const target = targets[i];
+          target.position.z -= target.speed * delta;
           if (target.position.z < -1) {
               target.dispose();
               targets.splice(i, 1);
-          } else {
-            const delta = Math.min(engine.getDeltaTime() / 1000, 0.016);
-            target.position.z -= target.speed * delta;
           }
       }
       } else if (targets.length > 0 && stopped) {
         for (let i = targets.length - 1; i >= 0; i--) {
           const target = targets[i];
+          target.position.z -= target.speed * delta;
           if (target.position.z < -1) {
               target.dispose();
               targets.splice(i, 1);

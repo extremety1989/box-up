@@ -17,8 +17,9 @@
   },
   "dependencies": {
     "@babylonjs/core": "^7.5.0",
-    "@babylonjs/loaders": "^7.5.0",
     "@babylonjs/gui": "^7.5.0",
+    "@babylonjs/inspector": "^7.6.0",
+    "@babylonjs/loaders": "^7.5.0",
     "howler": "^2.2.4"
   }
 }
