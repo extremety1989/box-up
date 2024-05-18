@@ -33,14 +33,21 @@ const info = localStorage.getItem('info') ? JSON.parse(localStorage.getItem('inf
 
 async function run() {
 
+  function setEndTime(time) {
+    return time;
+  }
+
   let startTime = performance.now();
-  let endTime = 1 * 60 * 1000;
+  let endTime = setEndTime(1 * 60 * 1000);
+
+  
 
   if (info.difficulty === undefined) {
     info.difficulty = "Easy";
   }
 
   let stopped = true;
+  let globalSpeed = 0;
 
   const app = document.getElementById('app');
   const canvas = document.createElement('canvas');
@@ -152,19 +159,40 @@ ddioqjoidjq.name = "2Pac - Time Back";
   mp3s.push(dzdjjzaioj);
 
 
+  const djazjodafd = new Howl({
+    src: "./sounds/Kevin Rudolf - Let It Rock.mp3",
+    autoplay: false,
+    loop: true,
+    volume: 0.5
+  })
+  djazjodafd.name = "Kevin Rudolf - Let It Rock";
+  mp3s.push(djazjodafd);
+
+
 
   playRadio.onPointerClickObservable.add(() => {
     if (playRadio.textBlock.text === "Play") {
       playRadio.textBlock.text = "Stop";
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        anim.play();
+        
+        if(anim.name === "play"){
+          anim.play();
+        }
+        // if(anim.name === "stop"){
+        //   anim.stop();
+        // }
       });
       radioHeader.text = `${mp3s[mp3_index].name}`;
       mp3s[mp3_index].play();
     } else {
       playRadio.textBlock.text = "Play";
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        anim.stop();
+        if(anim.name === "play"){
+          anim.stop();
+        }
+        if(anim.name === "stop"){
+          anim.play();
+        }
       });
       radioHeader.text = ""
       mp3s[mp3_index].stop();
@@ -181,7 +209,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
   forwardRadio.fontSize = "100px";
   forwardRadio.onPointerClickObservable.add(() => {
     let was_playing = false;
-    if(mp3s[mp3_index].isPlaying()){
+    if(mp3s[mp3_index].playing()){
       was_playing = true;
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
         anim.stop();
@@ -212,7 +240,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
 
   backwardRadio.onPointerClickObservable.add(() => {
     let was_playing = false;
-    if(mp3s[mp3_index].isPlaying()){
+    if(mp3s[mp3_index].playing()){
       was_playing = true;
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
         anim.stop();
@@ -568,8 +596,51 @@ ddioqjoidjq.name = "2Pac - Time Back";
   center.fontSize = "120px";
   panel2.addControl(center);
 
+  function create_combo_1() {
 
-  let globalSpeed = 1;
+    let temp = [];
+    for (let i = 0; i < 4; i++) {
+      const tb = createBlackTarget();
+      const ty = createYellowTarget();
+
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.2;
+      ty.position.y = pos_y.y - 0.2;
+      temp.push(tb);
+      temp.push(ty);
+    }
+
+    for (let i = 0; i < 4; i++) {
+      const tb = createBlackTarget();
+      const ty = createYellowTarget();
+      const ty2 = createYellowTarget();
+
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.2;
+
+
+      ty.position.y = pos_y.y - 0.2;
+      ty2.position.y = pos_y.y - 0.2;
+    
+      temp.push(ty);
+      temp.push(ty2);
+      temp.push(tb);
+
+    }
+
+    let dist = 0;
+    temp.forEach(element => {
+      element.position.z += dist;
+      dist += 4;
+      element.speed = globalSpeed;
+      console.log(element.rotation);
+    });
+
+    targets = temp;
+    temp = null;
+  }
+
+
 
   let timerInterval = null;
 
@@ -580,23 +651,29 @@ ddioqjoidjq.name = "2Pac - Time Back";
       if (timerInterval) clearInterval(timerInterval);
       timerInterval = setInterval(() => {
         if (!plane2.isVisible) plane2.isVisible = true;
-
         center.text = sec.toString();
         if (sec <= 0) {
           pos.copyFrom(xr.baseExperience.camera.position);
           center.text = "Go!";
-          stopped = false;
           clearInterval(timerInterval);
           setTimeout(() => {
             if (info.difficulty === "Easy") {
-              globalSpeed = 2;
+              globalSpeed = 0.01;
+
+              create_combo_1();
+   
+
             } else if (info.difficulty === "Medium") {
-              globalSpeed = 2.5;
+              globalSpeed = 0.02;
+              create_combo_1();
             } else if (info.difficulty === "Hard") {
-              globalSpeed = 5;
+              globalSpeed = 0.03
+              create_combo_1();
             }
             plane2.isVisible = false;
+
             center.text = "";
+            stopped = false;
           }, 1000);
         }
         sec--;
@@ -624,10 +701,10 @@ ddioqjoidjq.name = "2Pac - Time Back";
   }
 
 
+
   function openMenu() {
     stopped = true;
     startTime = performance.now();
-    endTime = 1 * 60 * 1000;
     if (timerInterval) {
       clearInterval(timerInterval);
       timerInterval = null;
@@ -648,31 +725,32 @@ ddioqjoidjq.name = "2Pac - Time Back";
 
 
   function createBlackTarget() {
-    // const newBlackTarget = blackTarget.createInstance("black");
     const newBlackTarget = blackSide.loadedMeshes[0].instantiateHierarchy();
     newBlackTarget.dts = destroyedTargetSound;
     newBlackTarget.name = "black";
     newBlackTarget.position.copyFrom(pos);
+    newBlackTarget.rotation.x = Math.PI / 2;
     newBlackTarget.position.y -= 0.2;
     newBlackTarget.position.z += 5;
     newBlackTarget.position.x += 0.1;
     newBlackTarget.isVisible = true;
-    // newBlackTarget.rotation.x = Math.PI / 2;
+    newBlackTarget.speed = 0;
     shadowGenerator.addShadowCaster(newBlackTarget);
     return newBlackTarget;
   }
+
 
   function createYellowTarget() {
     const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
     newTellowTarget.name = "yellow";
     newTellowTarget.dts = destroyedTargetSound;
     newTellowTarget.position.copyFrom(pos);
+    newTellowTarget.rotation.x = Math.PI / 2;
     newTellowTarget.position.y -= 0.2;
     newTellowTarget.position.z += 5;
     newTellowTarget.position.x -= 0.1;
     newTellowTarget.isVisible = true;
-    // newTellowTarget.rotation.x = Math.PI / 2;
-    // newTellowTarget.rotation.z = -Math.PI / 4;
+    newTellowTarget.speed = 0;
     shadowGenerator.addShadowCaster(newTellowTarget);
     return newTellowTarget;
   }
@@ -685,14 +763,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
     return newUpper;
   }
 
-  function combo_1() {
-
-  }
-
-  function combo_5() {
-
-  }
-
+ 
   const leftCollision = MeshBuilder.CreateSphere("dummyCam", { diameter: 0.25 }, scene, true);
   leftCollision.isVisible = false;
   leftCollision.showBoundingBox = true;
@@ -829,7 +900,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
                 offOnGloves(true, false);
               } else {
                 offOnGloves(false, true);
-                getTimer(3);
+                getTimer(1);
               }
             } else {
               openMenu();
@@ -924,9 +995,6 @@ ddioqjoidjq.name = "2Pac - Time Back";
 
 
     let paused = false;
-    let lastTime = 0;
-
-    let global_count = 0;
     let progression = 0;
     engine.runRenderLoop(() => {
       scene.render();
@@ -936,38 +1004,23 @@ ddioqjoidjq.name = "2Pac - Time Back";
       if (progression === 1) {
 
       }
-      if (!stopped && (now - lastTime >= 1000) && !paused) {
-        lastTime = now;
-        if(!(now - startTime >= endTime)){
-          const tb = createBlackTarget();
-          const ty = createYellowTarget();
-          global_count++;
-          tb.position.y = xr.baseExperience.camera.position.y - 0.1;
-          tb.position.z = 15;
-          tb.speed = globalSpeed;
-          ty.position.y = xr.baseExperience.camera.position.y - 0.1;
-          ty.position.z = 16;
-          ty.speed = globalSpeed;
-          targets.push(tb);
-          targets.push(ty);
+
+      if (paused && targets.length === 0) {
+        const timeLeft = 30 - Math.floor((now - startTime) / 1000);
+        center.text = timeLeft.toString();
+ 
+        if (timeLeft <= 0) {
+          create_combo_1();
+          plane2.isVisible = false;
+
+          paused = false;
         }
+      } else if(targets.length === 0 && !paused && !stopped) {
+        paused = true;
+        plane2.isVisible = true;
+        startTime = performance.now();
       }
 
-      if (now - startTime >= endTime) {
-        if (paused && targets.length === 0) {
-          const timeLeft = 33 - Math.floor((now - (endTime + startTime)) / 1000);
-          center.text = timeLeft.toString();
-          if (timeLeft <= 0) {
-            plane2.isVisible = false;
-            startTime = performance.now();
-            global_count = 0;
-            paused = false;
-          }
-        } else if(targets.length === 0){
-          paused = true;
-          plane2.isVisible = true;
-        }
-      }
       if (leftController) {
         const currentTime = performance.now();
         const currentPosition = leftController.grip.position.clone();
@@ -1026,23 +1079,19 @@ ddioqjoidjq.name = "2Pac - Time Back";
       }
 
       if (targets.length > 0 && !stopped) {
-        const delta = Math.min(engine.getDeltaTime() / 1000, 0.016);
-        for (let i = targets.length - 1; i >= 0; i--) {
-          const target = targets[i];
-          target.position.z -= target.speed * delta;
-          if (target.position.z < -1) {
+        targets.forEach(target => {
+          const delta = engine.getDeltaTime() / 1000;
+          target.position.z = Scalar.Lerp(target.position.z, -100, target.speed * delta);
+          if (target.position.z <= -1) {
               target.dispose();
-              targets.splice(i, 1);
+              targets.splice(targets.indexOf(target), 1);
           }
-      }
+        });
       } else if (targets.length > 0 && stopped) {
         for (let i = targets.length - 1; i >= 0; i--) {
           const target = targets[i];
-          target.position.z -= target.speed * delta;
-          if (target.position.z < -1) {
-              target.dispose();
-              targets.splice(i, 1);
-          } 
+          target.dispose();
+          targets.splice(i, 1);
        }
       }
     });
