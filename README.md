@@ -13,11 +13,11 @@ Project with Vincent MAISONNET
 
 
 
-to launch and install packages you need "pnpm"
+to launch and install packages you need "npm"
 
-command to install all packages: pnpm install 
-command to run in dev: pnpm run dev
-command to build project: pnpm run build
+command to install all packages: npm install 
+command to run in dev: npm run dev
+command to build project: npm run build
 
 
 To run the game you need a VR.

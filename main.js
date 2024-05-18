@@ -820,7 +820,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
               mesh.isVisible = true;
               if (mesh.name === "__root__") {
                 mesh.position = target.position;
-                mesh.rotation = target.rotation;
+                mesh.rotationQuaternion = target.rotationQuaternion;
               }
             });
             const fracture = yellowSideFracture.loadedMeshes[0].instantiateHierarchy();
@@ -856,7 +856,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
               mesh.isVisible = true;
               if (mesh.name === "__root__") {
                 mesh.position = target.position;
-                mesh.rotation = target.rotation;
+                mesh.rotationQuaternion = target.rotationQuaternion;
               }
             });
             const fracture = blackSideFracture.loadedMeshes[0].instantiateHierarchy();
@@ -1039,61 +1039,34 @@ ddioqjoidjq.name = "2Pac - Time Back";
         startTime = performance.now();
       }
 
-      if (leftController) {
-        const currentTime = performance.now();
-        const currentPosition = leftController.grip.position.clone();
-        if (leftPreviousPosition && leftPreviousTime) {
-          const deltaTime = (currentTime - leftPreviousTime) / 1000;
-          if (deltaTime > 0) {
-            const velocity = currentPosition.subtract(leftPreviousPosition).scale(1 / deltaTime);
-            if (velocity.length() > 0.1) {
-              left.velocity = velocity;
+      if(leftController && rightController){
+        [leftController, rightController].forEach((controller) => {
+          const currentTime = performance.now();
+          const currentPosition = controller.grip.position.clone();
+          if (leftPreviousPosition && leftPreviousTime) {
+            const deltaTime = (currentTime - leftPreviousTime) / 1000;
+            if (deltaTime > 0) {
+              const velocity = currentPosition.subtract(leftPreviousPosition).scale(1 / deltaTime);
+              if (velocity.length() > 0.1) {
+                left.velocity = velocity;
+              }
             }
           }
-        }
-
-        if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed) {
-
-          if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
-            let targetPosition = new Vector3(0, currentPosition.y, 0);
-            floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
-            floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.3);
-            floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.3);
-            info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
-          }
-        }
-
-        leftPreviousPosition = currentPosition;
-        leftPreviousTime = currentTime;
-      }
-
-      if (rightController) {
-        const currentTime = performance.now();
-        const currentPosition = rightController.grip.position.clone();
-        if (rightPreviousPosition && rightPreviousTime) {
-          const deltaTime = (currentTime - rightPreviousTime) / 1000;
-          if (deltaTime > 0) {
-            const velocity = currentPosition.subtract(rightPreviousPosition).scale(1 / deltaTime);
-            if (velocity.length() > 0.1) {
-              right.velocity = velocity;
+  
+          if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed) {
+  
+            if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
+              let targetPosition = new Vector3(0, currentPosition.y, 0);
+              floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
+              floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.3);
+              floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.3);
+              info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
             }
           }
-        }
-
-
-        if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed) {
-          if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
-            let targetPosition = new Vector3(0, currentPosition.y, 0);
-            floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
-            floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.3);
-            floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.3);
-            info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
-          }
-        }
-
-
-        rightPreviousPosition = currentPosition;
-        rightPreviousTime = currentTime;
+  
+          leftPreviousPosition = currentPosition;
+          leftPreviousTime = currentTime;
+        });
       }
 
       if (targets.length > 0 && !stopped) {
