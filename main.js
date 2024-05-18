@@ -79,7 +79,7 @@ async function run() {
   advancedTextureRadio.idealWidth = 600;
 
 
-  const radioPlane = MeshBuilder.CreatePlane("radioPlane", { size: 1.0 }, scene);
+  const radioPlane = MeshBuilder.CreatePlane("radioPlane", { }, scene);
   radioPlane.isVisible = true;
   radioPlane.position = new Vector3(2.5, 1.5, 0);
   radioPlane.rotation = new Vector3(0, Math.PI / 2, 0);
@@ -92,8 +92,10 @@ async function run() {
   panelRadio.background = "black";
   panelRadio.alpha = 0.8;
   advancedTextureRadio2.addControl(panelRadio);
+ 
 
-  const gridRadio = new Grid("Grid");
+
+  const gridRadio = new Grid("gridRadio");
   gridRadio.height = "600px"
   gridRadio.addRowDefinition(200, true);
   gridRadio.addRowDefinition(200, true);
@@ -103,13 +105,14 @@ async function run() {
   gridRadio.verticalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER
 
   const radioHeader = new TextBlock();
+  radioHeader.height = "200px";
   radioHeader.text = "";
-  radioHeader.paddingTop = "260px";
+  radioHeader.paddingTop = "60px";
   radioHeader.paddingLeft = "40px";
   radioHeader.color = '#fff';
-  radioHeader.fontSizeInPixels = 12;
+  radioHeader.fontSizeInPixels = 1;
   radioHeader.fontWeight = '300';
-  radioHeader.fontSize = "100px";
+  radioHeader.fontSize = "80px";
 
   const playRadio = Button.CreateSimpleButton("playRadio", "Play");
   playRadio.paddingTop = "40px";
@@ -312,6 +315,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
     task.loadedMeshes.forEach((mesh) => {
       if(mesh.name === "__root__"){
         mesh.position.x = 0;
+        mesh.rotation.x = Math.PI / 2;
       }
       mesh.isVisible = false;
     });
@@ -329,6 +333,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
     task.loadedMeshes.forEach((mesh) => {
       if(mesh.name === "__root__"){
         mesh.position.x = 0;
+        mesh.rotation.x = Math.PI / 2;
       }
       mesh.isVisible = false;
     });
@@ -446,15 +451,15 @@ ddioqjoidjq.name = "2Pac - Time Back";
   header.fontSize = "80px";
   panel.addControl(header);
 
-  const grid = new Grid("Grid");
-  grid.height = "400px"
-  grid.addRowDefinition(100, true);
-  grid.addRowDefinition(100, true);
-  grid.addRowDefinition(100, true);
-  grid.addColumnDefinition(500, true)
-  grid.addColumnDefinition(500, true)
-  grid.addColumnDefinition(500, true)
-  grid.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER
+  const gridMenu = new Grid("gridMenu");
+  gridMenu.height = "400px"
+  gridMenu.addRowDefinition(100, true);
+  gridMenu.addRowDefinition(100, true);
+  gridMenu.addRowDefinition(100, true);
+  gridMenu.addColumnDefinition(500, true)
+  gridMenu.addColumnDefinition(500, true)
+  gridMenu.addColumnDefinition(500, true)
+  gridMenu.verticalAlignment = Control.VERTICAL_ALIGNMENT_CENTER
 
   const button_1 = Button.CreateSimpleButton("Easy", "Easy");
   button_1.paddingTop = "40px";
@@ -497,13 +502,13 @@ ddioqjoidjq.name = "2Pac - Time Back";
   button_5.fontSize = "40px";
 
 
-  panel.addControl(grid);
-  grid.addControl(button_1, 0, 0);
-  grid.addControl(button_2, 1, 0);
-  grid.addControl(button_3, 2, 0);
+  panel.addControl(gridMenu);
+  gridMenu.addControl(button_1, 0, 0);
+  gridMenu.addControl(button_2, 1, 0);
+  gridMenu.addControl(button_3, 2, 0);
 
-  grid.addControl(button_4, 0, 1);
-  grid.addControl(button_5, 1, 1);
+  gridMenu.addControl(button_4, 0, 1);
+  gridMenu.addControl(button_5, 1, 1);
 
 
   if (info.difficulty === button_1.name) {
@@ -613,17 +618,27 @@ ddioqjoidjq.name = "2Pac - Time Back";
     for (let i = 0; i < 4; i++) {
       const tb = createBlackTarget();
       const ty = createYellowTarget();
-      const ty2 = createYellowTarget();
-
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-Math.PI / 2 - 0.5, 0, 0);
       const pos_y = xr.baseExperience.camera.position.clone();
       tb.position.y = pos_y.y - 0.2;
-
-
       ty.position.y = pos_y.y - 0.2;
-      ty2.position.y = pos_y.y - 0.2;
-    
+
       temp.push(ty);
-      temp.push(ty2);
+      temp.push(tb);
+
+    }
+
+    for (let i = 0; i < 4; i++) {
+      const tb = createBlackTarget();
+      const ty = createYellowTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.2 - 0.5;
+      ty.position.y = pos_y.y - 0.2 - 0.5;
+
+      temp.push(ty);
       temp.push(tb);
 
     }
@@ -633,7 +648,6 @@ ddioqjoidjq.name = "2Pac - Time Back";
       element.position.z += dist;
       dist += 4;
       element.speed = globalSpeed;
-      console.log(element.rotation);
     });
 
     targets = temp;
@@ -745,7 +759,6 @@ ddioqjoidjq.name = "2Pac - Time Back";
     newTellowTarget.name = "yellow";
     newTellowTarget.dts = destroyedTargetSound;
     newTellowTarget.position.copyFrom(pos);
-    newTellowTarget.rotation.x = Math.PI / 2;
     newTellowTarget.position.y -= 0.2;
     newTellowTarget.position.z += 5;
     newTellowTarget.position.x -= 0.1;
@@ -807,6 +820,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
               mesh.isVisible = true;
               if (mesh.name === "__root__") {
                 mesh.position = target.position;
+                mesh.rotation = target.rotation;
               }
             });
             const fracture = yellowSideFracture.loadedMeshes[0].instantiateHierarchy();
@@ -842,6 +856,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
               mesh.isVisible = true;
               if (mesh.name === "__root__") {
                 mesh.position = target.position;
+                mesh.rotation = target.rotation;
               }
             });
             const fracture = blackSideFracture.loadedMeshes[0].instantiateHierarchy();
@@ -988,6 +1003,9 @@ ddioqjoidjq.name = "2Pac - Time Back";
 
 
   assetsManager.onFinish = function (tasks) {
+
+
+
     let leftPreviousPosition = null;
     let leftPreviousTime = null;
     let rightPreviousPosition = null;
@@ -1038,9 +1056,9 @@ ddioqjoidjq.name = "2Pac - Time Back";
 
           if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
             let targetPosition = new Vector3(0, currentPosition.y, 0);
-            floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.2);
-            floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.2);
-            floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.2);
+            floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
+            floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.3);
+            floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.3);
             info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
           }
         }
@@ -1066,9 +1084,9 @@ ddioqjoidjq.name = "2Pac - Time Back";
         if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed) {
           if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
             let targetPosition = new Vector3(0, currentPosition.y, 0);
-            floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.2);
-            floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.2);
-            floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.2);
+            floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
+            floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.3);
+            floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.3);
             info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
           }
         }
