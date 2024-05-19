@@ -603,6 +603,7 @@ async function run() {
     let dist = 0;
     let temp = [];
 
+
     //jab cross
     for (let i = 0; i < 2; i++) {
       const tb = createBlackTarget();
@@ -620,49 +621,49 @@ async function run() {
       ty.speed = 0.03;
       dist += 4;
     }
-    dist += 10;
+    dist += 20;
 
-        //cross jab
-        for (let i = 0; i < 2; i++) {
-          const tb = createBlackTarget();
-          const ty = createYellowTarget();
-          const pos_y = xr.baseExperience.camera.position.clone();
-          tb.position.y = pos_y.y - 0.2;
-          ty.position.y = pos_y.y - 0.2;
-          tb.position.x = 0.1
-          ty.position.x = -0.1
-          temp.push(tb);
-          temp.push(ty);
-          tb.position.z += dist;
-          ty.position.z += dist+2;
-          tb.speed = 0.03;
-          ty.speed = 0.03;
-          dist += 4;
-        }
-        dist += 10;
+    //cross jab
+    for (let i = 0; i < 2; i++) {
+      const tb = createBlackTarget();
+      const ty = createYellowTarget();
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.2;
+      ty.position.y = pos_y.y - 0.2;
+      tb.position.x = 0.1
+      ty.position.x = -0.1
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist;
+      ty.position.z += dist + 2;
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+      dist += 4;
+    }
+    dist += 20;
 
 
-        //lead uppercut, rear uppercut
-        for (let i = 0; i < 1; i++) {
-          const tb = createBlackTarget();
-          tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
-          const ty = createYellowTarget();
-          ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
-          const pos_y = xr.baseExperience.camera.position.clone();
-          tb.position.y = pos_y.y - 0.3;
-          ty.position.y = pos_y.y - 0.3;
-          tb.position.x = 0
-          ty.position.x = 0
-          temp.push(tb);
-          temp.push(ty);
-          tb.position.z += dist + 2;
-          ty.position.z += dist;
-          dist += 4;
-    
-          tb.speed = 0.03;
-          ty.speed = 0.03;
-        }
-        dist += 10;
+    //lead uppercut, rear uppercut
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.3;
+      ty.position.y = pos_y.y - 0.3;
+      tb.position.x = 0
+      ty.position.x = 0
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist + 6;
+      ty.position.z += dist;
+      dist += 4;
+
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 20;
 
     //lead hook, rear hook
     for (let i = 0; i < 1; i++) {
@@ -683,51 +684,51 @@ async function run() {
       tb.speed = 0.03;
       ty.speed = 0.03;
     }
-    dist += 10;
+    dist += 20;
 
 
-            //lead uppercut, rear uppercut
-            for (let i = 0; i < 1; i++) {
-              const tb = createBlackTarget();
-              tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
-              const ty = createYellowTarget();
-              ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
-              const pos_y = xr.baseExperience.camera.position.clone();
-              tb.position.y = pos_y.y - 0.3;
-              ty.position.y = pos_y.y - 0.3;
-              tb.position.x = 0
-              ty.position.x = 0
-              temp.push(tb);
-              temp.push(ty);
-              tb.position.z += dist + 2;
-              ty.position.z += dist;
-              dist += 4;
-        
-              tb.speed = 0.03;
-              ty.speed = 0.03;
-            }
-            dist += 10;
-    
-        //lead hook, rear hook
-        for (let i = 0; i < 1; i++) {
-          const tb = createBlackTarget();
-          tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
-          const ty = createYellowTarget();
-          ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-(Math.PI / 2 + 0.5), 0, 0);
-          const pos_y = xr.baseExperience.camera.position.clone();
-          tb.position.y = pos_y.y - 0.2;
-          ty.position.y = pos_y.y - 0.2;
-          tb.position.x = 0
-          ty.position.x = -0.1
-          temp.push(tb);
-          temp.push(ty);
-          ty.position.z += dist + 2;
-          tb.position.z += dist + 6;
-          dist += 14;
-          tb.speed = 0.03;
-          ty.speed = 0.03;
-        }
-        dist += 20;
+    //lead uppercut, rear uppercut
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.3;
+      ty.position.y = pos_y.y - 0.3;
+      tb.position.x = 0
+      ty.position.x = 0
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist + 6;
+      ty.position.z += dist;
+      dist += 4;
+
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 20;
+
+    //lead hook, rear hook
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-(Math.PI / 2 + 0.5), 0, 0);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.2;
+      ty.position.y = pos_y.y - 0.2;
+      tb.position.x = 0
+      ty.position.x = -0.1
+      temp.push(tb);
+      temp.push(ty);
+      ty.position.z += dist + 2;
+      tb.position.z += dist + 6;
+      dist += 14;
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 20;
 
 
     //evade right, evade left
@@ -738,146 +739,102 @@ async function run() {
       const up = createUpper();
       up.scaling.z = 3.0;
       up.position.z += dist;
-      up.position.y = pos_y.y - 0.4;
+      up.position.y = pos_y.y - 0.2;
       up.speed = 0.03;
       temp.push(up);
-      dist += 10;
+      dist += 4 + up.scaling.z;
     }
-
-      //lead skycut, rear skycut, left first
-      for (let i = 0; i < 1; i++) {
-        const tb = createBlackTarget();
-        tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
-        const ty = createYellowTarget();
-        ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
-        const pos_y = xr.baseExperience.camera.position.clone();
-        tb.position.y = pos_y.y + 0.3;
-        ty.position.y = pos_y.y + 0.3;
-        tb.position.x = 0.1
-        ty.position.x = -0.1
-        temp.push(tb);
-        temp.push(ty);
-        tb.position.z += dist + 2;
-        ty.position.z += dist;
-        dist += 4;
-  
-        tb.speed = 0.03;
-        ty.speed = 0.03;
-      }
-      dist += 4;
-
-            //lead skycut + rear skycut
-            for (let i = 0; i < 1; i++) {
-              const tb = createBlackTarget();
-              tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
-              const ty = createYellowTarget();
-              ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
-              const pos_y = xr.baseExperience.camera.position.clone();
-              tb.position.y = pos_y.y + 0.3;
-              ty.position.y = pos_y.y + 0.3;
-              tb.position.x = 0.2
-              ty.position.x = -0.2
-              temp.push(tb);
-              temp.push(ty);
-              tb.position.z += dist;
-              ty.position.z += dist;
-              dist += 4;
-        
-              tb.speed = 0.03;
-              ty.speed = 0.03;
-            }
-            dist += 4;
-
-      //lead skycut, rear skycut, right first
-      for (let i = 0; i < 1; i++) {
-        const tb = createBlackTarget();
-        tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
-        const ty = createYellowTarget();
-        ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
-        const pos_y = xr.baseExperience.camera.position.clone();
-        tb.position.y = pos_y.y + 0.3;
-        ty.position.y = pos_y.y + 0.3;
-        tb.position.x = 0.1
-        ty.position.x = -0.1
-        temp.push(tb);
-        temp.push(ty);
-        tb.position.z += dist;
-        ty.position.z += dist + 2;
-        dist += 4;
-  
-        tb.speed = 0.03;
-        ty.speed = 0.03;
-      }
-      dist += 4;
-
-      //lead skycut + rear skycut
-      for (let i = 0; i < 1; i++) {
-        const tb = createBlackTarget();
-        tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
-        const ty = createYellowTarget();
-        ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
-        const pos_y = xr.baseExperience.camera.position.clone();
-        tb.position.y = pos_y.y + 0.3;
-        ty.position.y = pos_y.y + 0.3;
-        tb.position.x = 0.2
-        ty.position.x = -0.2
-        temp.push(tb);
-        temp.push(ty);
-        tb.position.z += dist;
-        ty.position.z += dist;
-        dist += 4;
-  
-        tb.speed = 0.03;
-        ty.speed = 0.03;
-      }
-      dist += 10;
-
-
-     //lead hummer, rear hummer, left first
-     for (let i = 0; i < 1; i++) {
+    dist += 20;
+    //lead skycut, rear skycut, left first
+    for (let i = 0; i < 1; i++) {
       const tb = createBlackTarget();
-      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
       const ty = createYellowTarget();
-      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
       const pos_y = xr.baseExperience.camera.position.clone();
-      tb.position.y = pos_y.y - 0.3;
-      ty.position.y = pos_y.y - 0.3;
+      tb.position.y = pos_y.y + 0.3;
+      ty.position.y = pos_y.y + 0.3;
       tb.position.x = 0.1
       ty.position.x = -0.1
       temp.push(tb);
       temp.push(ty);
-      tb.position.z += dist + 2;
+      tb.position.z += dist + 4;
       ty.position.z += dist;
       dist += 4;
 
       tb.speed = 0.03;
       ty.speed = 0.03;
     }
-    dist += 4;
+    dist += 20;
 
-          //lead hummer + rear hummer
-          for (let i = 0; i < 1; i++) {
-            const tb = createBlackTarget();
-            tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
-            const ty = createYellowTarget();
-            ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
-            const pos_y = xr.baseExperience.camera.position.clone();
-            tb.position.y = pos_y.y - 0.3;
-            ty.position.y = pos_y.y - 0.3;
-            tb.position.x = 0.2
-            ty.position.x = -0.2
-            temp.push(tb);
-            temp.push(ty);
-            tb.position.z += dist;
-            ty.position.z += dist;
-            dist += 4;
-      
-            tb.speed = 0.03;
-            ty.speed = 0.03;
-          }
-          dist += 4;
+    //lead skycut + rear skycut
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y + 0.3;
+      ty.position.y = pos_y.y + 0.3;
+      tb.position.x = 0.2
+      ty.position.x = -0.2
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist;
+      ty.position.z += dist;
+      dist += 4;
 
-    //lead hummer, rear hummer, right first
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 20;
+
+    //lead skycut, rear skycut, right first
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y + 0.3;
+      ty.position.y = pos_y.y + 0.3;
+      tb.position.x = 0.1
+      ty.position.x = -0.1
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist;
+      ty.position.z += dist + 4;
+      dist += 4;
+
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 20;
+
+    //lead skycut + rear skycut
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y + 0.3;
+      ty.position.y = pos_y.y + 0.3;
+      tb.position.x = 0.2
+      ty.position.x = -0.2
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist;
+      ty.position.z += dist;
+      dist += 4;
+
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 20;
+
+
+    //lead hummer, rear hummer, left first
     for (let i = 0; i < 1; i++) {
       const tb = createBlackTarget();
       tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
@@ -890,14 +847,14 @@ async function run() {
       ty.position.x = -0.1
       temp.push(tb);
       temp.push(ty);
-      tb.position.z += dist;
-      ty.position.z += dist + 2;
+      tb.position.z += dist + 4;
+      ty.position.z += dist;
       dist += 4;
 
       tb.speed = 0.03;
       ty.speed = 0.03;
     }
-    dist += 4;
+    dist += 20;
 
     //lead hummer + rear hummer
     for (let i = 0; i < 1; i++) {
@@ -919,7 +876,51 @@ async function run() {
       tb.speed = 0.03;
       ty.speed = 0.03;
     }
-    dist += 10;
+    dist += 20;
+
+    //lead hummer, rear hummer, right first
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.3;
+      ty.position.y = pos_y.y - 0.3;
+      tb.position.x = 0.1
+      ty.position.x = -0.1
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist;
+      ty.position.z += dist + 4;
+      dist += 4;
+
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 20;
+
+    //lead hummer + rear hummer
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.3;
+      ty.position.y = pos_y.y - 0.3;
+      tb.position.x = 0.2
+      ty.position.x = -0.2
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist;
+      ty.position.z += dist;
+      dist += 4;
+
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 20;
 
 
     targets = temp;
@@ -1037,8 +1038,8 @@ async function run() {
       temp.push(tb);
       temp.push(ty);
       temp.push(tb2);
-   
-  
+
+
       tb.position.z += dist + 2;
       tb2.position.z += dist + 4;
       ty.position.z += dist + 6;
@@ -1145,7 +1146,7 @@ async function run() {
               create_combo_tutorial();
 
 
-            } 
+            }
             // else if (info.difficulty === "Medium") {
             //   globalSpeed = 0.04;
             //   create_combo_1();
@@ -1455,7 +1456,7 @@ async function run() {
           if (progression === 0) {
             create_combo_tutorial();
             // create_combo_1();
-          } 
+          }
           // else if (progression === 1) {
           //   create_combo_1();
           // } else if (progression === 2) {
