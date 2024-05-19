@@ -41,6 +41,7 @@ async function run() {
   let allow_click_the_menu = true;
   let combo_tutorial = false;
   let tutorial = false;
+  let target;
   let targets = [];
   let startTime = performance.now();
   let progression = 0;
@@ -178,6 +179,8 @@ async function run() {
 
 
   playRadio.onPointerClickObservable.add(() => {
+    target = null;
+    if(!allow_click_the_menu) return;
     if (playRadio.textBlock.text === "Play") {
       playRadio.textBlock.text = "Stop";
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
@@ -215,6 +218,8 @@ async function run() {
   forwardRadio.fontWeight = '300';
   forwardRadio.fontSize = "100px";
   forwardRadio.onPointerClickObservable.add(() => {
+    target = null;
+    if (!allow_click_the_menu) return;
     let was_playing = false;
     if (mp3s[mp3_index].playing()) {
       was_playing = true;
@@ -246,6 +251,8 @@ async function run() {
   backwardRadio.fontSize = "100px";
 
   backwardRadio.onPointerClickObservable.add(() => {
+    target = null;
+    if (!allow_click_the_menu) return;
     let was_playing = false;
     if (mp3s[mp3_index].playing()) {
       was_playing = true;
@@ -534,6 +541,7 @@ async function run() {
 
 
   button_1.onPointerClickObservable.add(() => {
+    target = null;
     if (!allow_click_the_menu) return;
     info.difficulty = button_1.name;
     localStorage.setItem('info', JSON.stringify(info));
@@ -546,6 +554,7 @@ async function run() {
   });
 
   button_2.onPointerClickObservable.add(() => {
+    target = null;
     if (!allow_click_the_menu) return;
     info.difficulty = button_2.name;
     localStorage.setItem('info', JSON.stringify(info));
@@ -558,6 +567,7 @@ async function run() {
   });
 
   button_3.onPointerClickObservable.add(() => {
+    target = null;
     if (!allow_click_the_menu) return;
     info.difficulty = button_3.name;
     localStorage.setItem('info', JSON.stringify(info));
@@ -570,6 +580,7 @@ async function run() {
   });
 
   button_4.onPointerClickObservable.add(() => {
+    target = null;
     if (!allow_click_the_menu) return;
     startTutorial();
   });
@@ -1395,7 +1406,7 @@ async function run() {
     }
   });
 
-  let target;
+
   let leftController;
   let rightController;
   xr.input.onControllerAddedObservable.add((controller) => {
