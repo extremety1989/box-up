@@ -580,7 +580,6 @@ async function run() {
   });
 
   button_4.onPointerClickObservable.add(() => {
-    target = null;
     if (!allow_click_the_menu) return;
     startTutorial();
   });
@@ -625,6 +624,7 @@ async function run() {
 
 
   function startTutorial() {
+    target = null;
     tutorial = true;
     allow_click_the_menu = false;
     const startTutorialMP3 = new Howl({
@@ -1465,19 +1465,19 @@ async function run() {
             if (target && target.name === "plane" && target.parent === null && !floorPosition.isVisible) {
               target.setParent(motionController.rootMesh);
             }
-          } else if (stopped && allow_click_the_menu) {
+          } else if (stopped) {
             if (plane.parent) {
               plane.setParent(null);
             }
 
             if (target) {
 
-              if (target.name === "Circle" && !floorPosition.isVisible && !tutorial) {
+              if (target.name === "Circle" && !floorPosition.isVisible && !tutorial && allow_click_the_menu) {
                 xr.baseExperience.camera.position.x = 0;
                 xr.baseExperience.camera.position.z = 0;
               }
 
-              if (target.name.startsWith("Circle.00") && !floorPosition.isVisible && !tutorial) {
+              if (target.name.startsWith("Circle.00") && !floorPosition.isVisible && !tutorial && allow_click_the_menu) {
                 xr.baseExperience.camera.position.x = -target.position.x;
                 xr.baseExperience.camera.position.z = target.position.z;
               }
@@ -1485,7 +1485,7 @@ async function run() {
               target = null;
             }
 
-            if (floorPosition.isVisible && !plane.isVisible) {
+            if (floorPosition.isVisible && !plane.isVisible && allow_click_the_menu) {
 
               floorPosition.isPressed = false;
               localStorage.setItem('info', JSON.stringify(info));
