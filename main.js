@@ -17,7 +17,6 @@ import {
   SceneLoader,
   ShadowGenerator,
   AssetsManager,
-  Sound,
   Engine,
 } from '@babylonjs/core';
 
@@ -34,6 +33,14 @@ const info = localStorage.getItem('info') ? JSON.parse(localStorage.getItem('inf
 
 async function run() {
 
+  let comobo_tutorial_1 = false;
+  let comobo_tutorial_2 = false;
+  let comobo_tutorial_3 = false;
+  let comobo_tutorial_4 = false;
+  let comobo_tutorial_5 = false;
+  let allow_click_the_menu = true;
+  let combo_tutorial = false;
+  let tutorial = false;
   let targets = [];
   let startTime = performance.now();
   let progression = 0;
@@ -527,6 +534,7 @@ async function run() {
 
 
   button_1.onPointerClickObservable.add(() => {
+    if (!allow_click_the_menu) return;
     info.difficulty = button_1.name;
     localStorage.setItem('info', JSON.stringify(info));
     button_1.background = '#fff';
@@ -538,6 +546,7 @@ async function run() {
   });
 
   button_2.onPointerClickObservable.add(() => {
+    if (!allow_click_the_menu) return;
     info.difficulty = button_2.name;
     localStorage.setItem('info', JSON.stringify(info));
     button_1.color = '#fff';
@@ -549,6 +558,7 @@ async function run() {
   });
 
   button_3.onPointerClickObservable.add(() => {
+    if (!allow_click_the_menu) return;
     info.difficulty = button_3.name;
     localStorage.setItem('info', JSON.stringify(info));
     button_1.color = '#fff';
@@ -560,13 +570,15 @@ async function run() {
   });
 
   button_4.onPointerClickObservable.add(() => {
-
+    if (!allow_click_the_menu) return;
+    startTutorial();
   });
 
   const floorPosition = MeshBuilder.CreateGround("floorPlane", { width: 2, height: 2 }, scene);
   floorPosition.isVisible = false;
 
   button_5.onPointerDownObservable.add(() => {
+    if (!allow_click_the_menu) return;
     if (!floorPosition.isVisible && stopped) {
       plane.isVisible = false;
       const fcp = xr.baseExperience.camera.position
@@ -598,12 +610,44 @@ async function run() {
   center.fontSize = "120px";
   panel2.addControl(center);
 
-  function create_combo_tutorial() {
-
-    let dist = 0;
-    let temp = [];
 
 
+  function startTutorial() {
+    plane.isVisible = false;
+    tutorial = true;
+    allow_click_the_menu = false;
+    const startTutorialMP3 = new Howl({
+      src: ['./sounds/welcome_tutorial.mp3']
+    });
+    startTutorialMP3.once('load', function () {
+
+      startTutorialMP3.play();
+    });
+
+    startTutorialMP3.on('end', function () {
+      startFloorFix();
+    });
+  }
+
+
+  function startFloorFix() {
+    allow_click_the_menu = false;
+    const fixFloorPositionMP3 = new Howl({
+      src: ['./sounds/adjust_floor.mp3']
+    });
+
+    fixFloorPositionMP3.once('load', function () {
+      fixFloorPositionMP3.play();
+    });
+
+    fixFloorPositionMP3.on('end', function () {
+      allow_click_the_menu = true;
+    });
+  }
+
+
+
+  function JabCross(temp, dist) {
     //jab cross
     for (let i = 0; i < 2; i++) {
       const tb = createBlackTarget();
@@ -622,7 +666,11 @@ async function run() {
       dist += 4;
     }
     dist += 20;
+    targets = temp;
+    comobo_tutorial_2 = true;
+  }
 
+  function CrossJab(temp, dist) {
     //cross jab
     for (let i = 0; i < 2; i++) {
       const tb = createBlackTarget();
@@ -641,51 +689,11 @@ async function run() {
       dist += 4;
     }
     dist += 20;
+    targets = temp;
+    comobo_tutorial_3 = true;
+  }
 
-
-    //lead uppercut, rear uppercut
-    for (let i = 0; i < 1; i++) {
-      const tb = createBlackTarget();
-      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
-      const ty = createYellowTarget();
-      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
-      const pos_y = xr.baseExperience.camera.position.clone();
-      tb.position.y = pos_y.y - 0.3;
-      ty.position.y = pos_y.y - 0.3;
-      tb.position.x = 0
-      ty.position.x = 0
-      temp.push(tb);
-      temp.push(ty);
-      tb.position.z += dist + 6;
-      ty.position.z += dist;
-      dist += 4;
-
-      tb.speed = 0.03;
-      ty.speed = 0.03;
-    }
-    dist += 20;
-
-    //lead hook, rear hook
-    for (let i = 0; i < 1; i++) {
-      const tb = createBlackTarget();
-      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
-      const ty = createYellowTarget();
-      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-(Math.PI / 2 + 0.5), 0, 0);
-      const pos_y = xr.baseExperience.camera.position.clone();
-      tb.position.y = pos_y.y - 0.2;
-      ty.position.y = pos_y.y - 0.2;
-      tb.position.x = 0
-      ty.position.x = -0.1
-      temp.push(tb);
-      temp.push(ty);
-      ty.position.z += dist + 2;
-      tb.position.z += dist + 6;
-      dist += 14;
-      tb.speed = 0.03;
-      ty.speed = 0.03;
-    }
-    dist += 20;
-
+  function UpperCutAndHook(temp, dist) {
 
     //lead uppercut, rear uppercut
     for (let i = 0; i < 1; i++) {
@@ -731,8 +739,53 @@ async function run() {
     dist += 20;
 
 
-    //evade right, evade left
-    //need to implement
+    //lead uppercut, rear uppercut
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.3;
+      ty.position.y = pos_y.y - 0.3;
+      tb.position.x = 0
+      ty.position.x = 0
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist + 6;
+      ty.position.z += dist;
+      dist += 4;
+
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 20;
+
+    //lead hook, rear hook
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-(Math.PI / 2 + 0.5), 0, 0);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.2;
+      ty.position.y = pos_y.y - 0.2;
+      tb.position.x = 0
+      ty.position.x = -0.1
+      temp.push(tb);
+      temp.push(ty);
+      ty.position.z += dist + 2;
+      tb.position.z += dist + 6;
+      dist += 14;
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 20;
+    targets = temp;
+    comobo_tutorial_4 = true;
+  }
+
+  function SkyHammerSquat(temp, dist) {
     //squad
     for (let i = 0; i < 1; i++) {
       const pos_y = xr.baseExperience.camera.position.clone();
@@ -834,7 +887,7 @@ async function run() {
     dist += 20;
 
 
-    //lead hummer, rear hummer, left first
+    //lead hammer, rear hammer, left first
     for (let i = 0; i < 1; i++) {
       const tb = createBlackTarget();
       tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
@@ -856,7 +909,7 @@ async function run() {
     }
     dist += 20;
 
-    //lead hummer + rear hummer
+    //lead hammer + rear hammer
     for (let i = 0; i < 1; i++) {
       const tb = createBlackTarget();
       tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
@@ -878,7 +931,7 @@ async function run() {
     }
     dist += 20;
 
-    //lead hummer, rear hummer, right first
+    //lead hammer, rear hammer, right first
     for (let i = 0; i < 1; i++) {
       const tb = createBlackTarget();
       tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
@@ -900,7 +953,7 @@ async function run() {
     }
     dist += 20;
 
-    //lead hummer + rear hummer
+    //lead hammer + rear hammer
     for (let i = 0; i < 1; i++) {
       const tb = createBlackTarget();
       tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
@@ -921,9 +974,21 @@ async function run() {
       ty.speed = 0.03;
     }
     dist += 20;
-
-
     targets = temp;
+    comobo_tutorial_5 = true;
+
+
+  }
+
+
+
+  function create_combo_tutorial() {
+
+
+    combo_tutorial = true;
+    offOnGloves(false, true);
+    plane.isVisible = false;
+    comobo_tutorial_1 = true;
   }
 
   function create_combo_1() {
@@ -1142,8 +1207,7 @@ async function run() {
             if (info.difficulty === "Easy") {
               globalSpeed = 0.03;
 
-              // create_combo_1();
-              create_combo_tutorial();
+              create_combo_1();
 
 
             }
@@ -1186,7 +1250,23 @@ async function run() {
 
 
 
+
+  function OkFloorAdjust() {
+    const okFloor = new Howl({
+      src: ['./sounds/continue_tutorial.mp3']
+    });
+    okFloor.once('load', function () {
+      okFloor.play();
+    });
+
+    okFloor.on('end', function () {
+
+    });
+  }
+
+
   function openMenu() {
+
     stopped = true;
     startTime = performance.now();
     if (timerInterval) {
@@ -1329,9 +1409,19 @@ async function run() {
         const ids = motionController.getComponentIds();
         const trigger = motionController.getComponent(ids[0]);
         const thumb_stick = motionController.getComponent(ids[2]);
+        const A_OR_X = motionController.getComponent(ids[3]);
+        const B_OR_Y = motionController.getComponent(ids[4]);
+
+        [A_OR_X, B_OR_Y].forEach((button) => {
+          button.onButtonStateChangedObservable.add(() => {
+            if (button.pressed && stopped && tutorial && !combo_tutorial && allow_click_the_menu) {
+              create_combo_tutorial();
+            }
+          });
+        });
 
         thumb_stick.onButtonStateChangedObservable.add(() => {
-          if (thumb_stick.pressed && !floorPosition.isVisible) {
+          if (thumb_stick.pressed && !floorPosition.isVisible && !tutorial) {
             if (stopped) {
               if (floorPosition.isVisible) {
                 floorPosition.parent = null;
@@ -1356,7 +1446,7 @@ async function run() {
 
         trigger.onButtonStateChangedObservable.add(() => {
 
-          if (trigger.pressed && stopped) {
+          if (trigger.pressed && stopped && allow_click_the_menu) {
 
             target = scene.meshUnderPointer;
             if (xr.pointerSelection.getMeshUnderPointer) {
@@ -1365,7 +1455,7 @@ async function run() {
             if (target && target.name === "plane" && target.parent === null && !floorPosition.isVisible) {
               target.setParent(motionController.rootMesh);
             }
-          } else if (stopped) {
+          } else if (stopped && allow_click_the_menu) {
             if (plane.parent) {
               plane.setParent(null);
             }
@@ -1405,6 +1495,9 @@ async function run() {
               plane.isVisible = true;
               floorPosition.parent = null;
               floorPosition.isVisible = false;
+              if (tutorial) {
+                OkFloorAdjust();
+              }
             }
           }
         });
@@ -1439,6 +1532,9 @@ async function run() {
 
     let leftPreviousPosition = null;
     let leftPreviousTime = null;
+    
+    let rightPreviousPosition = null;
+    let rightPreviousTime = null;
     let paused = false;
 
     engine.runRenderLoop(() => {
@@ -1454,8 +1550,8 @@ async function run() {
         center.text = timeLeft.toString();
         if (timeLeft <= 0) {
           if (progression === 0) {
-            create_combo_tutorial();
-            // create_combo_1();
+
+            create_combo_1();
           }
           // else if (progression === 1) {
           //   create_combo_1();
@@ -1476,37 +1572,65 @@ async function run() {
         startTime = performance.now();
       }
 
-      if (leftController && rightController) {
-        [leftController, rightController].forEach((controller) => {
-          const currentTime = performance.now();
-          const currentPosition = controller.grip.position.clone();
-          if (leftPreviousPosition && leftPreviousTime) {
-            const deltaTime = (currentTime - leftPreviousTime) / 1000;
-            if (deltaTime > 0) {
-              const velocity = currentPosition.subtract(leftPreviousPosition).scale(1 / deltaTime);
-              if (velocity.length() > 0.1) {
-                left.velocity = velocity;
-              }
+      if (leftController) {
+        const currentTime = performance.now();
+        const currentPosition = leftController.grip.position.clone();
+        if (leftPreviousPosition && leftPreviousTime) {
+          const deltaTime = (currentTime - leftPreviousTime) / 1000;
+          if (deltaTime > 0) {
+            const velocity = currentPosition.subtract(leftPreviousPosition).scale(1 / deltaTime);
+            if (velocity.length() > 0.1) {
+              left.velocity = velocity;
             }
           }
+        }
 
-          if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed) {
+        if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed) {
 
-            if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
-              let targetPosition = new Vector3(0, currentPosition.y, 0);
-              floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
-              floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.3);
-              floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.3);
-              info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
-            }
+          if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
+            let targetPosition = new Vector3(0, currentPosition.y, 0);
+            floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
+            floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.3);
+            floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.3);
+            info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
           }
+        }
 
-          leftPreviousPosition = currentPosition;
-          leftPreviousTime = currentTime;
-        });
+        leftPreviousPosition = currentPosition;
+        leftPreviousTime = currentTime;
       }
 
-      if (targets.length > 0 && !stopped) {
+      if (rightController) {
+        const currentTime = performance.now();
+        const currentPosition = rightController.grip.position.clone();
+        if (rightPreviousPosition && rightPreviousTime) {
+          const deltaTime = (currentTime - rightPreviousTime) / 1000;
+          if (deltaTime > 0) {
+            const velocity = currentPosition.subtract(rightPreviousPosition).scale(1 / deltaTime);
+            if (velocity.length() > 0.1) {
+              right.velocity = velocity;
+            }
+          }
+        }
+
+        if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed) {
+
+          if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
+            let targetPosition = new Vector3(0, currentPosition.y, 0);
+            floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
+            floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.3);
+            floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.3);
+            info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
+          }
+        }
+
+        rightPreviousPosition = currentPosition;
+        rightPreviousTime = currentTime;
+      }
+
+
+      if ((targets.length > 0 && !stopped) || (targets.length > 0 && tutorial)) {
+
         targets.forEach(target => {
           const delta = engine.getDeltaTime() / 1000;
           target.position.z = Scalar.Lerp(target.position.z, -100, target.speed * delta);
@@ -1515,12 +1639,99 @@ async function run() {
             targets.splice(targets.indexOf(target), 1);
           }
         });
-      } else if (targets.length > 0 && stopped) {
+
+      } else if ((targets.length > 0 && stopped || tutorial)) {
         for (let i = targets.length - 1; i >= 0; i--) {
           const target = targets[i];
           target.dispose();
           targets.splice(i, 1);
         }
+      }
+      if (tutorial && targets.length === 0) {
+        let dist = 0;
+        let temp = [];
+        if(comobo_tutorial_1){
+          comobo_tutorial_1 = false;
+          const combo3MP3 = new Howl({
+            src: ['./sounds/left_right_punches.mp3']
+          });
+          combo3MP3.once('load', function () {
+            combo3MP3.play();
+          });
+    
+          combo3MP3.on('end', function () {
+            JabCross(temp, dist);
+          });
+        
+        }
+        else if(comobo_tutorial_2){
+          comobo_tutorial_2 = false;
+          const combo3MP3 = new Howl({
+            src: ['./sounds/right_left_punches.mp3']
+          });
+    
+    
+          combo3MP3.once('load', function () {
+            combo3MP3.play();
+          });
+    
+          combo3MP3.on('end', function () {
+            CrossJab(temp, dist);
+          });
+   
+        }
+        else if(comobo_tutorial_3){
+          comobo_tutorial_3 = false;
+          const combo4MP3 = new Howl({
+            src: ['./sounds/uppercut_hook.mp3']
+          });
+    
+          combo4MP3.once('load', function () {
+            combo4MP3.play();
+          });
+    
+          combo4MP3.on('end', function () {
+        
+            UpperCutAndHook(temp, dist);
+          });
+     
+        }else if (comobo_tutorial_4) {
+          comobo_tutorial_4 = false;
+
+
+
+          const combo5MP3 = new Howl({
+            src: ['./sounds/squat_sky_hammer.mp3']
+          });
+    
+          combo5MP3.once('load', function () {
+            combo5MP3.play();
+          });
+    
+          combo5MP3.on('end', function () {
+        
+            SkyHammerSquat(temp, dist);
+          });
+
+
+        }else if(comobo_tutorial_5){
+          comobo_tutorial_5 = false;
+          const end_tutorialMP3 = new Howl({
+            src: ['./sounds/end_tutorial.mp3']
+          });
+          
+          end_tutorialMP3.once('load', function () {
+            end_tutorialMP3.play();
+          });
+        
+          end_tutorialMP3.on('end', function () {
+            offOnGloves(true, false);
+            allow_click_the_menu = true;
+            plane.isVisible = true;
+            tutorial = false;
+          });
+        }
+  
       }
     });
   };
