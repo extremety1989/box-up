@@ -1462,12 +1462,12 @@ async function run() {
 
             if (target) {
 
-              if (target.name === "Circle" && !floorPosition.isVisible) {
+              if (target.name === "Circle" && !floorPosition.isVisible && !tutorial) {
                 xr.baseExperience.camera.position.x = 0;
                 xr.baseExperience.camera.position.z = 0;
               }
 
-              if (target.name.startsWith("Circle.00") && !floorPosition.isVisible) {
+              if (target.name.startsWith("Circle.00") && !floorPosition.isVisible && !tutorial) {
                 xr.baseExperience.camera.position.x = -target.position.x;
                 xr.baseExperience.camera.position.z = target.position.z;
               }

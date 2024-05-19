@@ -1,10 +1,10 @@
-Welcome to the tutorial. Let's begin. On your right side, you have a menu. 
+Welcome to the tutorial. In this tutorial, you will learn how to move around the room, ajust floor position, and do basic punches.
 
-
-Click and hold the "Adjust floor position" button on the menu.
-While holding the button, pull your controller to the ground.
+Let's start with adjusting the floor position.
+If you feel that you are too high or too low, you can adjust the floor position.
+By holding the "Adjust floor position" button, you can move the floor down.
 If you are satisfied with the position, release the button.
-You can repeat this process as many times as needed.
+
 
 
 
