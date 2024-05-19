@@ -612,7 +612,7 @@ async function run() {
 
 
   function startTutorial() {
-    plane.isVisible = false;
+   offOnGloves(false, true);
     tutorial = true;
     allow_click_the_menu = false;
     const startTutorialMP3 = new Howl({
@@ -640,6 +640,7 @@ async function run() {
     });
 
     fixFloorPositionMP3.on('end', function () {
+      offOnGloves(true, false);
       allow_click_the_menu = true;
     });
   }
