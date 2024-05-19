@@ -580,7 +580,6 @@ async function run() {
   button_5.onPointerDownObservable.add(() => {
     if (!allow_click_the_menu) return;
     if (!floorPosition.isVisible && stopped) {
-      plane.isVisible = false;
       const fcp = xr.baseExperience.camera.position
       floorPosition.position.y = fcp.y - 0.5;
       floorPosition.isVisible = true;
@@ -642,7 +641,6 @@ async function run() {
 
     fixFloorPositionMP3.on('end', function () {
       allow_click_the_menu = true;
-      plane.isVisible = true;
     });
   }
 
