@@ -33,11 +33,11 @@ const info = localStorage.getItem('info') ? JSON.parse(localStorage.getItem('inf
 
 async function run() {
 
-  let comobo_tutorial_1 = false;
-  let comobo_tutorial_2 = false;
-  let comobo_tutorial_3 = false;
-  let comobo_tutorial_4 = false;
-  let comobo_tutorial_5 = false;
+  let combo_tutorial_1 = false;
+  let combo_tutorial_2 = false;
+  let combo_tutorial_3 = false;
+  let combo_tutorial_4 = false;
+  let combo_tutorial_5 = false;
   let allow_click_the_menu = true;
   let combo_tutorial = false;
   let tutorial = false;
@@ -678,7 +678,7 @@ async function run() {
     }
     dist += 20;
     targets = temp;
-    comobo_tutorial_2 = true;
+    combo_tutorial_2 = true;
   }
 
   function CrossJab(temp, dist) {
@@ -701,7 +701,7 @@ async function run() {
     }
     dist += 20;
     targets = temp;
-    comobo_tutorial_3 = true;
+    combo_tutorial_3 = true;
   }
 
   function UpperCutAndHook(temp, dist) {
@@ -793,7 +793,7 @@ async function run() {
     }
     dist += 20;
     targets = temp;
-    comobo_tutorial_4 = true;
+    combo_tutorial_4 = true;
   }
 
   function SkyHammerSquat(temp, dist) {
@@ -986,7 +986,7 @@ async function run() {
     }
     dist += 20;
     targets = temp;
-    comobo_tutorial_5 = true;
+    combo_tutorial_5 = true;
 
 
   }
@@ -998,7 +998,8 @@ async function run() {
 
     combo_tutorial = true;
     offOnGloves(false, true);
-    comobo_tutorial_1 = true;
+    combo_tutorial_1 = true;
+    plane.isVisible = false;
   }
 
   function create_combo_1() {
@@ -1661,8 +1662,8 @@ async function run() {
       if (tutorial && targets.length === 0) {
         let dist = 0;
         let temp = [];
-        if(comobo_tutorial_1){
-          comobo_tutorial_1 = false;
+        if(combo_tutorial_1){
+          combo_tutorial_1 = false;
           const combo3MP3 = new Howl({
             src: ['./sounds/left_right_punches.mp3']
           });
@@ -1675,8 +1676,8 @@ async function run() {
           });
         
         }
-        else if(comobo_tutorial_2){
-          comobo_tutorial_2 = false;
+        else if(combo_tutorial_2){
+          combo_tutorial_2 = false;
           const combo3MP3 = new Howl({
             src: ['./sounds/right_left_punches.mp3']
           });
@@ -1691,8 +1692,8 @@ async function run() {
           });
    
         }
-        else if(comobo_tutorial_3){
-          comobo_tutorial_3 = false;
+        else if(combo_tutorial_3){
+          combo_tutorial_3 = false;
           const combo4MP3 = new Howl({
             src: ['./sounds/uppercut_hook.mp3']
           });
@@ -1706,8 +1707,8 @@ async function run() {
             UpperCutAndHook(temp, dist);
           });
      
-        }else if (comobo_tutorial_4) {
-          comobo_tutorial_4 = false;
+        }else if (combo_tutorial_4) {
+          combo_tutorial_4 = false;
 
 
 
@@ -1725,8 +1726,8 @@ async function run() {
           });
 
 
-        }else if(comobo_tutorial_5){
-          comobo_tutorial_5 = false;
+        }else if(combo_tutorial_5){
+          combo_tutorial_5 = false;
           const end_tutorialMP3 = new Howl({
             src: ['./sounds/end_tutorial.mp3']
           });
@@ -1737,6 +1738,7 @@ async function run() {
         
           end_tutorialMP3.on('end', function () {
             offOnGloves(true, false);
+            plane.isVisible = true;
             allow_click_the_menu = true;
             tutorial = false;
           });
