@@ -987,7 +987,6 @@ async function run() {
 
     combo_tutorial = true;
     offOnGloves(false, true);
-    plane.isVisible = false;
     comobo_tutorial_1 = true;
   }
 
@@ -1727,7 +1726,6 @@ async function run() {
           end_tutorialMP3.on('end', function () {
             offOnGloves(true, false);
             allow_click_the_menu = true;
-            plane.isVisible = true;
             tutorial = false;
           });
         }
