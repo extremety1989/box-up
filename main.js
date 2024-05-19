@@ -591,10 +591,12 @@ async function run() {
   button_5.onPointerDownObservable.add(() => {
     if (!allow_click_the_menu) return;
     if (!floorPosition.isVisible && stopped) {
+     
       const fcp = xr.baseExperience.camera.position
       floorPosition.position.y = fcp.y - 0.5;
       floorPosition.isVisible = true;
       floorPosition.isPressed = true;
+      plane.isVisible = false;
       level.loadedMeshes.forEach((mesh) => {
         mesh.isVisible = false;
       });
@@ -1503,6 +1505,7 @@ async function run() {
               plane.isVisible = true;
               floorPosition.parent = null;
               floorPosition.isVisible = false;
+        
               if (tutorial) {
                 OkFloorAdjust();
               }
