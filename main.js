@@ -26,6 +26,7 @@ import '@babylonjs/core/Materials/Node/Blocks'
 
 import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock'
 import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control, Slider } from '@babylonjs/gui'
+import { prePassDeclaration } from '@babylonjs/core/Shaders/ShadersInclude/prePassDeclaration';
 
 
 
@@ -33,14 +34,10 @@ const info = localStorage.getItem('info') ? JSON.parse(localStorage.getItem('inf
 
 async function run() {
 
-  function setEndTime(time) {
-    return time;
-  }
-
+  let targets = [];
   let startTime = performance.now();
-  let endTime = setEndTime(1 * 60 * 1000);
+  let progression = 0;
 
-  
 
   if (info.difficulty === undefined) {
     info.difficulty = "Easy";
@@ -79,7 +76,7 @@ async function run() {
   advancedTextureRadio.idealWidth = 600;
 
 
-  const radioPlane = MeshBuilder.CreatePlane("radioPlane", { }, scene);
+  const radioPlane = MeshBuilder.CreatePlane("radioPlane", {}, scene);
   radioPlane.isVisible = true;
   radioPlane.position = new Vector3(2.5, 1.5, 0);
   radioPlane.rotation = new Vector3(0, Math.PI / 2, 0);
@@ -92,7 +89,7 @@ async function run() {
   panelRadio.background = "black";
   panelRadio.alpha = 0.8;
   advancedTextureRadio2.addControl(panelRadio);
- 
+
 
 
   const gridRadio = new Grid("gridRadio");
@@ -143,14 +140,14 @@ async function run() {
 
   let mp3_index = 0;
   const mp3s = []
-const ddioqjoidjq = new Howl({
-  name: "2Pac - Time Back",
-  src: "./sounds/2Pac - Time Back.mp3",
-  autoplay: false,
-  loop: true,
-  volume: 0.5
-})
-ddioqjoidjq.name = "2Pac - Time Back";
+  const ddioqjoidjq = new Howl({
+    name: "2Pac - Time Back",
+    src: "./sounds/2Pac - Time Back.mp3",
+    autoplay: false,
+    loop: true,
+    volume: 0.5
+  })
+  ddioqjoidjq.name = "2Pac - Time Back";
   mp3s.push(ddioqjoidjq);
   const dzdjjzaioj = new Howl({
     src: "./sounds/a-ha - Take On Me.mp3",
@@ -177,8 +174,8 @@ ddioqjoidjq.name = "2Pac - Time Back";
     if (playRadio.textBlock.text === "Play") {
       playRadio.textBlock.text = "Stop";
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        
-        if(anim.name === "play"){
+
+        if (anim.name === "play") {
           anim.play();
         }
         // if(anim.name === "stop"){
@@ -190,10 +187,10 @@ ddioqjoidjq.name = "2Pac - Time Back";
     } else {
       playRadio.textBlock.text = "Play";
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        if(anim.name === "play"){
+        if (anim.name === "play") {
           anim.stop();
         }
-        if(anim.name === "stop"){
+        if (anim.name === "stop") {
           anim.play();
         }
       });
@@ -212,7 +209,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
   forwardRadio.fontSize = "100px";
   forwardRadio.onPointerClickObservable.add(() => {
     let was_playing = false;
-    if(mp3s[mp3_index].playing()){
+    if (mp3s[mp3_index].playing()) {
       was_playing = true;
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
         anim.stop();
@@ -225,7 +222,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
       mp3_index = 0;
     }
     radioHeader.text = `${mp3s[mp3_index].name}`;
-    if(was_playing){
+    if (was_playing) {
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
         anim.play();
       });
@@ -243,7 +240,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
 
   backwardRadio.onPointerClickObservable.add(() => {
     let was_playing = false;
-    if(mp3s[mp3_index].playing()){
+    if (mp3s[mp3_index].playing()) {
       was_playing = true;
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
         anim.stop();
@@ -256,7 +253,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
       mp3_index = mp3s.length - 1;
     }
     radioHeader.text = `${mp3s[mp3_index].name}`;
-    if(was_playing){
+    if (was_playing) {
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
         anim.play();
       });
@@ -313,7 +310,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
   const yellowSideFracture = assetsManager.addMeshTask("yellow_fracture", "", "/box-up/models/", "yellow_fracture.glb");
   yellowSideFracture.onSuccess = function (task) {
     task.loadedMeshes.forEach((mesh) => {
-      if(mesh.name === "__root__"){
+      if (mesh.name === "__root__") {
         mesh.position.x = 0;
         mesh.rotation.x = Math.PI / 2;
       }
@@ -331,7 +328,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
   const blackSide = assetsManager.addMeshTask("black", "", "/box-up/models/", "black.glb");
   blackSide.onSuccess = function (task) {
     task.loadedMeshes.forEach((mesh) => {
-      if(mesh.name === "__root__"){
+      if (mesh.name === "__root__") {
         mesh.position.x = 0;
         mesh.rotation.x = Math.PI / 2;
       }
@@ -601,57 +598,527 @@ ddioqjoidjq.name = "2Pac - Time Back";
   center.fontSize = "120px";
   panel2.addControl(center);
 
-  function create_combo_1() {
-
-    let temp = [];
-    for (let i = 0; i < 4; i++) {
-      const tb = createBlackTarget();
-      const ty = createYellowTarget();
-
-      const pos_y = xr.baseExperience.camera.position.clone();
-      tb.position.y = pos_y.y - 0.2;
-      ty.position.y = pos_y.y - 0.2;
-      temp.push(tb);
-      temp.push(ty);
-    }
-
-    for (let i = 0; i < 4; i++) {
-      const tb = createBlackTarget();
-      const ty = createYellowTarget();
-      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
-      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-Math.PI / 2 - 0.5, 0, 0);
-      const pos_y = xr.baseExperience.camera.position.clone();
-      tb.position.y = pos_y.y - 0.2;
-      ty.position.y = pos_y.y - 0.2;
-
-      temp.push(ty);
-      temp.push(tb);
-
-    }
-
-    for (let i = 0; i < 4; i++) {
-      const tb = createBlackTarget();
-      const ty = createYellowTarget();
-      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
-      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
-      const pos_y = xr.baseExperience.camera.position.clone();
-      tb.position.y = pos_y.y - 0.2 - 0.5;
-      ty.position.y = pos_y.y - 0.2 - 0.5;
-
-      temp.push(ty);
-      temp.push(tb);
-
-    }
+  function create_combo_tutorial() {
 
     let dist = 0;
-    temp.forEach(element => {
-      element.position.z += dist;
+    let temp = [];
+
+    //jab cross
+    for (let i = 0; i < 2; i++) {
+      const tb = createBlackTarget();
+      const ty = createYellowTarget();
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.2;
+      ty.position.y = pos_y.y - 0.2;
+      tb.position.x = 0.1
+      ty.position.x = -0.1
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist + 2;
+      ty.position.z += dist;
+      tb.speed = 0.03;
+      ty.speed = 0.03;
       dist += 4;
-      element.speed = globalSpeed;
-    });
+    }
+    dist += 10;
+
+        //cross jab
+        for (let i = 0; i < 2; i++) {
+          const tb = createBlackTarget();
+          const ty = createYellowTarget();
+          const pos_y = xr.baseExperience.camera.position.clone();
+          tb.position.y = pos_y.y - 0.2;
+          ty.position.y = pos_y.y - 0.2;
+          tb.position.x = 0.1
+          ty.position.x = -0.1
+          temp.push(tb);
+          temp.push(ty);
+          tb.position.z += dist;
+          ty.position.z += dist+2;
+          tb.speed = 0.03;
+          ty.speed = 0.03;
+          dist += 4;
+        }
+        dist += 10;
+
+
+        //lead uppercut, rear uppercut
+        for (let i = 0; i < 1; i++) {
+          const tb = createBlackTarget();
+          tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+          const ty = createYellowTarget();
+          ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+          const pos_y = xr.baseExperience.camera.position.clone();
+          tb.position.y = pos_y.y - 0.3;
+          ty.position.y = pos_y.y - 0.3;
+          tb.position.x = 0
+          ty.position.x = 0
+          temp.push(tb);
+          temp.push(ty);
+          tb.position.z += dist + 2;
+          ty.position.z += dist;
+          dist += 4;
+    
+          tb.speed = 0.03;
+          ty.speed = 0.03;
+        }
+        dist += 10;
+
+    //lead hook, rear hook
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-(Math.PI / 2 + 0.5), 0, 0);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.2;
+      ty.position.y = pos_y.y - 0.2;
+      tb.position.x = 0
+      ty.position.x = -0.1
+      temp.push(tb);
+      temp.push(ty);
+      ty.position.z += dist + 2;
+      tb.position.z += dist + 6;
+      dist += 14;
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 10;
+
+
+            //lead uppercut, rear uppercut
+            for (let i = 0; i < 1; i++) {
+              const tb = createBlackTarget();
+              tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+              const ty = createYellowTarget();
+              ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+              const pos_y = xr.baseExperience.camera.position.clone();
+              tb.position.y = pos_y.y - 0.3;
+              ty.position.y = pos_y.y - 0.3;
+              tb.position.x = 0
+              ty.position.x = 0
+              temp.push(tb);
+              temp.push(ty);
+              tb.position.z += dist + 2;
+              ty.position.z += dist;
+              dist += 4;
+        
+              tb.speed = 0.03;
+              ty.speed = 0.03;
+            }
+            dist += 10;
+    
+        //lead hook, rear hook
+        for (let i = 0; i < 1; i++) {
+          const tb = createBlackTarget();
+          tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
+          const ty = createYellowTarget();
+          ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-(Math.PI / 2 + 0.5), 0, 0);
+          const pos_y = xr.baseExperience.camera.position.clone();
+          tb.position.y = pos_y.y - 0.2;
+          ty.position.y = pos_y.y - 0.2;
+          tb.position.x = 0
+          ty.position.x = -0.1
+          temp.push(tb);
+          temp.push(ty);
+          ty.position.z += dist + 2;
+          tb.position.z += dist + 6;
+          dist += 14;
+          tb.speed = 0.03;
+          ty.speed = 0.03;
+        }
+        dist += 20;
+
+
+    //evade right, evade left
+    //need to implement
+    //squad
+    for (let i = 0; i < 1; i++) {
+      const pos_y = xr.baseExperience.camera.position.clone();
+      const up = createUpper();
+      up.scaling.z = 3.0;
+      up.position.z += dist;
+      up.position.y = pos_y.y - 0.4;
+      up.speed = 0.03;
+      temp.push(up);
+      dist += 10;
+    }
+
+      //lead skycut, rear skycut, left first
+      for (let i = 0; i < 1; i++) {
+        const tb = createBlackTarget();
+        tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+        const ty = createYellowTarget();
+        ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+        const pos_y = xr.baseExperience.camera.position.clone();
+        tb.position.y = pos_y.y + 0.3;
+        ty.position.y = pos_y.y + 0.3;
+        tb.position.x = 0.1
+        ty.position.x = -0.1
+        temp.push(tb);
+        temp.push(ty);
+        tb.position.z += dist + 2;
+        ty.position.z += dist;
+        dist += 4;
+  
+        tb.speed = 0.03;
+        ty.speed = 0.03;
+      }
+      dist += 4;
+
+            //lead skycut + rear skycut
+            for (let i = 0; i < 1; i++) {
+              const tb = createBlackTarget();
+              tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+              const ty = createYellowTarget();
+              ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+              const pos_y = xr.baseExperience.camera.position.clone();
+              tb.position.y = pos_y.y + 0.3;
+              ty.position.y = pos_y.y + 0.3;
+              tb.position.x = 0.2
+              ty.position.x = -0.2
+              temp.push(tb);
+              temp.push(ty);
+              tb.position.z += dist;
+              ty.position.z += dist;
+              dist += 4;
+        
+              tb.speed = 0.03;
+              ty.speed = 0.03;
+            }
+            dist += 4;
+
+      //lead skycut, rear skycut, right first
+      for (let i = 0; i < 1; i++) {
+        const tb = createBlackTarget();
+        tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+        const ty = createYellowTarget();
+        ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+        const pos_y = xr.baseExperience.camera.position.clone();
+        tb.position.y = pos_y.y + 0.3;
+        ty.position.y = pos_y.y + 0.3;
+        tb.position.x = 0.1
+        ty.position.x = -0.1
+        temp.push(tb);
+        temp.push(ty);
+        tb.position.z += dist;
+        ty.position.z += dist + 2;
+        dist += 4;
+  
+        tb.speed = 0.03;
+        ty.speed = 0.03;
+      }
+      dist += 4;
+
+      //lead skycut + rear skycut
+      for (let i = 0; i < 1; i++) {
+        const tb = createBlackTarget();
+        tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+        const ty = createYellowTarget();
+        ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+        const pos_y = xr.baseExperience.camera.position.clone();
+        tb.position.y = pos_y.y + 0.3;
+        ty.position.y = pos_y.y + 0.3;
+        tb.position.x = 0.2
+        ty.position.x = -0.2
+        temp.push(tb);
+        temp.push(ty);
+        tb.position.z += dist;
+        ty.position.z += dist;
+        dist += 4;
+  
+        tb.speed = 0.03;
+        ty.speed = 0.03;
+      }
+      dist += 10;
+
+
+     //lead hummer, rear hummer, left first
+     for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.3;
+      ty.position.y = pos_y.y - 0.3;
+      tb.position.x = 0.1
+      ty.position.x = -0.1
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist + 2;
+      ty.position.z += dist;
+      dist += 4;
+
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 4;
+
+          //lead hummer + rear hummer
+          for (let i = 0; i < 1; i++) {
+            const tb = createBlackTarget();
+            tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+            const ty = createYellowTarget();
+            ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+            const pos_y = xr.baseExperience.camera.position.clone();
+            tb.position.y = pos_y.y - 0.3;
+            ty.position.y = pos_y.y - 0.3;
+            tb.position.x = 0.2
+            ty.position.x = -0.2
+            temp.push(tb);
+            temp.push(ty);
+            tb.position.z += dist;
+            ty.position.z += dist;
+            dist += 4;
+      
+            tb.speed = 0.03;
+            ty.speed = 0.03;
+          }
+          dist += 4;
+
+    //lead hummer, rear hummer, right first
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.3;
+      ty.position.y = pos_y.y - 0.3;
+      tb.position.x = 0.1
+      ty.position.x = -0.1
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist;
+      ty.position.z += dist + 2;
+      dist += 4;
+
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 4;
+
+    //lead hummer + rear hummer
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -(Math.PI / 2 + 0.1), Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.3;
+      ty.position.y = pos_y.y - 0.3;
+      tb.position.x = 0.2
+      ty.position.x = -0.2
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist;
+      ty.position.z += dist;
+      dist += 4;
+
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+    }
+    dist += 10;
+
 
     targets = temp;
-    temp = null;
+  }
+
+  function create_combo_1() {
+
+    let dist = 0;
+    let temp = [];
+    // for (let i = 0; i < 4; i++) {
+    //   const tb = createBlackTarget();
+    //   const ty = createYellowTarget();
+    //   const pos_y = xr.baseExperience.camera.position.clone();
+    //   tb.position.y = pos_y.y - 0.2;
+    //   ty.position.y = pos_y.y - 0.2;
+    //   tb.position.x = 0.1
+    //   ty.position.x = -0.1
+    //   temp.push(tb);
+    //   temp.push(ty);
+    //   tb.position.z += dist;
+    //   ty.position.z += dist + 2;
+    //   dist += 4;
+    // }
+    // dist += 10;
+
+    // for (let i = 0; i < 4; i++) {
+    //   const tb = createBlackTarget();
+    //   const ty = createYellowTarget();
+    //   tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
+    //   ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-Math.PI / 2 - 0.5, 0, 0);
+    //   const pos_y = xr.baseExperience.camera.position.clone();
+    //   tb.position.y = pos_y.y - 0.2;
+    //   ty.position.y = pos_y.y - 0.2;
+    //   temp.push(ty);
+    //   temp.push(tb);
+    //   tb.position.z += dist;
+    //   ty.position.z += dist + 2;
+    //   dist += 4;
+    // }
+    // dist += 10;
+    // for (let i = 0; i < 4; i++) {
+    //   const tb = createBlackTarget();
+    //   const ty = createYellowTarget();
+    //   tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
+    //   ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
+    //   const pos_y = xr.baseExperience.camera.position.clone();
+    //   tb.position.y = pos_y.y - 0.2 - 0.5;
+    //   ty.position.y = pos_y.y - 0.2 - 0.5;
+    //   tb.position.x = 0.1
+    //   ty.position.x = -0.1
+    //   temp.push(ty);
+    //   temp.push(tb);
+    //   tb.position.z += dist;
+    //   ty.position.z += dist + 2;
+    //   dist += 4;
+    // }
+    // dist += 10;
+
+    // for (let i = 0; i < 4; i++) {
+    //   const tb = createBlackTarget();
+    //   const ty = createYellowTarget();
+    //   const pos_y = xr.baseExperience.camera.position.clone();
+    //   tb.position.y = pos_y.y - 0.2;
+    //   ty.position.y = pos_y.y - 0.2;
+    //   tb.position.x = 0.1
+    //   ty.position.x = -0.1
+    //   temp.push(tb);
+    //   temp.push(ty);
+    //   tb.position.z += dist;
+    //   ty.position.z += dist + 2;
+    //   dist += 14;
+    // }
+
+    // dist += 10;
+
+    //jab jab rear hook
+    for (let i = 0; i < 4; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
+      const ty = createYellowTarget();
+      const ty2 = createYellowTarget();
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.2;
+      ty.position.y = pos_y.y - 0.2;
+      ty2.position.y = pos_y.y - 0.2;
+      tb.position.x = 0
+      ty.position.x = -0.1
+      ty2.position.x = -0.1
+      temp.push(tb);
+      temp.push(ty);
+      temp.push(ty2);
+      ty.position.z += dist + 2;
+      ty2.position.z += dist + 4;
+      tb.position.z += dist + 6;
+      dist += 14;
+      tb.speed = globalSpeed;
+      ty.speed = globalSpeed;
+      ty2.speed = globalSpeed;
+    }
+    dist += 10;
+
+    //cross cross lead hook
+    for (let i = 0; i < 4; i++) {
+      const tb = createBlackTarget();
+      const tb2 = createBlackTarget();
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-(Math.PI / 2 + 0.5), 0, 0);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.3;
+      tb2.position.y = pos_y.y - 0.3;
+      ty.position.y = pos_y.y - 0.3;
+      tb.position.x = 0.1
+      tb2.position.x = 0.1
+      ty.position.x = 0
+      temp.push(tb);
+      temp.push(ty);
+      temp.push(tb2);
+   
+  
+      tb.position.z += dist + 2;
+      tb2.position.z += dist + 4;
+      ty.position.z += dist + 6;
+      dist += 14;
+    }
+
+    // dist += 10;
+    // //uppercut left first
+    // for (let i = 0; i < 4; i++) {
+    //   const tb = createBlackTarget();
+    //   const ty = createYellowTarget();
+    //   tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+    //   ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+    //   const pos_y = xr.baseExperience.camera.position.clone();
+    //   tb.position.y = pos_y.y - 0.3;
+    //   ty.position.y = pos_y.y - 0.3;
+    //   temp.push(ty);
+    //   temp.push(tb);
+    //   tb.position.z += dist + 2;
+    //   ty.position.z += dist;
+    //   dist += 4;
+    // }
+
+    // dist += 10;
+    // //upper cut right first
+    // for (let i = 0; i < 4; i++) {
+    //   const tb = createBlackTarget();
+    //   const ty = createYellowTarget();
+    //   tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+    //   ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+    //   const pos_y = xr.baseExperience.camera.position.clone();
+    //   tb.position.y = pos_y.y - 0.3;
+    //   ty.position.y = pos_y.y - 0.3;
+    //   temp.push(ty);
+    //   temp.push(tb);
+    //   tb.position.z += dist;
+    //   ty.position.z += dist + 2;
+    //   dist += 4;
+    // }
+    targets = temp;
+  }
+
+
+  function createYellowTarget() {
+    const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
+    newTellowTarget.name = "yellow";
+    newTellowTarget.dts = destroyedTargetSound;
+    newTellowTarget.position.copyFrom(pos);
+    newTellowTarget.position.y -= 0.2;
+    newTellowTarget.position.z += 10;
+    newTellowTarget.position.x -= 0.1;
+    newTellowTarget.isVisible = true;
+    newTellowTarget.speed = globalSpeed;
+    shadowGenerator.addShadowCaster(newTellowTarget);
+    return newTellowTarget;
+  }
+
+  function createBlackTarget() {
+    const newBlackTarget = blackSide.loadedMeshes[0].instantiateHierarchy();
+    newBlackTarget.dts = destroyedTargetSound;
+    newBlackTarget.name = "black";
+    newBlackTarget.position.copyFrom(pos);
+    newBlackTarget.rotation.x = Math.PI / 2;
+    newBlackTarget.position.y -= 0.2;
+    newBlackTarget.position.z += 10;
+    newBlackTarget.position.x += 0.1;
+    newBlackTarget.isVisible = true;
+    newBlackTarget.speed = globalSpeed;
+    shadowGenerator.addShadowCaster(newBlackTarget);
+    return newBlackTarget;
+  }
+
+
+  function createUpper() {
+    const newUpper = upper.createInstance("upper");
+    newUpper.position.copyFrom(pos);
+    newUpper.position.z += 10;
+    newUpper.isVisible = true;
+    newUpper.speed = globalSpeed;
+    return newUpper;
   }
 
 
@@ -672,18 +1139,20 @@ ddioqjoidjq.name = "2Pac - Time Back";
           clearInterval(timerInterval);
           setTimeout(() => {
             if (info.difficulty === "Easy") {
-              globalSpeed = 0.01;
+              globalSpeed = 0.03;
 
-              create_combo_1();
-   
+              // create_combo_1();
+              create_combo_tutorial();
 
-            } else if (info.difficulty === "Medium") {
-              globalSpeed = 0.02;
-              create_combo_1();
-            } else if (info.difficulty === "Hard") {
-              globalSpeed = 0.03
-              create_combo_1();
-            }
+
+            } 
+            // else if (info.difficulty === "Medium") {
+            //   globalSpeed = 0.04;
+            //   create_combo_1();
+            // } else if (info.difficulty === "Hard") {
+            //   globalSpeed = 0.05;
+            //   create_combo_1();
+            // }
             plane2.isVisible = false;
 
             center.text = "";
@@ -735,48 +1204,9 @@ ddioqjoidjq.name = "2Pac - Time Back";
     targets = [];
   }
 
-  let targets = [];
 
 
-  function createBlackTarget() {
-    const newBlackTarget = blackSide.loadedMeshes[0].instantiateHierarchy();
-    newBlackTarget.dts = destroyedTargetSound;
-    newBlackTarget.name = "black";
-    newBlackTarget.position.copyFrom(pos);
-    newBlackTarget.rotation.x = Math.PI / 2;
-    newBlackTarget.position.y -= 0.2;
-    newBlackTarget.position.z += 5;
-    newBlackTarget.position.x += 0.1;
-    newBlackTarget.isVisible = true;
-    newBlackTarget.speed = 0;
-    shadowGenerator.addShadowCaster(newBlackTarget);
-    return newBlackTarget;
-  }
 
-
-  function createYellowTarget() {
-    const newTellowTarget = yellowSide.loadedMeshes[0].instantiateHierarchy();
-    newTellowTarget.name = "yellow";
-    newTellowTarget.dts = destroyedTargetSound;
-    newTellowTarget.position.copyFrom(pos);
-    newTellowTarget.position.y -= 0.2;
-    newTellowTarget.position.z += 5;
-    newTellowTarget.position.x -= 0.1;
-    newTellowTarget.isVisible = true;
-    newTellowTarget.speed = 0;
-    shadowGenerator.addShadowCaster(newTellowTarget);
-    return newTellowTarget;
-  }
-
-  function createUpper() {
-    const newUpper = upper.createInstance("upper");
-    newUpper.position.copyFrom(pos);
-    newUpper.position.z += 5;
-    newUpper.isVisible = true;
-    return newUpper;
-  }
-
- 
   const leftCollision = MeshBuilder.CreateSphere("dummyCam", { diameter: 0.25 }, scene, true);
   leftCollision.isVisible = false;
   leftCollision.showBoundingBox = true;
@@ -830,7 +1260,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
             if (left.velocity.length() > 0.9) {
               comboCounter.text = `COMBO\n\n${(comboCounter.value += 1).toString()}`;
             }
-      
+
             if (fracture.animations) {
               fracture.animations.forEach((anim) => {
                 if (!anim.isPlaying) {
@@ -864,7 +1294,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
             if (right.velocity.length() > 0.9) {
               comboCounter.text = `COMBO\n\n${(comboCounter.value += 1).toString()}`;
             }
-           
+
             if (fracture.animations) {
               fracture.animations.forEach((anim) => {
 
@@ -880,7 +1310,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
               });
             }
             fracture.dispose();
-      
+
           }
         }
       });
@@ -1008,38 +1438,44 @@ ddioqjoidjq.name = "2Pac - Time Back";
 
     let leftPreviousPosition = null;
     let leftPreviousTime = null;
-    let rightPreviousPosition = null;
-    let rightPreviousTime = null;
-
-
     let paused = false;
-    let progression = 0;
+
     engine.runRenderLoop(() => {
       scene.render();
 
       const now = performance.now();
 
-      if (progression === 1) {
-
-      }
-
+      let timeLeft = 0;
       if (paused && targets.length === 0) {
-        const timeLeft = 30 - Math.floor((now - startTime) / 1000);
-        center.text = timeLeft.toString();
- 
-        if (timeLeft <= 0) {
-          create_combo_1();
-          plane2.isVisible = false;
-
-          paused = false;
+        if (!stopped) {
+          timeLeft = 30 - Math.floor((now - startTime) / 1000);
         }
-      } else if(targets.length === 0 && !paused && !stopped) {
+        center.text = timeLeft.toString();
+        if (timeLeft <= 0) {
+          if (progression === 0) {
+            create_combo_tutorial();
+            // create_combo_1();
+          } 
+          // else if (progression === 1) {
+          //   create_combo_1();
+          // } else if (progression === 2) {
+          //   create_combo_1();
+          // } else if (progression === 3) {
+          //   create_combo_1();
+          // }
+
+          plane2.isVisible = false;
+          paused = false;
+          progression++;
+        }
+      } else if (targets.length === 0 && !paused && !stopped) {
+        timeLeft = 0;
         paused = true;
         plane2.isVisible = true;
         startTime = performance.now();
       }
 
-      if(leftController && rightController){
+      if (leftController && rightController) {
         [leftController, rightController].forEach((controller) => {
           const currentTime = performance.now();
           const currentPosition = controller.grip.position.clone();
@@ -1052,9 +1488,9 @@ ddioqjoidjq.name = "2Pac - Time Back";
               }
             }
           }
-  
+
           if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed) {
-  
+
             if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
               let targetPosition = new Vector3(0, currentPosition.y, 0);
               floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
@@ -1063,7 +1499,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
               info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
             }
           }
-  
+
           leftPreviousPosition = currentPosition;
           leftPreviousTime = currentTime;
         });
@@ -1074,8 +1510,8 @@ ddioqjoidjq.name = "2Pac - Time Back";
           const delta = engine.getDeltaTime() / 1000;
           target.position.z = Scalar.Lerp(target.position.z, -100, target.speed * delta);
           if (target.position.z <= -1) {
-              target.dispose();
-              targets.splice(targets.indexOf(target), 1);
+            target.dispose();
+            targets.splice(targets.indexOf(target), 1);
           }
         });
       } else if (targets.length > 0 && stopped) {
@@ -1083,7 +1519,7 @@ ddioqjoidjq.name = "2Pac - Time Back";
           const target = targets[i];
           target.dispose();
           targets.splice(i, 1);
-       }
+        }
       }
     });
   };
