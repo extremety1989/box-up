@@ -642,6 +642,7 @@ async function run() {
 
     fixFloorPositionMP3.on('end', function () {
       allow_click_the_menu = true;
+      plane.isVisible = true;
     });
   }
 
