@@ -184,9 +184,7 @@ async function run() {
     if (playRadio.textBlock.text === "Play") {
       playRadio.textBlock.text = "Stop";
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        if (anim.name === "play") {
-          anim.play();
-        }
+        anim.play();
       });
       radioHeader.text = `${mp3s[mp3_index].name}`;
       mp3s[mp3_index].play();
