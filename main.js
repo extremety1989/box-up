@@ -1124,7 +1124,7 @@ async function run() {
       temp.push(tb);
       tb.position.z += dist + 4;
       ty.position.z += dist;
-      dist += 8;
+      dist += 14;
     }
 
     dist += 10;
@@ -1144,7 +1144,7 @@ async function run() {
     }
 
     for (let j = 0; j < 5; j++) {
-      dist += 10;
+      dist += 14;
       //squad
       for (let i = 0; i < 1; i++) {
         const pos_y = xr.baseExperience.camera.position.clone();
@@ -1160,7 +1160,7 @@ async function run() {
         up.position.y = pos_y.y - 0.1;
         up.speed = 0.03;
         temp.push(up);
-        dist += up.scaling.z;
+        dist += up.scaling.z + 8;
       }
       dist += 10;
       //lead skycut + rear skycut
@@ -1183,7 +1183,7 @@ async function run() {
         tb.speed = 0.03;
         ty.speed = 0.03;
       }
-      dist += 10;
+      dist += 14;
       //squad
       for (let i = 0; i < 1; i++) {
         const pos_y = xr.baseExperience.camera.position.clone();
@@ -1199,10 +1199,10 @@ async function run() {
         up.position.y = pos_y.y - 0.1;
         up.speed = 0.03;
         temp.push(up);
-        dist += up.scaling.z;
+        dist += up.scaling.z + 8;
       }
     }
-    dist += 10;
+    dist += 14;
     //lead skycut + rear skycut
     for (let i = 0; i < 1; i++) {
       const tb = createBlackTarget();
