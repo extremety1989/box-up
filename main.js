@@ -60,6 +60,10 @@ async function run() {
   const engine = new Engine(canvas, true);
 
   const scene = new Scene(engine);
+
+  const assetsManager = new AssetsManager(scene);
+  const level = assetsManager.addMeshTask("Gym", "", "/box-up/models/", "gym.glb");
+
   const swappedHandednessConfiguration = [
     {
       allowedComponentTypes: [
@@ -177,6 +181,13 @@ async function run() {
   mp3s.push(djazjodafd);
 
 
+  const radioPlayer = assetsManager.addMeshTask("radio", "", "/box-up/models/", "radio.glb");
+  radioPlayer.onSuccess = function (task) {
+    task.loadedAnimationGroups.forEach((anim) => {
+      anim.loopAnimation = true; 
+      anim.stop();
+    });
+  };
 
   playRadio.onPointerClickObservable.add(() => {
     target = null;
@@ -184,21 +195,20 @@ async function run() {
     if (playRadio.textBlock.text === "Play") {
       playRadio.textBlock.text = "Stop";
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        anim.play();
+        anim.play(true);
       });
       radioHeader.text = `${mp3s[mp3_index].name}`;
       mp3s[mp3_index].play();
     } else {
       playRadio.textBlock.text = "Play";
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        if (anim.name === "play") {
-          anim.stop();
-        }
+        anim.stop();
       });
       radioHeader.text = ""
       mp3s[mp3_index].stop();
     }
   });
+
 
 
   const forwardRadio = Button.CreateSimpleButton("forwardRadio", ">>");
@@ -215,9 +225,7 @@ async function run() {
     if (mp3s[mp3_index].playing()) {
       was_playing = true;
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        if(anim.name === "play"){
-          anim.stop();
-        }
+        anim.stop();
       });
       mp3s[mp3_index].stop();
     }
@@ -229,9 +237,7 @@ async function run() {
     radioHeader.text = `${mp3s[mp3_index].name}`;
     if (was_playing) {
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        if(anim.name === "play"){
-          anim.play();
-        }
+        anim.play(true);
       });
       mp3s[mp3_index].play();
     }
@@ -252,9 +258,7 @@ async function run() {
     if (mp3s[mp3_index].playing()) {
       was_playing = true;
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        if(anim.name === "play"){
-          anim.stop();
-        }
+        anim.stop();
       });
       mp3s[mp3_index].stop();
     }
@@ -266,9 +270,7 @@ async function run() {
     radioHeader.text = `${mp3s[mp3_index].name}`;
     if (was_playing) {
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        if(anim.name === "play"){
-          anim.play();
-        }
+        anim.play(true);
       });
       mp3s[mp3_index].play();
     }
@@ -286,21 +288,13 @@ async function run() {
   gridRadio.addControl(soundSlider, 1, 2);
 
 
-  const assetsManager = new AssetsManager(scene);
-  const level = assetsManager.addMeshTask("Gym", "", "/box-up/models/", "gym.glb");
+
 
   level.onSuccess = function (task) {
     task.loadedMeshes.forEach((mesh) => {
       if (mesh.name === "Ground") {
         shadowGenerator.addShadowCaster(mesh);
       }
-    });
-  };
-
-  const radioPlayer = assetsManager.addMeshTask("radio", "", "/box-up/models/", "radio.glb");
-  radioPlayer.onSuccess = function (task) {
-    task.loadedAnimationGroups.forEach((anim) => {
-      anim.stop();
     });
   };
 
