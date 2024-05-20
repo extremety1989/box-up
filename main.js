@@ -25,9 +25,6 @@ import '@babylonjs/core/Materials/Node/Blocks'
 
 import { TextBlock } from '@babylonjs/gui/2D/controls/textBlock'
 import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control, Slider } from '@babylonjs/gui'
-import { prePassDeclaration } from '@babylonjs/core/Shaders/ShadersInclude/prePassDeclaration';
-
-
 
 const info = localStorage.getItem('info') ? JSON.parse(localStorage.getItem('info')) : {};
 
