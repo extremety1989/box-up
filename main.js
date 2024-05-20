@@ -184,13 +184,9 @@ async function run() {
     if (playRadio.textBlock.text === "Play") {
       playRadio.textBlock.text = "Stop";
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-
         if (anim.name === "play") {
           anim.play();
         }
-        // if(anim.name === "stop"){
-        //   anim.stop();
-        // }
       });
       radioHeader.text = `${mp3s[mp3_index].name}`;
       mp3s[mp3_index].play();
@@ -199,9 +195,6 @@ async function run() {
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
         if (anim.name === "play") {
           anim.stop();
-        }
-        if (anim.name === "stop") {
-          anim.play();
         }
       });
       radioHeader.text = ""
@@ -224,7 +217,9 @@ async function run() {
     if (mp3s[mp3_index].playing()) {
       was_playing = true;
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        anim.stop();
+        if(anim.name === "play"){
+          anim.stop();
+        }
       });
       mp3s[mp3_index].stop();
     }
@@ -236,7 +231,9 @@ async function run() {
     radioHeader.text = `${mp3s[mp3_index].name}`;
     if (was_playing) {
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        anim.play();
+        if(anim.name === "play"){
+          anim.play();
+        }
       });
       mp3s[mp3_index].play();
     }
@@ -257,7 +254,9 @@ async function run() {
     if (mp3s[mp3_index].playing()) {
       was_playing = true;
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        anim.stop();
+        if(anim.name === "play"){
+          anim.stop();
+        }
       });
       mp3s[mp3_index].stop();
     }
@@ -269,7 +268,9 @@ async function run() {
     radioHeader.text = `${mp3s[mp3_index].name}`;
     if (was_playing) {
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
-        anim.play();
+        if(anim.name === "play"){
+          anim.play();
+        }
       });
       mp3s[mp3_index].play();
     }
