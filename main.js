@@ -181,14 +181,14 @@ async function run() {
   const radioPlayer = assetsManager.addMeshTask("radio", "", "/box-up/models/", "radio.glb");
   radioPlayer.onSuccess = function (task) {
     task.loadedAnimationGroups.forEach((anim) => {
-      anim.loopAnimation = true; 
+      anim.loopAnimation = true;
       anim.stop();
     });
   };
 
   playRadio.onPointerClickObservable.add(() => {
     target = null;
-    if(!allow_click_the_menu) return;
+    if (!allow_click_the_menu) return;
     if (playRadio.textBlock.text === "Play") {
       playRadio.textBlock.text = "Stop";
       radioPlayer.loadedAnimationGroups.forEach((anim) => {
@@ -580,7 +580,7 @@ async function run() {
   button_5.onPointerDownObservable.add(() => {
     if (!allow_click_the_menu) return;
     if (!floorPosition.isVisible && stopped) {
-     
+
       const fcp = xr.baseExperience.camera.position
       floorPosition.position.y = fcp.y - 0.5;
       floorPosition.isVisible = true;
@@ -793,7 +793,7 @@ async function run() {
       const up = createUpper();
       up.scaling.z = 3.0;
       up.position.z += dist;
-      up.position.y = pos_y.y - 0.2;
+      up.position.y = pos_y.y - 0.1;
       up.speed = 0.03;
       temp.push(up);
       dist += 4 + up.scaling.z;
@@ -977,15 +977,11 @@ async function run() {
     dist += 20;
     targets = temp;
     combo_tutorial_5 = true;
-
-
   }
 
 
 
   function create_combo_tutorial() {
-
-
     combo_tutorial = true;
     offOnGloves(false, true);
     combo_tutorial_1 = true;
@@ -996,71 +992,73 @@ async function run() {
 
     let dist = 0;
     let temp = [];
-    // for (let i = 0; i < 4; i++) {
-    //   const tb = createBlackTarget();
-    //   const ty = createYellowTarget();
-    //   const pos_y = xr.baseExperience.camera.position.clone();
-    //   tb.position.y = pos_y.y - 0.2;
-    //   ty.position.y = pos_y.y - 0.2;
-    //   tb.position.x = 0.1
-    //   ty.position.x = -0.1
-    //   temp.push(tb);
-    //   temp.push(ty);
-    //   tb.position.z += dist;
-    //   ty.position.z += dist + 2;
-    //   dist += 4;
-    // }
-    // dist += 10;
 
-    // for (let i = 0; i < 4; i++) {
-    //   const tb = createBlackTarget();
-    //   const ty = createYellowTarget();
-    //   tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
-    //   ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-Math.PI / 2 - 0.5, 0, 0);
-    //   const pos_y = xr.baseExperience.camera.position.clone();
-    //   tb.position.y = pos_y.y - 0.2;
-    //   ty.position.y = pos_y.y - 0.2;
-    //   temp.push(ty);
-    //   temp.push(tb);
-    //   tb.position.z += dist;
-    //   ty.position.z += dist + 2;
-    //   dist += 4;
-    // }
-    // dist += 10;
-    // for (let i = 0; i < 4; i++) {
-    //   const tb = createBlackTarget();
-    //   const ty = createYellowTarget();
-    //   tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
-    //   ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
-    //   const pos_y = xr.baseExperience.camera.position.clone();
-    //   tb.position.y = pos_y.y - 0.2 - 0.5;
-    //   ty.position.y = pos_y.y - 0.2 - 0.5;
-    //   tb.position.x = 0.1
-    //   ty.position.x = -0.1
-    //   temp.push(ty);
-    //   temp.push(tb);
-    //   tb.position.z += dist;
-    //   ty.position.z += dist + 2;
-    //   dist += 4;
-    // }
-    // dist += 10;
+    //jab cross
+    for (let i = 0; i < 4; i++) {
+      const tb = createBlackTarget();
+      const ty = createYellowTarget();
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.2;
+      ty.position.y = pos_y.y - 0.2;
+      tb.position.x = 0.1
+      ty.position.x = -0.1
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist;
+      ty.position.z += dist + 4;
+      dist += 8;
+    }
+    dist += 10;
 
-    // for (let i = 0; i < 4; i++) {
-    //   const tb = createBlackTarget();
-    //   const ty = createYellowTarget();
-    //   const pos_y = xr.baseExperience.camera.position.clone();
-    //   tb.position.y = pos_y.y - 0.2;
-    //   ty.position.y = pos_y.y - 0.2;
-    //   tb.position.x = 0.1
-    //   ty.position.x = -0.1
-    //   temp.push(tb);
-    //   temp.push(ty);
-    //   tb.position.z += dist;
-    //   ty.position.z += dist + 2;
-    //   dist += 14;
-    // }
+    for (let i = 0; i < 4; i++) {
+      const tb = createBlackTarget();
+      const ty = createYellowTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-Math.PI / 2 - 0.5, 0, 0);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.2;
+      ty.position.y = pos_y.y - 0.2;
+      temp.push(ty);
+      temp.push(tb);
+      tb.position.z += dist;
+      ty.position.z += dist + 4;
+      dist += 8;
+    }
+    dist += 10;
+    for (let i = 0; i < 4; i++) {
+      const tb = createBlackTarget();
+      const ty = createYellowTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.3;
+      ty.position.y = pos_y.y - 0.3;
+      tb.position.x = 0.1
+      ty.position.x = -0.1
+      temp.push(ty);
+      temp.push(tb);
+      tb.position.z += dist;
+      ty.position.z += dist + 4;
+      dist += 8;
+    }
+    dist += 10;
 
-    // dist += 10;
+    for (let i = 0; i < 4; i++) {
+      const tb = createBlackTarget();
+      const ty = createYellowTarget();
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.2;
+      ty.position.y = pos_y.y - 0.2;
+      tb.position.x = 0.1
+      ty.position.x = -0.1
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist;
+      ty.position.z += dist + 4;
+      dist += 14;
+    }
+
+    dist += 10;
 
     //jab jab rear hook
     for (let i = 0; i < 4; i++) {
@@ -1079,8 +1077,8 @@ async function run() {
       temp.push(ty);
       temp.push(ty2);
       ty.position.z += dist + 2;
-      ty2.position.z += dist + 4;
-      tb.position.z += dist + 6;
+      ty2.position.z += dist + 6;
+      tb.position.z += dist + 10;
       dist += 14;
       tb.speed = globalSpeed;
       ty.speed = globalSpeed;
@@ -1107,45 +1105,125 @@ async function run() {
 
 
       tb.position.z += dist + 2;
-      tb2.position.z += dist + 4;
-      ty.position.z += dist + 6;
+      tb2.position.z += dist + 6;
+      ty.position.z += dist + 10;
       dist += 14;
     }
 
-    // dist += 10;
-    // //uppercut left first
-    // for (let i = 0; i < 4; i++) {
-    //   const tb = createBlackTarget();
-    //   const ty = createYellowTarget();
-    //   tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
-    //   ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
-    //   const pos_y = xr.baseExperience.camera.position.clone();
-    //   tb.position.y = pos_y.y - 0.3;
-    //   ty.position.y = pos_y.y - 0.3;
-    //   temp.push(ty);
-    //   temp.push(tb);
-    //   tb.position.z += dist + 2;
-    //   ty.position.z += dist;
-    //   dist += 4;
-    // }
+    dist += 10;
+    //uppercut left first
+    for (let i = 0; i < 4; i++) {
+      const tb = createBlackTarget();
+      const ty = createYellowTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.3;
+      ty.position.y = pos_y.y - 0.3;
+      temp.push(ty);
+      temp.push(tb);
+      tb.position.z += dist + 4;
+      ty.position.z += dist;
+      dist += 8;
+    }
 
-    // dist += 10;
-    // //upper cut right first
-    // for (let i = 0; i < 4; i++) {
-    //   const tb = createBlackTarget();
-    //   const ty = createYellowTarget();
-    //   tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
-    //   ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
-    //   const pos_y = xr.baseExperience.camera.position.clone();
-    //   tb.position.y = pos_y.y - 0.3;
-    //   ty.position.y = pos_y.y - 0.3;
-    //   temp.push(ty);
-    //   temp.push(tb);
-    //   tb.position.z += dist;
-    //   ty.position.z += dist + 2;
-    //   dist += 4;
-    // }
-    targets = temp;
+    dist += 10;
+    //upper cut right first
+    for (let i = 0; i < 4; i++) {
+      const tb = createBlackTarget();
+      const ty = createYellowTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y - 0.3;
+      ty.position.y = pos_y.y - 0.3;
+      temp.push(ty);
+      temp.push(tb);
+      tb.position.z += dist;
+      ty.position.z += dist + 4;
+    }
+
+    for (let j = 0; j < 5; j++) {
+      dist += 10;
+      //squad
+      for (let i = 0; i < 1; i++) {
+        const pos_y = xr.baseExperience.camera.position.clone();
+        const up = createUpper();
+        if (info.difficulty === "Easy") {
+          up.scaling.z = 0.4;
+        } else if (info.difficulty === "Medium") {
+          up.scaling.z = 0.8;
+        } else if (info.difficulty === "Hard") {
+          up.scaling.z = 1.0;
+        }
+        up.position.z += dist / 2;
+        up.position.y = pos_y.y - 0.1;
+        up.speed = 0.03;
+        temp.push(up);
+        dist += up.scaling.z;
+      }
+      dist += 10;
+      //lead skycut + rear skycut
+      for (let i = 0; i < 1; i++) {
+        const tb = createBlackTarget();
+        tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+        const ty = createYellowTarget();
+        ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+        const pos_y = xr.baseExperience.camera.position.clone();
+        tb.position.y = pos_y.y + 0.3;
+        ty.position.y = pos_y.y + 0.3;
+        tb.position.x = 0.2
+        ty.position.x = -0.2
+        temp.push(tb);
+        temp.push(ty);
+        tb.position.z += dist / 2;
+        ty.position.z += dist / 2;
+        dist += 8;
+
+        tb.speed = 0.03;
+        ty.speed = 0.03;
+      }
+      dist += 10;
+      //squad
+      for (let i = 0; i < 1; i++) {
+        const pos_y = xr.baseExperience.camera.position.clone();
+        const up = createUpper();
+        if (info.difficulty === "Easy") {
+          up.scaling.z = 0.0;
+        } else if (info.difficulty === "Medium") {
+          up.scaling.z = 6.0;
+        } else if (info.difficulty === "Hard") {
+          up.scaling.z = 0.1;
+        }
+        up.position.z += dist / 2;
+        up.position.y = pos_y.y - 0.1;
+        up.speed = 0.03;
+        temp.push(up);
+        dist += up.scaling.z;
+      }
+    }
+    dist += 10;
+    //lead skycut + rear skycut
+    for (let i = 0; i < 1; i++) {
+      const tb = createBlackTarget();
+      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const ty = createYellowTarget();
+      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+      const pos_y = xr.baseExperience.camera.position.clone();
+      tb.position.y = pos_y.y + 0.3;
+      ty.position.y = pos_y.y + 0.3;
+      tb.position.x = 0.2
+      ty.position.x = -0.2
+      temp.push(tb);
+      temp.push(ty);
+      tb.position.z += dist / 2;
+      ty.position.z += dist / 2;
+      dist += 8;
+  
+      tb.speed = 0.03;
+      ty.speed = 0.03;
+      targets = temp;
+  }
   }
 
 
@@ -1207,20 +1285,14 @@ async function run() {
           setTimeout(() => {
             if (info.difficulty === "Easy") {
               globalSpeed = 0.03;
-
-              create_combo_1();
-
-
             }
-            // else if (info.difficulty === "Medium") {
-            //   globalSpeed = 0.04;
-            //   create_combo_1();
-            // } else if (info.difficulty === "Hard") {
-            //   globalSpeed = 0.05;
-            //   create_combo_1();
-            // }
+            else if (info.difficulty === "Medium") {
+              globalSpeed = 0.04;
+            } else if (info.difficulty === "Hard") {
+              globalSpeed = 0.05;
+            }
+            create_combo_1();
             plane2.isVisible = false;
-
             center.text = "";
             stopped = false;
           }, 1000);
@@ -1496,7 +1568,7 @@ async function run() {
               plane.isVisible = true;
               floorPosition.parent = null;
               floorPosition.isVisible = false;
-        
+
               if (tutorial) {
                 OkFloorAdjust();
               }
@@ -1534,7 +1606,7 @@ async function run() {
 
     let leftPreviousPosition = null;
     let leftPreviousTime = null;
-    
+
     let rightPreviousPosition = null;
     let rightPreviousTime = null;
     let paused = false;
@@ -1652,7 +1724,7 @@ async function run() {
       if (tutorial && targets.length === 0) {
         let dist = 0;
         let temp = [];
-        if(combo_tutorial_1){
+        if (combo_tutorial_1) {
           combo_tutorial_1 = false;
           const combo3MP3 = new Howl({
             src: ['./sounds/left_right_punches.mp3']
@@ -1660,44 +1732,44 @@ async function run() {
           combo3MP3.once('load', function () {
             combo3MP3.play();
           });
-    
+
           combo3MP3.on('end', function () {
             JabCross(temp, dist);
           });
-        
+
         }
-        else if(combo_tutorial_2){
+        else if (combo_tutorial_2) {
           combo_tutorial_2 = false;
           const combo3MP3 = new Howl({
             src: ['./sounds/right_left_punches.mp3']
           });
-    
-    
+
+
           combo3MP3.once('load', function () {
             combo3MP3.play();
           });
-    
+
           combo3MP3.on('end', function () {
             CrossJab(temp, dist);
           });
-   
+
         }
-        else if(combo_tutorial_3){
+        else if (combo_tutorial_3) {
           combo_tutorial_3 = false;
           const combo4MP3 = new Howl({
             src: ['./sounds/uppercut_hook.mp3']
           });
-    
+
           combo4MP3.once('load', function () {
             combo4MP3.play();
           });
-    
+
           combo4MP3.on('end', function () {
-        
+
             UpperCutAndHook(temp, dist);
           });
-     
-        }else if (combo_tutorial_4) {
+
+        } else if (combo_tutorial_4) {
           combo_tutorial_4 = false;
 
 
@@ -1705,27 +1777,27 @@ async function run() {
           const combo5MP3 = new Howl({
             src: ['./sounds/squat_sky_hammer.mp3']
           });
-    
+
           combo5MP3.once('load', function () {
             combo5MP3.play();
           });
-    
+
           combo5MP3.on('end', function () {
-        
+
             SkyHammerSquat(temp, dist);
           });
 
 
-        }else if(combo_tutorial_5){
+        } else if (combo_tutorial_5) {
           combo_tutorial_5 = false;
           const end_tutorialMP3 = new Howl({
             src: ['./sounds/end_tutorial.mp3']
           });
-          
+
           end_tutorialMP3.once('load', function () {
             end_tutorialMP3.play();
           });
-        
+
           end_tutorialMP3.on('end', function () {
             offOnGloves(true, false);
             plane.isVisible = true;
@@ -1733,7 +1805,7 @@ async function run() {
             tutorial = false;
           });
         }
-  
+
       }
     });
   };
