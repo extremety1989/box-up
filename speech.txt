@@ -3,7 +3,7 @@ Welcome to the tutorial. In this tutorial, you will learn how to move around the
 Let's start with adjusting the floor position.
 If you feel that you are too high or too low, you can adjust the floor position.
 By holding the "Adjust floor position" button, you can move the floor down.
-If you are satisfied with the position, release the button.
+If you are satisfied with the position, release the button. Now go ahead and adjust the floor position.
 
 
 
