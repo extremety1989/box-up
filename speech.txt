@@ -1,4 +1,4 @@
-Welcome to the tutorial. In this tutorial, you will learn how to move around the room, ajust floor position, and do basic punches.
+    Welcome to the tutorial. In this tutorial, you will learn how to ajust floor position, do basic punches and move around the room.
 
 Let's start with adjusting the floor position.
 Click and hold the "Adjust floor position" button.
