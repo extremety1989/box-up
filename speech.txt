@@ -1,18 +1,11 @@
-    Welcome to the tutorial. In this tutorial, you will learn how to ajust floor position, do basic punches and move around the room.
+Welcome to the tutorial. In this tutorial, you will learn how to ajust floor position, do basic punches and move around the room.
 
 Let's start with adjusting the floor position.
-Click and hold the "Adjust floor position" button.
+Click and Hold the "Adjust floor position" button.
 
+Position the white plane right to the floor and release the button.
 
-
-Move the floor down. If you are satisfied with the position, release the button. 
-
-
-If you have finished adjusting the floor position, 
-you can click one of the buttons: A or B on the right controller, 
-or X or Y on the left controller to continue with the tutorial.
-
-
+Great! If you are ready, Press any of A,B,X,Y buttons to continue with the tutorial.
 
 Check your boxing gloves. You need to hit the yellow target with the yellow glove and the black target with the black glove. 
 Now, let's do simple left-right punches.

@@ -29,6 +29,9 @@ import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control, Slider } fro
 const info = localStorage.getItem('info') ? JSON.parse(localStorage.getItem('info')) : {};
 
 async function run() {
+
+  let leftController;
+  let rightController;
   let end_tutorialMP3;
   let comboSquatSkyHammerMP3;
   let comboUpperCutHookMP3;
@@ -585,33 +588,18 @@ async function run() {
 
   const floorPosition = MeshBuilder.CreateGround("floorPlane", { width: 2, height: 2 }, scene);
   floorPosition.isVisible = false;
-
-  button_5.onPointerDownObservable.add(() => {
-  
-    if (startTutorialMP3) {
+  floorPosition.handness = null;
+  button_5.onPointerDownObservable.add((event) => {
+    if (!allow_click_the_menu) return;
+    if (tutorial && startTutorialMP3) {
       startTutorialMP3.stop();
     }
 
-    if(okFloor_2){
-      okFloor_2.stop();
-    }
-
-    okFloor_2 = new Howl({
-      src: ['./sounds/adjust_floor_2.mp3']
-    });
-    okFloor_2.once('load', function () {
-      okFloor_2.play();
-    });
-
-    okFloor_2.on('end', function () {
-
-    });
     if (!floorPosition.isVisible && stopped) {
-
+      floorPosition.isPressed = true;
       const fcp = xr.baseExperience.camera.position
       floorPosition.position.y = fcp.y - 0.5;
       floorPosition.isVisible = true;
-      floorPosition.isPressed = true;
       plane.isVisible = false;
       level.loadedMeshes.forEach((mesh) => {
         mesh.isVisible = false;
@@ -1359,10 +1347,6 @@ async function run() {
     okFloor.once('load', function () {
       okFloor.play();
     });
-
-    okFloor.on('end', function () {
-
-    });
   }
 
 
@@ -1509,8 +1493,7 @@ async function run() {
   });
 
 
-  let leftController;
-  let rightController;
+
   xr.input.onControllerAddedObservable.add((controller) => {
     controller.onMotionControllerInitObservable.add(
       async (motionController) => {
@@ -1524,11 +1507,13 @@ async function run() {
 
         [A_OR_X, B_OR_Y].forEach((button) => {
           button.onButtonStateChangedObservable.add(() => {
-            if (button.pressed && stopped && tutorial && !combo_tutorial && allow_click_the_menu) {
-              if(okFloor_2) {
-                okFloor_2.stop();
-              }
-              create_combo_tutorial();
+            if (button.pressed && stopped) {
+
+                
+                if(tutorial && !combo_tutorial && allow_click_the_menu){
+                  create_combo_tutorial();
+                }
+   
             }
           });
         });
@@ -1568,30 +1553,11 @@ async function run() {
             if (target && target.name === "plane" && target.parent === null && !floorPosition.isVisible) {
               target.setParent(motionController.rootMesh);
             }
-
+            if(!floorPosition.handness){
+              floorPosition.handness = motionController.handness;
+            }
           } else if (stopped) {
-            if (plane.parent) {
-              plane.setParent(null);
-            }
-
-            if (target) {
-
-              if (target.name === "Circle" && !floorPosition.isVisible && !tutorial && allow_click_the_menu) {
-                xr.baseExperience.camera.position.x = 0;
-                xr.baseExperience.camera.position.z = 0;
-              }
-
-              if (target.name.startsWith("Circle.00") && !floorPosition.isVisible && !tutorial && allow_click_the_menu) {
-                xr.baseExperience.camera.position.x = -target.position.x;
-                xr.baseExperience.camera.position.z = target.position.z;
-              }
-
-              target = null;
-            }
-
-            if (floorPosition.isVisible && !plane.isVisible && allow_click_the_menu) {
-
-              floorPosition.isPressed = false;
+            if(floorPosition.isVisible && floorPosition.handness === motionController.handness){
               localStorage.setItem('info', JSON.stringify(info));
 
               [level, radioPlayer].forEach((task) => {
@@ -1609,10 +1575,28 @@ async function run() {
               plane.isVisible = true;
               floorPosition.parent = null;
               floorPosition.isVisible = false;
+              floorPosition.isPressed = false;
+              floorPosition.handness = null;
 
-              if (tutorial) {
+              if(tutorial && !combo_tutorial){
+                fixFloorPositionMP3.stop();
                 OkFloorAdjust();
               }
+            }
+            if (plane.parent) {
+              plane.setParent(null);
+            }
+            if (target) {
+              if (target.name === "Circle" && !floorPosition.isVisible && !tutorial && allow_click_the_menu) {
+                xr.baseExperience.camera.position.x = 0;
+                xr.baseExperience.camera.position.z = 0;
+              }
+
+              if (target.name.startsWith("Circle.00") && !floorPosition.isVisible && !tutorial && allow_click_the_menu) {
+                xr.baseExperience.camera.position.x = -target.position.x;
+                xr.baseExperience.camera.position.z = target.position.z;
+              }
+              target = null;
             }
           }
         });
@@ -1700,7 +1684,7 @@ async function run() {
           }
         }
 
-        if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed) {
+        if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed && floorPosition.handness === 'left') {
 
           if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
             let targetPosition = new Vector3(0, currentPosition.y, 0);
@@ -1728,7 +1712,7 @@ async function run() {
           }
         }
 
-        if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed) {
+        if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed && floorPosition.handness === 'right') {
 
           if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
             let targetPosition = new Vector3(0, currentPosition.y, 0);
