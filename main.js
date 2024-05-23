@@ -1424,7 +1424,7 @@ async function run() {
 
     if (targets.length > 0) {
       targets.forEach((target) => {
-        if(tutorial && target.name ==="upper" && target.position.z > xr.baseExperience.camera.position.z - 1) {
+        if(tutorial && target.name ==="upper" && target.position.z > xr.baseExperience.camera.position.z - 1 && target.position.z > 1) {
           if(bend_downMP3) {
             bend_downMP3.once('load', function () {
               bend_downMP3.play();
