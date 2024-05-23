@@ -34,6 +34,7 @@ async function run() {
   let comboUpperCutHookMP3;
   let comboRightLeftMP3;
   let comboLeftRightMP3;
+  let bend_downMP3;
   let okFloor;
   let okFloor_2;
   let startTutorialMP3;
@@ -1415,12 +1416,21 @@ async function run() {
   });
 
 
-
+  bend_downMP3 = new Howl({
+    src: ['./sounds/bend_down.mp3']
+  });
 
   scene.registerBeforeRender(function () {
 
     if (targets.length > 0) {
       targets.forEach((target) => {
+        if(tutorial && target.name ==="upper" && target.position.z > xr.baseExperience.camera.position.z - 1) {
+          if(bend_downMP3) {
+            bend_downMP3.once('load', function () {
+              bend_downMP3.play();
+            });
+          }
+        }
         if (leftCollision.intersectsMesh(target, true)) {
           if (target.name === "yellow") {
             target.speed = 0;
