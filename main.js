@@ -1836,6 +1836,7 @@ async function run() {
           });
 
           end_tutorialMP3.on('end', function () {
+            comboCounter.text = "COMBO\n\n0";
             offOnGloves(true, false);
             plane.isVisible = true;
             allow_click_the_menu = true;
