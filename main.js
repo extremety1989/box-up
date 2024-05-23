@@ -1515,8 +1515,8 @@ async function run() {
         [A_OR_X, B_OR_Y].forEach((button) => {
           button.onButtonStateChangedObservable.add(() => {
             if (button.pressed && stopped && tutorial && !combo_tutorial && allow_click_the_menu) {
-              if(okFloor.isPlaying()) {
-                okFloor.stop();
+              if(okFloor_2) {
+                okFloor_2.stop();
               }
               create_combo_tutorial();
             }
