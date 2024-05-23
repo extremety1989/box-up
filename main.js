@@ -813,7 +813,8 @@ async function run() {
   }
 
   function SkyHammerSquat(temp, dist) {
-    //squad
+    //squat
+    dist += 20;
     for (let i = 0; i < 1; i++) {
       const pos_y = xr.baseExperience.camera.position.clone();
       const up = createUpper();
@@ -1171,7 +1172,7 @@ async function run() {
 
     for (let j = 0; j < 5; j++) {
       dist += 14;
-      //squad
+      //squat
       for (let i = 0; i < 1; i++) {
         const pos_y = xr.baseExperience.camera.position.clone();
         const up = createUpper();
@@ -1210,7 +1211,7 @@ async function run() {
         ty.speed = 0.03;
       }
       dist += 14;
-      //squad
+      //squat
       for (let i = 0; i < 1; i++) {
         const pos_y = xr.baseExperience.camera.position.clone();
         const up = createUpper();
