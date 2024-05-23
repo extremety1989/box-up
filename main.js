@@ -29,7 +29,15 @@ import { AdvancedDynamicTexture, Button, StackPanel, Grid, Control, Slider } fro
 const info = localStorage.getItem('info') ? JSON.parse(localStorage.getItem('info')) : {};
 
 async function run() {
-
+  let end_tutorialMP3;
+  let comboSquatSkyHammerMP3;
+  let comboUpperCutHookMP3;
+  let comboRightLeftMP3;
+  let comboLeftRightMP3;
+  let okFloor;
+  let okFloor_2;
+  let startTutorialMP3;
+  let fixFloorPositionMP3;
   let combo_tutorial_1 = false;
   let combo_tutorial_2 = false;
   let combo_tutorial_3 = false;
@@ -578,7 +586,25 @@ async function run() {
   floorPosition.isVisible = false;
 
   button_5.onPointerDownObservable.add(() => {
-    if (!allow_click_the_menu) return;
+  
+    if (startTutorialMP3) {
+      startTutorialMP3.stop();
+    }
+
+    if(okFloor_2){
+      okFloor_2.stop();
+    }
+
+    okFloor_2 = new Howl({
+      src: ['./sounds/adjust_floor_2.mp3']
+    });
+    okFloor_2.once('load', function () {
+      okFloor_2.play();
+    });
+
+    okFloor_2.on('end', function () {
+
+    });
     if (!floorPosition.isVisible && stopped) {
 
       const fcp = xr.baseExperience.camera.position
@@ -617,7 +643,7 @@ async function run() {
     target = null;
     tutorial = true;
     allow_click_the_menu = false;
-    const startTutorialMP3 = new Howl({
+    startTutorialMP3 = new Howl({
       src: ['./sounds/welcome_tutorial.mp3']
     });
     startTutorialMP3.once('load', function () {
@@ -633,7 +659,7 @@ async function run() {
 
   function startFloorFix() {
     allow_click_the_menu = false;
-    const fixFloorPositionMP3 = new Howl({
+    fixFloorPositionMP3 = new Howl({
       src: ['./sounds/adjust_floor.mp3']
     });
 
@@ -1322,10 +1348,10 @@ async function run() {
   }
 
 
-
+ 
 
   function OkFloorAdjust() {
-    const okFloor = new Howl({
+    okFloor = new Howl({
       src: ['./sounds/continue_tutorial.mp3']
     });
     okFloor.once('load', function () {
@@ -1488,6 +1514,9 @@ async function run() {
         [A_OR_X, B_OR_Y].forEach((button) => {
           button.onButtonStateChangedObservable.add(() => {
             if (button.pressed && stopped && tutorial && !combo_tutorial && allow_click_the_menu) {
+              if(okFloor.isPlaying()) {
+                okFloor.stop();
+              }
               create_combo_tutorial();
             }
           });
@@ -1528,6 +1557,7 @@ async function run() {
             if (target && target.name === "plane" && target.parent === null && !floorPosition.isVisible) {
               target.setParent(motionController.rootMesh);
             }
+
           } else if (stopped) {
             if (plane.parent) {
               plane.setParent(null);
@@ -1726,71 +1756,67 @@ async function run() {
         let temp = [];
         if (combo_tutorial_1) {
           combo_tutorial_1 = false;
-          const combo3MP3 = new Howl({
+          comboLeftRightMP3 = new Howl({
             src: ['./sounds/left_right_punches.mp3']
           });
-          combo3MP3.once('load', function () {
-            combo3MP3.play();
+          comboLeftRightMP3.once('load', function () {
+            comboLeftRightMP3.play();
           });
 
-          combo3MP3.on('end', function () {
+          comboLeftRightMP3.on('end', function () {
             JabCross(temp, dist);
           });
 
         }
         else if (combo_tutorial_2) {
           combo_tutorial_2 = false;
-          const combo3MP3 = new Howl({
+          comboRightLeftMP3 = new Howl({
             src: ['./sounds/right_left_punches.mp3']
           });
 
 
-          combo3MP3.once('load', function () {
-            combo3MP3.play();
+          comboRightLeftMP3.once('load', function () {
+            comboRightLeftMP3.play();
           });
 
-          combo3MP3.on('end', function () {
+          comboRightLeftMP3.on('end', function () {
             CrossJab(temp, dist);
           });
 
         }
         else if (combo_tutorial_3) {
           combo_tutorial_3 = false;
-          const combo4MP3 = new Howl({
+          comboUpperCutHookMP3 = new Howl({
             src: ['./sounds/uppercut_hook.mp3']
           });
 
-          combo4MP3.once('load', function () {
-            combo4MP3.play();
+          comboUpperCutHookMP3.once('load', function () {
+            comboUpperCutHookMP3.play();
           });
 
-          combo4MP3.on('end', function () {
-
+          comboUpperCutHookMP3.on('end', function () {
             UpperCutAndHook(temp, dist);
           });
 
         } else if (combo_tutorial_4) {
           combo_tutorial_4 = false;
 
-
-
-          const combo5MP3 = new Howl({
+        comboSquatSkyHammerMP3 = new Howl({
             src: ['./sounds/squat_sky_hammer.mp3']
           });
 
-          combo5MP3.once('load', function () {
-            combo5MP3.play();
+          comboSquatSkyHammerMP3.once('load', function () {
+            comboSquatSkyHammerMP3.play();
           });
 
-          combo5MP3.on('end', function () {
-
+          comboSquatSkyHammerMP3.on('end', function () {
             SkyHammerSquat(temp, dist);
           });
 
 
         } else if (combo_tutorial_5) {
           combo_tutorial_5 = false;
-          const end_tutorialMP3 = new Howl({
+          end_tutorialMP3 = new Howl({
             src: ['./sounds/end_tutorial.mp3']
           });
 
