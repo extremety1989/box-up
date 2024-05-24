@@ -410,10 +410,18 @@ async function run() {
 
   let pos = new Vector3(0, 0, 0);
 
-  const upper = MeshBuilder.CreateBox("upper", { width: 1.0, height: 0.5 }, scene);
-  upper.material = new StandardMaterial('blackMaterial', scene);
-  upper.material.diffuseColor = Color3.Black();
-  upper.isVisible = false;
+  
+  const upper = assetsManager.addMeshTask("upper", "", "/box-up/models/", "upper.glb");
+  upper.onSuccess = function (task) {
+    task.loadedMeshes.forEach((mesh) => {
+      mesh.isVisible = false;
+    });
+
+    task.loadedAnimationGroups.forEach((anim) => {
+      anim.play();
+    });
+
+  };
   upper.speed = 0;
 
   const plane = MeshBuilder.CreatePlane("plane", { size: 1 }, scene);
@@ -1274,7 +1282,8 @@ async function run() {
 
 
   function createUpper() {
-    const newUpper = upper.createInstance("upper");
+    // const newUpper = upper.createInstance("upper");
+    const newUpper = upper.loadedMeshes[0].instantiateHierarchy();
     newUpper.position.copyFrom(pos);
     newUpper.position.z += 10;
     newUpper.isVisible = true;
