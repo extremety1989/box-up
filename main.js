@@ -410,7 +410,7 @@ async function run() {
 
   let pos = new Vector3(0, 0, 0);
 
-  
+
   const upper = assetsManager.addMeshTask("upper", "", "/box-up/models/", "upper.glb");
   upper.onSuccess = function (task) {
     task.loadedMeshes.forEach((mesh) => {
@@ -817,7 +817,7 @@ async function run() {
       const up = createUpper();
       up.scaling.z = 3.0;
       up.position.z += dist;
-      up.position.y = pos_y.y - 0.1;
+      up.position.y = pos_y.y + 0.3;
       up.speed = 0.03;
       temp.push(up);
       dist += 4 + up.scaling.z;
@@ -1028,12 +1028,18 @@ async function run() {
       ty.position.x = -0.1
       temp.push(tb);
       temp.push(ty);
-      tb.position.z += dist;
-      ty.position.z += dist + 4;
-      dist += 8;
     }
-    dist += 10;
 
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].position.z += dist;
+      dist += 4;
+    }
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].speed = globalSpeed;
+      targets.push(temp[i]);
+    }
+    temp = [];
+    dist += 8;
     for (let i = 0; i < 4; i++) {
       const tb = createBlackTarget();
       const ty = createYellowTarget();
@@ -1044,11 +1050,19 @@ async function run() {
       ty.position.y = pos_y.y - 0.2;
       temp.push(ty);
       temp.push(tb);
-      tb.position.z += dist;
-      ty.position.z += dist + 4;
-      dist += 8;
     }
-    dist += 10;
+
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].position.z += dist;
+      dist += 4;
+    }
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].speed = globalSpeed;
+      targets.push(temp[i]);
+    }
+    temp = [];
+    dist += 8;
+
     for (let i = 0; i < 4; i++) {
       const tb = createBlackTarget();
       const ty = createYellowTarget();
@@ -1061,11 +1075,18 @@ async function run() {
       ty.position.x = -0.1
       temp.push(ty);
       temp.push(tb);
-      tb.position.z += dist;
-      ty.position.z += dist + 4;
-      dist += 8;
     }
-    dist += 10;
+
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].position.z += dist;
+      dist += 4;
+    }
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].speed = globalSpeed;
+      targets.push(temp[i]);
+    }
+    temp = [];
+    dist += 8;
 
     for (let i = 0; i < 4; i++) {
       const tb = createBlackTarget();
@@ -1077,12 +1098,18 @@ async function run() {
       ty.position.x = -0.1
       temp.push(tb);
       temp.push(ty);
-      tb.position.z += dist;
-      ty.position.z += dist + 4;
-      dist += 14;
     }
 
-    dist += 10;
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].position.z += dist;
+      dist += 4;
+    }
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].speed = globalSpeed;
+      targets.push(temp[i]);
+    }
+    temp = [];
+    dist += 8;
 
     //jab jab rear hook
     for (let i = 0; i < 4; i++) {
@@ -1100,15 +1127,18 @@ async function run() {
       temp.push(tb);
       temp.push(ty);
       temp.push(ty2);
-      ty.position.z += dist + 2;
-      ty2.position.z += dist + 6;
-      tb.position.z += dist + 10;
-      dist += 14;
-      tb.speed = globalSpeed;
-      ty.speed = globalSpeed;
-      ty2.speed = globalSpeed;
     }
-    dist += 10;
+
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].position.z += dist;
+      dist += 4;
+    }
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].speed = globalSpeed;
+      targets.push(temp[i]);
+    }
+    temp = [];
+    dist += 8;
 
     //cross cross lead hook
     for (let i = 0; i < 4; i++) {
@@ -1126,15 +1156,20 @@ async function run() {
       temp.push(tb);
       temp.push(ty);
       temp.push(tb2);
-
-
-      tb.position.z += dist + 2;
-      tb2.position.z += dist + 6;
-      ty.position.z += dist + 10;
-      dist += 14;
     }
 
-    dist += 10;
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].position.z += dist;
+      dist += 4;
+    }
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].speed = globalSpeed;
+      targets.push(temp[i]);
+    }
+    temp = [];
+    dist += 8;
+
+
     //uppercut left first
     for (let i = 0; i < 4; i++) {
       const tb = createBlackTarget();
@@ -1146,12 +1181,19 @@ async function run() {
       ty.position.y = pos_y.y - 0.3;
       temp.push(ty);
       temp.push(tb);
-      tb.position.z += dist + 4;
-      ty.position.z += dist;
-      dist += 14;
     }
 
-    dist += 10;
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].position.z += dist;
+      dist += 4;
+    }
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].speed = globalSpeed;
+      targets.push(temp[i]);
+    }
+    temp = [];
+    dist += 8;
+
     //upper cut right first
     for (let i = 0; i < 4; i++) {
       const tb = createBlackTarget();
@@ -1163,30 +1205,44 @@ async function run() {
       ty.position.y = pos_y.y - 0.3;
       temp.push(ty);
       temp.push(tb);
-      tb.position.z += dist;
-      ty.position.z += dist + 4;
     }
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].position.z += dist;
+      dist += 4;
+    }
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].speed = globalSpeed;
+      targets.push(temp[i]);
+    }
+    temp = [];
+    dist += 14;
 
     for (let j = 0; j < 5; j++) {
-      dist += 14;
       //squat
-      for (let i = 0; i < 1; i++) {
-        const pos_y = xr.baseExperience.camera.position.clone();
-        const up = createUpper();
-        if (info.difficulty === "Easy") {
-          up.scaling.z = 0.4;
-        } else if (info.difficulty === "Medium") {
-          up.scaling.z = 0.8;
-        } else if (info.difficulty === "Hard") {
-          up.scaling.z = 1.0;
-        }
-        up.position.z += dist / 2;
-        up.position.y = pos_y.y - 0.1;
-        up.speed = 0.03;
-        temp.push(up);
-        dist += up.scaling.z + 8;
+      const pos_y = xr.baseExperience.camera.position.clone();
+      const up = createUpper();
+      if (info.difficulty === "Easy") {
+        up.scaling.z = 2;
+      } else if (info.difficulty === "Medium") {
+        up.scaling.z = 4;
+      } else if (info.difficulty === "Hard") {
+        up.scaling.z = 8;
       }
-      dist += 10;
+      up.position.y = pos_y.y + 0.3;
+      temp.push(up);
+
+      for (let i = 0; i < temp.length; i++) {
+        temp[i].position.z += dist;
+        dist += 4;
+      }
+      for (let i = 0; i < temp.length; i++) {
+        temp[i].speed = globalSpeed;
+        targets.push(temp[i]);
+      }
+      temp = [];
+      dist += 14;
+
+
       //lead skycut + rear skycut
       for (let i = 0; i < 1; i++) {
         const tb = createBlackTarget();
@@ -1200,33 +1256,20 @@ async function run() {
         ty.position.x = -0.2
         temp.push(tb);
         temp.push(ty);
-        tb.position.z += dist / 2;
-        ty.position.z += dist / 2;
-        dist += 8;
+      }
 
-        tb.speed = 0.03;
-        ty.speed = 0.03;
+      for (let i = 0; i < temp.length; i++) {
+        temp[i].position.z += dist;
+        dist += 4;
       }
+      for (let i = 0; i < temp.length; i++) {
+        temp[i].speed = globalSpeed;
+        targets.push(temp[i]);
+      }
+      temp = [];
       dist += 14;
-      //squat
-      for (let i = 0; i < 1; i++) {
-        const pos_y = xr.baseExperience.camera.position.clone();
-        const up = createUpper();
-        if (info.difficulty === "Easy") {
-          up.scaling.z = 0.0;
-        } else if (info.difficulty === "Medium") {
-          up.scaling.z = 6.0;
-        } else if (info.difficulty === "Hard") {
-          up.scaling.z = 0.1;
-        }
-        up.position.z += dist / 2;
-        up.position.y = pos_y.y - 0.1;
-        up.speed = 0.03;
-        temp.push(up);
-        dist += up.scaling.z + 8;
-      }
     }
-    dist += 14;
+
     //lead skycut + rear skycut
     for (let i = 0; i < 1; i++) {
       const tb = createBlackTarget();
@@ -1240,14 +1283,19 @@ async function run() {
       ty.position.x = -0.2
       temp.push(tb);
       temp.push(ty);
-      tb.position.z += dist / 2;
-      ty.position.z += dist / 2;
-      dist += 8;
-  
-      tb.speed = 0.03;
-      ty.speed = 0.03;
-      targets = temp;
-  }
+    }
+
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].position.z += dist;
+      dist += 0;
+    }
+    for (let i = 0; i < temp.length; i++) {
+      temp[i].speed = globalSpeed;
+      targets.push(temp[i]);
+    }
+    temp = [];
+    dist += 8;
+
   }
 
 
@@ -1347,7 +1395,7 @@ async function run() {
   }
 
 
- 
+
 
   function OkFloorAdjust() {
     okFloor = new Howl({
@@ -1417,8 +1465,8 @@ async function run() {
 
     if (targets.length > 0) {
       targets.forEach((target) => {
-        if(tutorial && target.name ==="upper" && target.position.z > xr.baseExperience.camera.position.z - 1 && target.position.z > 1) {
-          if(bend_downMP3) {
+        if (tutorial && target.name === "upper" && target.position.z > xr.baseExperience.camera.position.z - 1 && target.position.z > 1) {
+          if (bend_downMP3) {
             bend_downMP3.once('load', function () {
               bend_downMP3.play();
             });
@@ -1518,11 +1566,11 @@ async function run() {
           button.onButtonStateChangedObservable.add(() => {
             if (button.pressed && stopped) {
 
-                
-                if(tutorial && !combo_tutorial && allow_click_the_menu){
-                  create_combo_tutorial();
-                }
-   
+
+              if (tutorial && !combo_tutorial && allow_click_the_menu) {
+                create_combo_tutorial();
+              }
+
             }
           });
         });
@@ -1562,11 +1610,11 @@ async function run() {
             if (target && target.name === "plane" && target.parent === null && !floorPosition.isVisible) {
               target.setParent(motionController.rootMesh);
             }
-            if(!floorPosition.handness){
+            if (!floorPosition.handness) {
               floorPosition.handness = motionController.handness;
             }
           } else if (stopped) {
-            if(floorPosition.isVisible && floorPosition.handness === motionController.handness){
+            if (floorPosition.isVisible && floorPosition.handness === motionController.handness) {
               localStorage.setItem('info', JSON.stringify(info));
 
               [level, radioPlayer].forEach((task) => {
@@ -1587,7 +1635,7 @@ async function run() {
               floorPosition.isPressed = false;
               floorPosition.handness = null;
 
-              if(tutorial && !combo_tutorial){
+              if (tutorial && !combo_tutorial) {
                 fixFloorPositionMP3.stop();
                 OkFloorAdjust();
               }
@@ -1805,7 +1853,7 @@ async function run() {
         } else if (combo_tutorial_4) {
           combo_tutorial_4 = false;
 
-        comboSquatSkyHammerMP3 = new Howl({
+          comboSquatSkyHammerMP3 = new Howl({
             src: ['./sounds/squat_sky_hammer.mp3']
           });
 
