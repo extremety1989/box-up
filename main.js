@@ -553,6 +553,7 @@ async function run() {
   button_1.onPointerClickObservable.add(() => {
     target = null;
     if (!allow_click_the_menu) return;
+    comboCounter.value = 0;
     info.difficulty = button_1.name;
     localStorage.setItem('info', JSON.stringify(info));
     button_1.background = '#fff';
@@ -566,6 +567,7 @@ async function run() {
   button_2.onPointerClickObservable.add(() => {
     target = null;
     if (!allow_click_the_menu) return;
+    comboCounter.value = 0;
     info.difficulty = button_2.name;
     localStorage.setItem('info', JSON.stringify(info));
     button_1.color = '#fff';
@@ -579,6 +581,7 @@ async function run() {
   button_3.onPointerClickObservable.add(() => {
     target = null;
     if (!allow_click_the_menu) return;
+    comboCounter.value = 0;
     info.difficulty = button_3.name;
     localStorage.setItem('info', JSON.stringify(info));
     button_1.color = '#fff';
@@ -591,6 +594,7 @@ async function run() {
 
   button_4.onPointerClickObservable.add(() => {
     if (!allow_click_the_menu) return;
+    comboCounter.value = 0;
     startTutorial();
   });
 
