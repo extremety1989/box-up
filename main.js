@@ -612,11 +612,11 @@ async function run() {
       fixFloorPositionMP3 = new Howl({
         src: ['./sounds/adjust_floor.mp3']
       });
-  
+
       fixFloorPositionMP3.once('load', function () {
         fixFloorPositionMP3.play();
       });
-  
+
       fixFloorPositionMP3.on('end', function () {
         allow_click_the_menu = true;
       });
@@ -1032,13 +1032,10 @@ async function run() {
     plane.isVisible = false;
   }
 
-  function create_combo_1() {
 
-    let dist = 0;
-    let temp = [];
 
-    //jab cross
-    for (let i = 0; i < 4; i++) {
+function jab_cross(temp, dist) {
+      //jab cross
       const tb = createBlackTarget();
       const ty = createYellowTarget();
       const pos_y = xr.baseExperience.camera.position.clone();
@@ -1046,93 +1043,50 @@ async function run() {
       ty.position.y = pos_y.y - 0.2;
       tb.position.x = 0.1
       ty.position.x = -0.1
+      tb.position.z += dist + 4;
+      ty.position.z += dist;
+      dist += 4;
       temp.push(tb);
       temp.push(ty);
-    }
+}
 
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].position.z += dist;
-      dist += 4;
-    }
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].speed = globalSpeed;
-      targets.push(temp[i]);
-    }
-    temp = [];
-    dist += 8;
-    for (let i = 0; i < 4; i++) {
-      const tb = createBlackTarget();
-      const ty = createYellowTarget();
-      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
-      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-Math.PI / 2 - 0.5, 0, 0);
-      const pos_y = xr.baseExperience.camera.position.clone();
-      tb.position.y = pos_y.y - 0.2;
-      ty.position.y = pos_y.y - 0.2;
-      temp.push(ty);
-      temp.push(tb);
-    }
 
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].position.z += dist;
-      dist += 4;
-    }
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].speed = globalSpeed;
-      targets.push(temp[i]);
-    }
-    temp = [];
-    dist += 8;
+function left_right_hook(temp, dist){
+  const tb = createBlackTarget();
+  const ty = createYellowTarget();
+  tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
+  ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(-Math.PI / 2 - 0.5, 0, 0);
+  const pos_y = xr.baseExperience.camera.position.clone();
+  tb.position.y = pos_y.y - 0.2;
+  ty.position.y = pos_y.y - 0.2;
+  tb.position.z += dist + 4;
+  ty.position.z += dist;
+  dist += 4;
+  temp.push(tb);
+  temp.push(ty);
+}
 
-    for (let i = 0; i < 4; i++) {
-      const tb = createBlackTarget();
-      const ty = createYellowTarget();
-      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
-      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
-      const pos_y = xr.baseExperience.camera.position.clone();
-      tb.position.y = pos_y.y - 0.3;
-      ty.position.y = pos_y.y - 0.3;
-      tb.position.x = 0.1
-      ty.position.x = -0.1
-      temp.push(ty);
-      temp.push(tb);
-    }
 
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].position.z += dist;
-      dist += 4;
-    }
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].speed = globalSpeed;
-      targets.push(temp[i]);
-    }
-    temp = [];
-    dist += 8;
+function left_right_hammer(temp, dist){
+  const tb = createBlackTarget();
+  const ty = createYellowTarget();
+  tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
+  ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0, -Math.PI / 2 - 0.5, Math.PI);
+  const pos_y = xr.baseExperience.camera.position.clone();
+  tb.position.y = pos_y.y - 0.3;
+  ty.position.y = pos_y.y - 0.3;
+  tb.position.x = 0.1
+  ty.position.x = -0.1
+  ty.position.z += dist;
+  tb.position.z += dist + 4;
+  dist += 4;
+  temp.push(tb);
+  temp.push(ty);
+}
 
-    for (let i = 0; i < 4; i++) {
-      const tb = createBlackTarget();
-      const ty = createYellowTarget();
-      const pos_y = xr.baseExperience.camera.position.clone();
-      tb.position.y = pos_y.y - 0.2;
-      ty.position.y = pos_y.y - 0.2;
-      tb.position.x = 0.1
-      ty.position.x = -0.1
-      temp.push(tb);
-      temp.push(ty);
-    }
 
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].position.z += dist;
-      dist += 4;
-    }
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].speed = globalSpeed;
-      targets.push(temp[i]);
-    }
-    temp = [];
-    dist += 8;
-
-    //jab jab rear hook
-    for (let i = 0; i < 4; i++) {
+function jab_jab_rear_hook(temp, dist) {
+      //jab jab rear hook
       const tb = createBlackTarget();
       tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(Math.PI / 2 + 0.5, 0, 0);
       const ty = createYellowTarget();
@@ -1141,27 +1095,21 @@ async function run() {
       tb.position.y = pos_y.y - 0.2;
       ty.position.y = pos_y.y - 0.2;
       ty2.position.y = pos_y.y - 0.2;
-      tb.position.x = 0
       ty.position.x = -0.1
       ty2.position.x = -0.1
+     
+      ty.position.z += dist;
+      ty2.position.z += dist + 4;
+      tb.position.z += dist + 8;
+      dist += 4;
       temp.push(tb);
       temp.push(ty);
       temp.push(ty2);
-    }
+}
 
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].position.z += dist;
-      dist += 4;
-    }
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].speed = globalSpeed;
-      targets.push(temp[i]);
-    }
-    temp = [];
-    dist += 8;
 
-    //cross cross lead hook
-    for (let i = 0; i < 4; i++) {
+function cross_cross_lead_hook(temp, dist) {
+      //cross cross lead hook
       const tb = createBlackTarget();
       const tb2 = createBlackTarget();
       const ty = createYellowTarget();
@@ -1172,26 +1120,18 @@ async function run() {
       ty.position.y = pos_y.y - 0.3;
       tb.position.x = 0.1
       tb2.position.x = 0.1
-      ty.position.x = 0
+      tb.position.z += dist;
+      tb2.position.z += dist + 4;
+      ty.position.z += dist + 8;
+      dist += 4;
       temp.push(tb);
-      temp.push(ty);
       temp.push(tb2);
-    }
-
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].position.z += dist;
-      dist += 4;
-    }
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].speed = globalSpeed;
-      targets.push(temp[i]);
-    }
-    temp = [];
-    dist += 8;
+      temp.push(ty);
+}
 
 
-    //uppercut left first
-    for (let i = 0; i < 4; i++) {
+function uppercut_left_right(temp, dist) {
+      //uppercut left first
       const tb = createBlackTarget();
       const ty = createYellowTarget();
       tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
@@ -1199,123 +1139,247 @@ async function run() {
       const pos_y = xr.baseExperience.camera.position.clone();
       tb.position.y = pos_y.y - 0.3;
       ty.position.y = pos_y.y - 0.3;
-      temp.push(ty);
-      temp.push(tb);
-    }
-
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].position.z += dist;
-      dist += 4;
-    }
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].speed = globalSpeed;
-      targets.push(temp[i]);
-    }
-    temp = [];
-    dist += 8;
-
-    //upper cut right first
-    for (let i = 0; i < 4; i++) {
-      const tb = createBlackTarget();
-      const ty = createYellowTarget();
-      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
-      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
-      const pos_y = xr.baseExperience.camera.position.clone();
-      tb.position.y = pos_y.y - 0.3;
-      ty.position.y = pos_y.y - 0.3;
-      temp.push(ty);
-      temp.push(tb);
-    }
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].position.z += dist;
-      dist += 4;
-    }
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].speed = globalSpeed;
-      targets.push(temp[i]);
-    }
-    temp = [];
-    dist += 14;
-
-    for (let j = 0; j < 5; j++) {
-      //squat
-      const pos_y = xr.baseExperience.camera.position.clone();
-      const up = createUpper();
-      if (info.difficulty === "Easy") {
-        up.scaling.z = 2;
-      } else if (info.difficulty === "Medium") {
-        up.scaling.z = 4;
-      } else if (info.difficulty === "Hard") {
-        up.scaling.z = 8;
-      }
-      up.position.y = pos_y.y + 0.3;
-      temp.push(up);
-
-      for (let i = 0; i < temp.length; i++) {
-        temp[i].position.z += dist;
-        dist += 4;
-      }
-      for (let i = 0; i < temp.length; i++) {
-        temp[i].speed = globalSpeed;
-        targets.push(temp[i]);
-      }
-      temp = [];
-      dist += 14;
-
-
-      //lead skycut + rear skycut
-      for (let i = 0; i < 1; i++) {
-        const tb = createBlackTarget();
-        tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
-        const ty = createYellowTarget();
-        ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
-        const pos_y = xr.baseExperience.camera.position.clone();
-        tb.position.y = pos_y.y + 0.3;
-        ty.position.y = pos_y.y + 0.3;
-        tb.position.x = 0.2
-        ty.position.x = -0.2
-        temp.push(tb);
-        temp.push(ty);
-      }
-
-      for (let i = 0; i < temp.length; i++) {
-        temp[i].position.z += dist;
-        dist += 0;
-      }
-      for (let i = 0; i < temp.length; i++) {
-        temp[i].speed = globalSpeed;
-        targets.push(temp[i]);
-      }
-      temp = [];
-      dist += 14;
-    }
-
-    //lead skycut + rear skycut
-    for (let i = 0; i < 1; i++) {
-      const tb = createBlackTarget();
-      tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
-      const ty = createYellowTarget();
-      ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
-      const pos_y = xr.baseExperience.camera.position.clone();
-      tb.position.y = pos_y.y + 0.3;
-      ty.position.y = pos_y.y + 0.3;
       tb.position.x = 0.2
       ty.position.x = -0.2
+      tb.position.z += dist + 4;
+      ty.position.z += dist;
+      dist += 4;
       temp.push(tb);
       temp.push(ty);
-    }
+}
 
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].position.z += dist;
-      dist += 0;
-    }
-    for (let i = 0; i < temp.length; i++) {
-      temp[i].speed = globalSpeed;
-      targets.push(temp[i]);
-    }
-    temp = [];
-    dist += 8;
 
+function squat(temp, dist){
+    //squat
+    const pos_y = xr.baseExperience.camera.position.clone();
+    const up = createUpper();
+    up.position.y = pos_y.y + 0.3;
+
+    dist += 4 + up.scaling.z;
+    up.position.z += dist;
+    temp.push(up);
+}
+
+function lead_rear_skypunch(temp, dist) {
+    //lead skycut + rear skycut
+    const tb = createBlackTarget();
+    tb.rotationQuaternion = Quaternion.RotationYawPitchRoll(-0.9, Math.PI / 2 + 0.1, -Math.PI);
+    const ty = createYellowTarget();
+    ty.rotationQuaternion = Quaternion.RotationYawPitchRoll(0.9, Math.PI / 2 + 0.1, -Math.PI);
+    const pos_y = xr.baseExperience.camera.position.clone();
+    tb.position.y = pos_y.y + 0.3;
+    ty.position.y = pos_y.y + 0.3;
+    tb.position.x = 0.2
+    ty.position.x = -0.2
+    tb.position.z += dist;
+    ty.position.z += dist + 4;
+    dist += 4;
+    temp.push(tb);
+    temp.push(ty);
+}
+
+  function create_combo_1() {
+    console.log("combo 1");
+    let dist = 0;
+    let temp = [];
+    jab_cross(temp, dist);
+    dist += 20;
+    left_right_hook(temp, dist);
+    dist += 20;
+    left_right_hammer(temp, dist);
+    dist += 20;
+    jab_jab_rear_hook(temp, dist);
+    dist += 20;
+    cross_cross_lead_hook(temp, dist);
+    dist += 20;
+    uppercut_left_right(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    targets = temp;
+  }
+
+  function create_combo_2() {
+
+    let dist = 0;
+    let temp = [];
+
+    console.log("combo 2");
+    jab_cross(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+    left_right_hammer(temp, dist);
+    left_right_hammer(temp, dist);
+    left_right_hammer(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+    left_right_hammer(temp, dist);
+    left_right_hammer(temp, dist);
+    left_right_hammer(temp, dist);
+    dist += 20;
+
+
+    lead_rear_skypunch(temp, dist);
+    lead_rear_skypunch(temp, dist);
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+    jab_cross(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    targets = temp;
+  }
+
+
+  function create_combo_3() {
+
+    let dist = 0;
+    let temp = [];
+
+    console.log("combo 3");
+    jab_cross(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+      uppercut_left_right(temp, dist);
+      uppercut_left_right(temp, dist);
+      uppercut_left_right(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+      uppercut_left_right(temp, dist);
+      uppercut_left_right(temp, dist);
+      uppercut_left_right(temp, dist);
+    dist += 20;
+
+
+    left_right_hook(temp, dist);
+    left_right_hook(temp, dist);
+    left_right_hook(temp, dist);
+    dist += 20;
+
+    jab_cross(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    targets = temp;
+  }
+
+  function create_combo_4() {
+
+    let dist = 0;
+    let temp = [];
+
+    console.log("combo 4");
+
+    jab_cross(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+    jab_cross(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+
+    left_right_hammer(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+    left_right_hammer(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+
+    cross_cross_lead_hook(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+    cross_cross_lead_hook(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+
+    cross_cross_lead_hook(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+    cross_cross_lead_hook(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+    uppercut_left_right(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+    uppercut_left_right(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+    jab_cross(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+
+    jab_cross(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    dist += 20;
+    lead_rear_skypunch(temp, dist);
+    dist += 20;
+    jab_cross(temp, dist);
+    dist += 20;
+    squat(temp, dist);
+    targets = temp;
   }
 
 
@@ -1350,12 +1414,19 @@ async function run() {
 
 
   function createUpper() {
-    // const newUpper = upper.createInstance("upper");
     const newUpper = upper.loadedMeshes[0].instantiateHierarchy();
+    if (info.difficulty === "Easy") {
+      newUpper.scaling.z = 2;
+    } else if (info.difficulty === "Medium") {
+      newUpper.scaling.z = 3;
+    } else if (info.difficulty === "Hard") {
+      newUpper.scaling.z = 4;
+    }
     newUpper.position.copyFrom(pos);
     newUpper.position.z += 10;
-    newUpper.isVisible = true;
+    newUpper.position.y += 0.3;
     newUpper.speed = globalSpeed;
+    newUpper.isVisible = true;
     return newUpper;
   }
 
@@ -1377,12 +1448,12 @@ async function run() {
           clearInterval(timerInterval);
           setTimeout(() => {
             if (info.difficulty === "Easy") {
-              globalSpeed = 0.03;
+              globalSpeed = 1;
             }
             else if (info.difficulty === "Medium") {
-              globalSpeed = 0.04;
+              globalSpeed = 2;
             } else if (info.difficulty === "Hard") {
-              globalSpeed = 0.05;
+              globalSpeed = 3;
             }
             create_combo_1();
             plane2.isVisible = false;
@@ -1457,9 +1528,9 @@ async function run() {
 
   const leftCollision = MeshBuilder.CreateSphere("dummyCam", { diameter: 0.25 }, scene, true);
   leftCollision.isVisible = false;
-  leftCollision.showBoundingBox = true;
+  leftCollision.showBoundingBox = false;
   const rightCollision = MeshBuilder.CreateSphere("dummyCam2", { diameter: 0.25 }, scene, true);
-  rightCollision.showBoundingBox = true;
+  rightCollision.showBoundingBox = false;
   rightCollision.isVisible = false;
 
 
@@ -1497,7 +1568,7 @@ async function run() {
             });
           }
         }
-        if (leftCollision.intersectsMesh(target, true)) {
+        if (leftCollision.intersectsMesh(target, false)) {
           if (target.name === "yellow") {
             target.speed = 0;
             target.dts.play();
@@ -1533,7 +1604,7 @@ async function run() {
             fracture.dispose();
           }
         }
-        if (rightCollision.intersectsMesh(target, true)) {
+        if (rightCollision.intersectsMesh(target, false)) {
           if (target.name === "black") {
             target.speed = 0;
             target.dts.play();
@@ -1639,7 +1710,7 @@ async function run() {
             }
 
           } else if (stopped) {
-    
+
             if (floorPosition.isVisible && floorPosition.handness === motionController.handness) {
               localStorage.setItem('info', JSON.stringify(info));
 
@@ -1733,21 +1804,18 @@ async function run() {
         }
         center.text = timeLeft.toString();
         if (timeLeft <= 0) {
-          if (progression === 0) {
-
-            create_combo_1();
+          progression++;
+          if (progression === 1) {
+            create_combo_2();
+          } else if (progression === 2) {
+            create_combo_3();
+          } else {
+            create_combo_4();
           }
-          // else if (progression === 1) {
-          //   create_combo_1();
-          // } else if (progression === 2) {
-          //   create_combo_1();
-          // } else if (progression === 3) {
-          //   create_combo_1();
-          // }
 
           plane2.isVisible = false;
           paused = false;
-          progression++;
+
         }
       } else if (targets.length === 0 && !paused && !stopped) {
         timeLeft = 0;
@@ -1770,7 +1838,7 @@ async function run() {
         }
 
         if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed && floorPosition.handness === 'left') {
-          if(plane.parent) plane.setParent(null);
+          if (plane.parent) plane.setParent(null);
           if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
             let targetPosition = new Vector3(0, currentPosition.y, 0);
             floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
@@ -1796,7 +1864,7 @@ async function run() {
         }
 
         if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed && floorPosition.handness === 'right') {
-          if(plane.parent) plane.setParent(null);
+          if (plane.parent) plane.setParent(null);
           if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
             let targetPosition = new Vector3(0, currentPosition.y, 0);
             floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
@@ -1810,14 +1878,13 @@ async function run() {
 
 
       if ((targets.length > 0 && !stopped) || (targets.length > 0 && tutorial)) {
-
+        const delta = engine.getDeltaTime() / 1000;
         targets.forEach(target => {
-          const delta = engine.getDeltaTime() / 1000;
-          target.position.z = Scalar.Lerp(target.position.z, -100, target.speed * delta);
           if (target.position.z <= -1) {
             target.dispose();
             targets.splice(targets.indexOf(target), 1);
           }
+          target.position.z = Scalar.Lerp(target.position.z, -1000, target.speed * delta * 0.0005);
         });
 
       } else if ((targets.length > 0 && stopped || tutorial)) {
