@@ -8,7 +8,6 @@ import {
   Vector3,
   Scalar,
   Quaternion,
-  StandardMaterial,
   Color3,
   MeshBuilder,
   DirectionalLight,
@@ -39,9 +38,9 @@ async function run() {
   let comboLeftRightMP3;
   let bend_downMP3;
   let okFloor;
-  let okFloor_2;
   let startTutorialMP3;
   let fixFloorPositionMP3;
+  let clickFloorPositionMP3;
   let combo_tutorial_1 = false;
   let combo_tutorial_2 = false;
   let combo_tutorial_3 = false;
@@ -593,6 +592,7 @@ async function run() {
   });
 
   button_4.onPointerClickObservable.add(() => {
+    target = null;
     if (!allow_click_the_menu) return;
     comboCounter.value = 0;
     startTutorial();
@@ -601,10 +601,26 @@ async function run() {
   const floorPosition = MeshBuilder.CreateGround("floorPlane", { width: 2, height: 2 }, scene);
   floorPosition.isVisible = false;
   floorPosition.handness = null;
-  button_5.onPointerDownObservable.add((event) => {
+  button_5.onPointerDownObservable.add(() => {
+    target = null;
     if (!allow_click_the_menu) return;
     if (tutorial && startTutorialMP3) {
       startTutorialMP3.stop();
+    }
+    if (tutorial && clickFloorPositionMP3) {
+      clickFloorPositionMP3.stop();
+      fixFloorPositionMP3 = new Howl({
+        src: ['./sounds/adjust_floor.mp3']
+      });
+  
+      fixFloorPositionMP3.once('load', function () {
+        fixFloorPositionMP3.play();
+      });
+  
+      fixFloorPositionMP3.on('end', function () {
+        allow_click_the_menu = true;
+      });
+
     }
 
     if (!floorPosition.isVisible && stopped) {
@@ -659,16 +675,16 @@ async function run() {
 
 
   function startFloorFix() {
-    allow_click_the_menu = false;
-    fixFloorPositionMP3 = new Howl({
-      src: ['./sounds/adjust_floor.mp3']
+    startTutorialMP3.stop();
+    clickFloorPositionMP3 = new Howl({
+      src: ['./sounds/click_adjust_floor.mp3']
     });
 
-    fixFloorPositionMP3.once('load', function () {
-      fixFloorPositionMP3.play();
+    clickFloorPositionMP3.once('load', function () {
+      clickFloorPositionMP3.play();
     });
 
-    fixFloorPositionMP3.on('end', function () {
+    clickFloorPositionMP3.on('end', function () {
       allow_click_the_menu = true;
     });
   }
@@ -1264,7 +1280,7 @@ async function run() {
 
       for (let i = 0; i < temp.length; i++) {
         temp[i].position.z += dist;
-        dist += 4;
+        dist += 0;
       }
       for (let i = 0; i < temp.length; i++) {
         temp[i].speed = globalSpeed;
@@ -1402,11 +1418,16 @@ async function run() {
 
 
   function OkFloorAdjust() {
+    allow_click_the_menu = false;
     okFloor = new Howl({
       src: ['./sounds/continue_tutorial.mp3']
     });
     okFloor.once('load', function () {
       okFloor.play();
+    });
+
+    okFloor.on('end', function () {
+      allow_click_the_menu = true;
     });
   }
 
@@ -1606,18 +1627,19 @@ async function run() {
         trigger.onButtonStateChangedObservable.add(() => {
 
           if (trigger.pressed && stopped && allow_click_the_menu) {
-
             target = scene.meshUnderPointer;
             if (xr.pointerSelection.getMeshUnderPointer) {
               target = xr.pointerSelection.getMeshUnderPointer(controller.uniqueId);
             }
-            if (target && target.name === "plane" && target.parent === null && !floorPosition.isVisible) {
+            if (target && target.name === "plane" && target.parent === null) {
+              info.planePosition = target.getAbsolutePosition();
+              info.planeRotation = target.rotation;
               target.setParent(motionController.rootMesh);
-            }
-            if (!floorPosition.handness) {
               floorPosition.handness = motionController.handness;
             }
+
           } else if (stopped) {
+    
             if (floorPosition.isVisible && floorPosition.handness === motionController.handness) {
               localStorage.setItem('info', JSON.stringify(info));
 
@@ -1633,6 +1655,8 @@ async function run() {
               ComboPlane.position.y = info.floorPosition + 1.5;
               radioPlane.position.y = info.floorPosition + 1.5;
               plane.position.y = info.floorPosition + 1.5;
+              // plane.position = new Vector3(1, 1.5, 1);
+              plane.rotation = new Vector3(0, Math.PI / 9, 0);
               plane.isVisible = true;
               floorPosition.parent = null;
               floorPosition.isVisible = false;
@@ -1746,12 +1770,10 @@ async function run() {
         }
 
         if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed && floorPosition.handness === 'left') {
-
+          if(plane.parent) plane.setParent(null);
           if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
             let targetPosition = new Vector3(0, currentPosition.y, 0);
             floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
-            floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.3);
-            floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.3);
             info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
           }
         }
@@ -1774,12 +1796,10 @@ async function run() {
         }
 
         if (floorPosition.isVisible && !plane.isVisible && floorPosition.isPressed && floorPosition.handness === 'right') {
-
+          if(plane.parent) plane.setParent(null);
           if (floorPosition.position.y >= (currentPosition.y - 0.05)) {
             let targetPosition = new Vector3(0, currentPosition.y, 0);
             floorPosition.position.y = Scalar.Lerp(floorPosition.position.y, targetPosition.y, 0.3);
-            floorPosition.position.x = Scalar.Lerp(floorPosition.position.x, targetPosition.x, 0.3);
-            floorPosition.position.z = Scalar.Lerp(floorPosition.position.z, targetPosition.z, 0.3);
             info.floorPosition = floorPosition.getAbsolutePosition().y - 0.05;
           }
         }
@@ -1886,6 +1906,7 @@ async function run() {
             plane.isVisible = true;
             allow_click_the_menu = true;
             tutorial = false;
+            combo_tutorial = false;
           });
         }
 
