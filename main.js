@@ -1448,12 +1448,12 @@ function lead_rear_skypunch(temp, dist) {
           clearInterval(timerInterval);
           setTimeout(() => {
             if (info.difficulty === "Easy") {
-              globalSpeed = 1;
+              globalSpeed = 6;
             }
             else if (info.difficulty === "Medium") {
-              globalSpeed = 2;
+              globalSpeed = 8;
             } else if (info.difficulty === "Hard") {
-              globalSpeed = 3;
+              globalSpeed = 9;
             }
             create_combo_1();
             plane2.isVisible = false;
@@ -1687,7 +1687,7 @@ function lead_rear_skypunch(temp, dist) {
                 offOnGloves(true, false);
               } else {
                 offOnGloves(false, true);
-                getTimer(1);
+                getTimer(3);
               }
             } else {
               openMenu();
@@ -1800,7 +1800,7 @@ function lead_rear_skypunch(temp, dist) {
       let timeLeft = 0;
       if (paused && targets.length === 0) {
         if (!stopped) {
-          timeLeft = 30 - Math.floor((now - startTime) / 1000);
+          timeLeft = 20 - Math.floor((now - startTime) / 1000);
         }
         center.text = timeLeft.toString();
         if (timeLeft <= 0) {
